@@ -1,268 +1,182 @@
 import streamlit as st
+import os
 from google import genai
 from google.genai import types
-import os
 from dotenv import load_dotenv
-import re
-from tools import scrape_linkedin_url, extract_text_from_pdf
+from tools import scrape_linkedin_url, extract_text_from_pdf, chunk_text
 from memory import save_to_memory, recall_from_memory, get_all_memories, wipe_memory
 
-# Load environment variables
+# --- 1. SETUP & CONFIG ---
 load_dotenv()
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+client = genai.Client(api_key=GEMINI_API_KEY)
 
-# Initialize API Client
-api_key = os.getenv("GEMINI_API_KEY")
-if not api_key:
-    st.error("🚨 API Key not found! Please check your .env file.")
-    st.stop()
+st.set_page_config(page_title="LinkSavvy: LinkedIn Assistant", layout="wide")
 
-client = genai.Client(api_key=api_key)
+# --- 2. SYSTEM PROMPT (The LinkedIn Persona) ---
+linksavvy_system_prompt = """
+You are LinkSavvy, a highly advanced LinkedIn Growth Strategist and Career Advisor.
+Your goal is to help the user build their personal brand and write highly engaging content.
 
-# Page Configuration
-st.set_page_config(page_title="LinkSavvy", page_icon="🔗", layout="centered")
+STRICT GUIDELINES:
+1. DWELL TIME PROTOCOL: Prioritize "Pattern Interrupt" hooks (surprising 1st sentences). Use the "1-3-1" structure (1 sentence, 3 bullet points, 1 punchline). Keep paragraphs to 1-2 lines maximum.
+2. LEXICAL DIVERSITY: Do NOT use AI cliches ("In today's fast-paced world", "Unleash your potential", "Let's dive in", "Delve"). Write like a confident, human professional.
+3. PERSONALIZATION: Always ground your advice in the specific facts provided in the "Memory Context" (e.g., their background as a Business Analyst, MBA, or specific projects).
+4. MULTIMODAL VISION: If an image is provided, act as a Brand Consultant. Critique the visual hook, text readability, and overall professional alignment for LinkedIn.
+5. GAP ANALYSIS: If a job description is provided, output a Markdown table comparing "Required Skill", "My Status", and "Action Item" using emojis.
+6. CONTENT PLANNING: If asked to plan content based on a document, extract 3 "Content Pillars" and format a calendar in a clean table.
+"""
 
-# --- LinkSavvy Persona ---
-linksavvy_system_prompt = """You are LinkSavvy, an elite LinkedIn growth strategist, technical copywriter, and professional branding assistant.
-Your sole purpose is to help the user craft high-impact LinkedIn content, optimize their professional profile, and strategize networking.
+# --- 3. SESSION STATE INITIALIZATION ---
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+if "current_file_bytes" not in st.session_state:
+    st.session_state.current_file_bytes = None
+if "current_file_name" not in st.session_state:
+    st.session_state.current_file_name = None
 
-Guidelines you must strictly follow:
-1. Tone: Professional, insightful, engaging, and free of typical "AI fluff" (avoid words like "delve", "testament", or "tapestry").
-2. Formatting: Always format LinkedIn posts with short, punchy sentences, clear line breaks, and 3-5 highly relevant hashtags.
-3. Domain Expertise: You have deep expertise in business analytics, marketing strategies, and the lifecycle of enterprise software development (such as CRM and ERP platforms). When the user asks for post ideas or profile summaries, lean into these analytical and strategic themes unless instructed otherwise.
-4. If the user asks a question entirely unrelated to professional growth, career, or LinkedIn, gently guide them back to your primary purpose.
-5. Visual Analysis: If an image is provided (like a LinkedIn banner, headshot, or post graphic), act as a Brand Consultant. 
-   - Critique the 'Visual Hook' (Does it stop the scroll?).
-   - Check for Professionalism (Is it aligned with LinkedIn's business environment?).
-   - Evaluate Clarity (Is the text/message easy to read on a small mobile screen?).
-6. Strategic Repurposing: When a long document (PDF/TXT) is provided, your goal is to extract "Content Pillars." 
-   - Identify 3-5 core themes (e.g., Technical Innovation, User Experience, Business Efficiency).
-   - For each pillar, suggest one "Educational" post, one "Opinion" post, and one "Behind-the-Scenes" post.
-   - Always link these pillars back to the user's saved experience in ChromaDB (e.g., their MBA background or BA role).   
-   """
-
-# --- UI Sidebar ---
+# --- 4. UI SIDEBAR ---
 with st.sidebar:
     st.title("⚙️ LinkSavvy Settings")
-    st.markdown("Select your AI Engine:")
+    # Using only the highest-limit free models to minimize quota errors
+    selected_model = st.selectbox("Select AI Engine:", [
+        "gemini-2.5-flash-lite", # The fastest, most forgiving free model
+        "gemini-3.1-flash-lite",   # Extremely lightweight fallback
+        "gemini-2.0-flash-lite"       # The smartest, but strictest quota
+    ])
     
     st.markdown("---")
-    st.subheader("📄 Upload Document")
-    st.write("Upload a PDF or TXT for temporary session context.")
-    uploaded_file = st.file_uploader("Choose a file", type=["pdf", "txt", "png", "jpg"])
-
-    st.markdown("---")
-    st.subheader("⚡ Quick Actions")
-    st.write("One-click prompts for faster workflows.")
-
-    st.markdown("---")
-    # --- Memory Dashboard ---
-    with st.expander("🗄️ Database Dashboard"):
-        st.write("View or clear LinkSavvy's long-term memory.")
-        
-        # 1. Fetch and display memories
-        all_memories = get_all_memories()
-        
-        if not all_memories:
-            st.info("Database is currently empty.")
-        else:
-            st.success(f"Total saved facts: {len(all_memories)}")
-            # Loop through and display a preview of each memory
-            for i, mem in enumerate(all_memories):
-                # Show only the first 100 characters to keep the UI clean
-                st.caption(f"{i+1}. {mem[:100]}...") 
-                
-        # 2. Add the wipe button
-        if st.button("🚨 Wipe All Database Memory"):
-            wipe_memory()
-            st.rerun() # Instantly refreshes the UI to show the empty state
+    st.subheader("📄 Upload Context")
+    st.write("Upload PDF, TXT, or Image (PNG/JPG)")
+    uploaded_file = st.file_uploader("Choose a file", type=["pdf", "txt", "png", "jpg", "jpeg"], label_visibility="collapsed")
     
-    # Existing buttons
-    btn_polish = st.button("✨ Polish Last Message")
-    btn_draft_file = st.button("📝 Draft Post from File")
-    btn_save_file = st.button("💾 Save File to Database") 
-
-    btn_clear_chat = st.button("🧹 Clear Chat History")
-    if btn_clear_chat:
-        st.session_state.messages = [] # Empties the chat memory
-        # Note: We do not clear the uploaded file here, so you can keep chatting about the same file!
-        st.rerun() # Instantly refreshes the UI to show a clean slate
-
-    # NEW: Hook Generator Button
-    btn_generate_hooks = st.button("🎣 Brainstorm Hooks")   
-    btn_content_plan = st.button("📅 Generate Content Plan") 
-    
-    # NEW: Save the file to session state so it survives chat reruns
     if uploaded_file:
         st.success(f"Attached: {uploaded_file.name}")
         st.session_state.current_file_name = uploaded_file.name
         st.session_state.current_file_bytes = uploaded_file.getvalue()
     else:
-        # Clear it if the user clicks the 'X' to remove the file
         st.session_state.current_file_name = None
         st.session_state.current_file_bytes = None
 
-    # Dropdown for the free-tier models
-    selected_model = st.selectbox(
-        "Gemini Model",
-        options=["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-3.1-flash-lite"],
-        index=0
-    )
-    st.caption("All models above are operating on the free tier.")
     st.markdown("---")
-    st.subheader("🧠 Teach LinkSavvy")
-    st.write("Save facts about your career, audience, or style.")
-    new_fact = st.text_area("Fact to remember:", height=100)
-    if st.button("Save to Memory"):
-        if new_fact:
-            save_to_memory(new_fact)
-            st.success("Saved to long-term memory!")
-        else:
-            st.warning("Please enter a fact first.")
+    st.subheader("⚡ Quick Actions")
+    btn_polish = st.button("✨ Polish Last Message")
+    btn_draft_file = st.button("📝 Draft Post from File")
+    btn_content_plan = st.button("📅 Generate Content Plan")
+    btn_gap_analysis = st.button("📊 Career Gap Analysis")
+    btn_ghostwrite = st.button("✍️ Ghostwrite My Voice")
+    btn_hooks = st.button("🎣 Brainstorm 3 Hooks")
+    btn_save_file = st.button("💾 Save File to Database")
+    btn_clear_chat = st.button("🧹 Clear Chat History")
 
-# --- Logic for "Save File to Database" Button ---
-if btn_save_file:
-    if st.session_state.get("current_file_bytes") is not None:
-        file_name = st.session_state.current_file_name
-        file_bytes = st.session_state.current_file_bytes
-        
-        with st.spinner(f"Saving {file_name} to permanent memory..."):
-            # Extract the text
-            if file_name.endswith(".pdf"):
-                text_to_save = extract_text_from_pdf(file_bytes)
-            else:
-                text_to_save = file_bytes.decode("utf-8")
+    # Clear Chat Logic
+    if btn_clear_chat:
+        st.session_state.messages = []
+        st.rerun()
+
+    # Save to Database Logic
+    if btn_save_file:
+        if st.session_state.get("current_file_bytes") is not None:
+            fname = st.session_state.current_file_name
+            fbytes = st.session_state.current_file_bytes
+            with st.spinner(f"Saving {fname} to memory..."):
+                if fname.endswith(".pdf"): text_to_save = extract_text_from_pdf(fbytes)
+                elif fname.lower().endswith((".png", ".jpg", ".jpeg")): text_to_save = "Image uploaded (cannot parse text directly to DB yet)."
+                else: text_to_save = fbytes.decode("utf-8")
                 
-            # Save to ChromaDB
-            if text_to_save and text_to_save.strip():
-                save_to_memory(text_to_save, source=file_name)
-                st.success(f"✅ Successfully and permanently saved the contents of {file_name} to ChromaDB!")
-            else:
-                st.error("⚠️ Could not extract readable text to save.")
-    else:
-        st.warning("⚠️ Please upload a file in the sidebar first.")            
+                if text_to_save.strip():
+                    save_to_memory(text_to_save, source=fname)
+                    st.success(f"✅ Saved {fname} to ChromaDB!")
+                else: st.error("⚠️ No readable text to save.")
+        else: st.warning("⚠️ Upload a file first.")
 
-# --- Main UI ---
+    st.markdown("---")
+    with st.expander("🗄️ Database Dashboard"):
+        st.write("View or clear long-term memory.")
+        all_memories = get_all_memories()
+        if not all_memories: st.info("Database is empty.")
+        else:
+            st.success(f"Total facts: {len(all_memories)}")
+            for i, mem in enumerate(all_memories): st.caption(f"{i+1}. {mem[:80]}...") 
+        if st.button("🚨 Wipe All Memory"):
+            wipe_memory()
+            st.rerun()
+
+# --- 5. MAIN CHAT INTERFACE ---
 st.title("🔗 LinkSavvy: LinkedIn Assistant")
-st.write("Welcome to your dedicated AI companion for LinkedIn growth.")
 
-# Initialize chat history in session state
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+# Display chat history
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
 
-# Display previous chat messages
-for msg in st.session_state.messages:
-    with st.chat_message(msg["role"]):
-        st.markdown(msg["content"])
+# --- 6. INPUT ROUTING ---
+user_input = st.chat_input("Ask LinkSavvy a question or paste a URL...")
 
-# --- Chat Input & Logic ---
-# 1. Capture input from EITHER the chat box OR a Quick Action button
-user_input = st.chat_input("Ask LinkSavvy a question...")
+# Intercept Quick Action Buttons
+if btn_polish: user_input = "Please rewrite the last generated message. Make it more punchy, professional, and perfectly formatted for a LinkedIn audience."
+if btn_draft_file: user_input = "Draft a highly engaging LinkedIn post based purely on the currently uploaded file. Ensure it has a strong hook, 3 short bullet points, and a clear call to action."
+if btn_content_plan: user_input = "Analyze the uploaded document and my professional background. Extract 3 core 'Content Pillars' and create a 5-day LinkedIn content calendar formatted as a clean table."
+if btn_gap_analysis: user_input = "Analyze the provided Job Description URL or context against my background. Produce a structured 'Gap Analysis' table highlighting what I need to improve."
+if btn_ghostwrite: user_input = "Write a LinkedIn post about a recent professional insight. Use the '1-3-1' structure for maximum dwell time. Ensure the tone is 'Confident but Human'."
+if btn_hooks: user_input = "Analyze the provided context and brainstorm 3 distinct, high-impact LinkedIn hooks for a post. Provide a brief 1-sentence explanation of why each hook works."
 
-if btn_polish:
-    user_input = "Please rewrite the last generated message. Make it more punchy, professional, and perfectly formatted for a LinkedIn audience."
-if btn_draft_file:
-    user_input = "Draft a highly engaging LinkedIn post based purely on the currently uploaded file. Ensure it has a strong hook, 3 short bullet points, and a clear call to action."
-if btn_generate_hooks:
-    user_input = "Analyze the provided context (either the uploaded file, database memory, or URL) and brainstorm 3 distinct, high-impact LinkedIn hooks for a post. Do NOT write the full post yet. Provide a brief 1-sentence explanation of the psychology behind why each hook works. Label them Hook 1, Hook 2, and Hook 3."
-if btn_content_plan:
-    user_input = """
-    Analyze the uploaded document and my professional background. 
-    1. Extract 3 core 'Content Pillars' from this data.
-    2. Create a 5-day LinkedIn content calendar based on these pillars.
-    3. Ensure each post draft includes a hook optimized for 'Dwell Time'.
-    4. Format the output as a clean table.
-    """
-
-# 2. Trigger the orchestration if an input exists
+# --- 7. ORCHESTRATION & API CALL ---
 if user_input:
-    prompt = user_input
-    
-    # Append and display user message
-    st.session_state.messages.append({"role": "user", "content": prompt})
+    # Display user message
+    st.session_state.messages.append({"role": "user", "content": user_input})
     with st.chat_message("user"):
-        st.markdown(prompt)
+        st.markdown(user_input)
 
-    # --- ORCHESTRATION LAYER: Data Gathering ---
+    # Gather Extra Context
     extracted_context = ""
-    memory_context = ""
+    if "linkedin.com" in user_input or "http" in user_input:
+        extracted_context = scrape_linkedin_url(user_input)
     
-    # 1. Check for URLs
-    url_match = re.search(r'(https?://[^\s]+)', prompt)
-    if url_match:
-        target_url = url_match.group(0)
-        with st.chat_message("assistant"):
-            with st.spinner(f"🔗 Extracting data from URL..."):
-                scraped_text = scrape_linkedin_url(target_url)
-                extracted_context = f"\n\n--- EXTRACTED WEBSITE CONTEXT ---\n{scraped_text}\n---------------------------------\n"
-                st.success("Successfully read the link context!")
-
-    # 2. Query Long-Term Memory
-    # We search the database for anything mathematically related to the user's prompt
-    relevant_memories = recall_from_memory(prompt)
-    if relevant_memories:
-        memory_context = "\n\n--- RELEVANT BACKGROUND KNOWLEDGE ---\n"
-        for mem in relevant_memories:
-            memory_context += f"- {mem}\n"
-        memory_context += "-------------------------------------\n"
-
-    # 3. Check for Uploaded File Context (Support for Vision)
-    file_context = [] # Change to a list to support multimodal parts
-    is_image = False
-
+    memory_context = recall_from_memory(user_input)
+    
+    # Initialize Multimodal Parts List
+    user_content_parts = [types.Part.from_text(text=user_input)]
+    
+    if extracted_context:
+        user_content_parts.append(types.Part.from_text(text=f"\nhttps://www.merriam-webster.com/dictionary/context: {extracted_context}"))
+    if memory_context:
+        user_content_parts.append(types.Part.from_text(text=f"\n[Memory Context]: {memory_context}"))
+        
+    # Inject File / Image Context
     if st.session_state.get("current_file_bytes") is not None:
-        file_name = st.session_state.current_file_name
-        file_bytes = st.session_state.current_file_bytes
+        fname = st.session_state.current_file_name
+        fbytes = st.session_state.current_file_bytes
         
         with st.chat_message("assistant"):
-            if file_name.lower().endswith((".png", ".jpg", ".jpeg")):
-                is_image = True
-                st.image(file_bytes, caption="Visual context attached", width=300)
-                # We package the image for the Gemini 2.0+ API
-                file_context = [types.Part.from_bytes(data=file_bytes, mime_type="image/jpeg")]
-                st.success(f"✅ Image loaded. LinkSavvy is now 'looking' at {file_name}")
+            if fname.lower().endswith((".png", ".jpg", ".jpeg")):
+                st.image(fbytes, caption=f"Analyzing {fname}", width=250)
+                # Correctly assign the MIME type based on file extension
+                mime = "image/png" if fname.lower().endswith(".png") else "image/jpeg"
+                user_content_parts.append(types.Part.from_bytes(data=fbytes, mime_type=mime))
+                user_content_parts.append(types.Part.from_text(text="[SYSTEM OVERRIDE: Analyze the attached image as requested.]"))
             else:
-                # Keep your existing PDF/TXT logic here...
-                with st.spinner(f"📄 Reading {file_name}..."):
-                    if file_name.endswith(".pdf"):
-                        extracted_text = extract_text_from_pdf(file_bytes)
-                    else:
-                        extracted_text = file_bytes.decode("utf-8")
+                with st.spinner(f"📄 Reading {fname}..."):
+                    if fname.endswith(".pdf"): text_content = extract_text_from_pdf(fbytes)
+                    else: text_content = fbytes.decode("utf-8")
                     
-                    if extracted_text.strip():
-                        st.success("✅ Text extracted from document.")
-                        file_context = [types.Part.from_text(text=f"\n\n--- DOCUMENT CONTEXT ---\n{extracted_text}\n")]
-    
-# --- LLM CALL ---
+                    if text_content.strip():
+                        user_content_parts.append(types.Part.from_text(text=f"\n[File Context ({fname})]:\n{text_content}"))
+                        user_content_parts.append(types.Part.from_text(text="[SYSTEM OVERRIDE: Prioritize the File Context above when answering.]"))
+
+    # Execute Gemini API Call safely
     with st.chat_message("assistant"):
-        with st.spinner("Thinking..."):
+        with st.spinner("Analyzing data & generating response..."):
             try:
-                # 1. Build the conversation history
+                # Build conversation history in correct Part format
                 formatted_history = []
                 for msg in st.session_state.messages[:-1]:
                     role = "user" if msg["role"] == "user" else "model"
-                    formatted_history.append(
-                        types.Content(role=role, parts=[types.Part.from_text(text=msg["content"])])
-                    )
+                    formatted_history.append(types.Content(role=role, parts=[types.Part.from_text(text=msg["content"])]))
                 
-                # 2. Combine all context safely
-                user_content_parts = [types.Part.from_text(text=prompt)]
-                
-                # Add scraped URL or Memory context as text parts
-                if extracted_context:
-                    user_content_parts.append(types.Part.from_text(text=extracted_context))
-                if memory_context:
-                    user_content_parts.append(types.Part.from_text(text=memory_context))
-                
-                # Append the file_context (which could now be an Image Part)
-                if file_context:
-                    user_content_parts.extend(file_context)
+                # Append the newly built current message
+                formatted_history.append(types.Content(role="user", parts=user_content_parts))
 
-                # 3. Add the final message to history
-                formatted_history.append(
-                    types.Content(role="user", parts=user_content_parts)
-                )
-            
-                # 4. Send to Gemini
                 response = client.models.generate_content(
                     model=selected_model,
                     contents=formatted_history,
@@ -274,7 +188,10 @@ if user_input:
                 
                 assistant_reply = response.text
                 st.markdown(assistant_reply)
-                # Append assistant message
                 st.session_state.messages.append({"role": "assistant", "content": assistant_reply})
+                
             except Exception as e:
-                st.error(f"An error occurred: {e}")
+                if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e):
+                    st.error("🚨 Quota Exceeded! The free tier limit was reached. Wait 60 seconds, or select 'gemini-1.5-flash-8b' from the sidebar and try again.")
+                else:
+                    st.error(f"API Error: {e}")
