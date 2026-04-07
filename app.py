@@ -40,6 +40,19 @@ with st.sidebar:
     st.subheader("📄 Upload Document")
     st.write("Upload a PDF or TXT for temporary session context.")
     uploaded_file = st.file_uploader("Choose a file", type=["pdf", "txt"])
+
+    st.markdown("---")
+    st.subheader("⚡ Quick Actions")
+    st.write("One-click prompts for faster workflows.")
+
+    st.markdown("---")
+    st.subheader("⚡ Quick Actions")
+    st.write("One-click prompts for faster workflows.")
+    
+    # We store the button clicks in variables
+    btn_polish = st.button("✨ Polish Last Message")
+    btn_draft_file = st.button("📝 Draft Post from File")
+    btn_save_file = st.button("💾 Save File to Database") # NEW BUTTON
     
     # NEW: Save the file to session state so it survives chat reruns
     if uploaded_file:
@@ -69,6 +82,28 @@ with st.sidebar:
         else:
             st.warning("Please enter a fact first.")
 
+# --- Logic for "Save File to Database" Button ---
+if btn_save_file:
+    if st.session_state.get("current_file_bytes") is not None:
+        file_name = st.session_state.current_file_name
+        file_bytes = st.session_state.current_file_bytes
+        
+        with st.spinner(f"Saving {file_name} to permanent memory..."):
+            # Extract the text
+            if file_name.endswith(".pdf"):
+                text_to_save = extract_text_from_pdf(file_bytes)
+            else:
+                text_to_save = file_bytes.decode("utf-8")
+                
+            # Save to ChromaDB
+            if text_to_save and text_to_save.strip():
+                save_to_memory(text_to_save, source=file_name)
+                st.success(f"✅ Successfully and permanently saved the contents of {file_name} to ChromaDB!")
+            else:
+                st.error("⚠️ Could not extract readable text to save.")
+    else:
+        st.warning("⚠️ Please upload a file in the sidebar first.")            
+
 # --- Main UI ---
 st.title("🔗 LinkSavvy: LinkedIn Assistant")
 st.write("Welcome to your dedicated AI companion for LinkedIn growth.")
@@ -82,8 +117,19 @@ for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-# Chat Input & Logic
-if prompt := st.chat_input("Ask LinkSavvy a question..."):
+# --- Chat Input & Logic ---
+# 1. Capture input from EITHER the chat box OR a Quick Action button
+user_input = st.chat_input("Ask LinkSavvy a question...")
+
+if btn_polish:
+    user_input = "Please rewrite the last generated message. Make it more punchy, professional, and perfectly formatted for a LinkedIn audience."
+if btn_draft_file:
+    user_input = "Draft a highly engaging LinkedIn post based purely on the currently uploaded file. Ensure it has a strong hook, 3 short bullet points, and a clear call to action."
+
+# 2. Trigger the orchestration if an input exists
+if user_input:
+    prompt = user_input
+    
     # Append and display user message
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
