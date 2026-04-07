@@ -5,7 +5,7 @@ import os
 from dotenv import load_dotenv
 import re
 from tools import scrape_linkedin_url, extract_text_from_pdf
-from memory import save_to_memory, recall_from_memory # Importing our database functions
+from memory import save_to_memory, recall_from_memory, get_all_memories, wipe_memory
 
 # Load environment variables
 load_dotenv()
@@ -46,12 +46,26 @@ with st.sidebar:
     st.write("One-click prompts for faster workflows.")
 
     st.markdown("---")
-    st.subheader("⚡ Quick Actions")
-    st.write("One-click prompts for faster workflows.")
-
-    st.markdown("---")
-    st.subheader("⚡ Quick Actions")
-    st.write("One-click prompts for faster workflows.")
+    # --- Memory Dashboard ---
+    with st.expander("🗄️ Database Dashboard"):
+        st.write("View or clear LinkSavvy's long-term memory.")
+        
+        # 1. Fetch and display memories
+        all_memories = get_all_memories()
+        
+        if not all_memories:
+            st.info("Database is currently empty.")
+        else:
+            st.success(f"Total saved facts: {len(all_memories)}")
+            # Loop through and display a preview of each memory
+            for i, mem in enumerate(all_memories):
+                # Show only the first 100 characters to keep the UI clean
+                st.caption(f"{i+1}. {mem[:100]}...") 
+                
+        # 2. Add the wipe button
+        if st.button("🚨 Wipe All Database Memory"):
+            wipe_memory()
+            st.rerun() # Instantly refreshes the UI to show the empty state
     
     # We store the button clicks in variables
     btn_polish = st.button("✨ Polish Last Message")

@@ -38,6 +38,23 @@ def recall_from_memory(query, n_results=2):
         return results['documents'][0]
     return []
 
+def get_all_memories():
+    """Retrieves all documents currently stored in the database."""
+    if collection.count() == 0:
+        return []
+    
+    # .get() without parameters returns everything in the collection
+    results = collection.get() 
+    return results['documents']
+
+def wipe_memory():
+    """Deletes all items in the current collection."""
+    if collection.count() > 0:
+        # Get all IDs and delete them
+        results = collection.get()
+        collection.delete(ids=results['ids'])
+    return True
+
 # --- Local Testing Block ---
 if __name__ == "__main__":
     print("🧠 Initializing LinkSavvy's Brain...")
