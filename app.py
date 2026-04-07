@@ -48,11 +48,22 @@ with st.sidebar:
     st.markdown("---")
     st.subheader("⚡ Quick Actions")
     st.write("One-click prompts for faster workflows.")
+
+    st.markdown("---")
+    st.subheader("⚡ Quick Actions")
+    st.write("One-click prompts for faster workflows.")
     
     # We store the button clicks in variables
     btn_polish = st.button("✨ Polish Last Message")
     btn_draft_file = st.button("📝 Draft Post from File")
     btn_save_file = st.button("💾 Save File to Database") # NEW BUTTON
+
+    # NEW: Clear Chat Button
+    btn_clear_chat = st.button("🧹 Clear Chat History")
+    if btn_clear_chat:
+        st.session_state.messages = [] # Empties the chat memory
+        # Note: We do not clear the uploaded file here, so you can keep chatting about the same file!
+        st.rerun() # Instantly refreshes the UI to show a clean slate
     
     # NEW: Save the file to session state so it survives chat reruns
     if uploaded_file:
