@@ -4,7 +4,7 @@ from google.genai import types
 import os
 from dotenv import load_dotenv
 import re
-from tools import scrape_linkedin_url # Importing our custom tool
+from tools import scrape_linkedin_url
 
 # Load environment variables
 load_dotenv()
