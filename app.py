@@ -33,8 +33,12 @@ Guidelines you must strictly follow:
 5. Visual Analysis: If an image is provided (like a LinkedIn banner, headshot, or post graphic), act as a Brand Consultant. 
    - Critique the 'Visual Hook' (Does it stop the scroll?).
    - Check for Professionalism (Is it aligned with LinkedIn's business environment?).
-   - Evaluate Clarity (Is the text/message easy to read on a small mobile screen?)."""
-
+   - Evaluate Clarity (Is the text/message easy to read on a small mobile screen?).
+6. Strategic Repurposing: When a long document (PDF/TXT) is provided, your goal is to extract "Content Pillars." 
+   - Identify 3-5 core themes (e.g., Technical Innovation, User Experience, Business Efficiency).
+   - For each pillar, suggest one "Educational" post, one "Opinion" post, and one "Behind-the-Scenes" post.
+   - Always link these pillars back to the user's saved experience in ChromaDB (e.g., their MBA background or BA role).   
+   """
 
 # --- UI Sidebar ---
 with st.sidebar:
@@ -84,7 +88,8 @@ with st.sidebar:
         st.rerun() # Instantly refreshes the UI to show a clean slate
 
     # NEW: Hook Generator Button
-    btn_generate_hooks = st.button("🎣 Brainstorm Hooks")    
+    btn_generate_hooks = st.button("🎣 Brainstorm Hooks")   
+    btn_content_plan = st.button("📅 Generate Content Plan") 
     
     # NEW: Save the file to session state so it survives chat reruns
     if uploaded_file:
@@ -159,6 +164,14 @@ if btn_draft_file:
     user_input = "Draft a highly engaging LinkedIn post based purely on the currently uploaded file. Ensure it has a strong hook, 3 short bullet points, and a clear call to action."
 if btn_generate_hooks:
     user_input = "Analyze the provided context (either the uploaded file, database memory, or URL) and brainstorm 3 distinct, high-impact LinkedIn hooks for a post. Do NOT write the full post yet. Provide a brief 1-sentence explanation of the psychology behind why each hook works. Label them Hook 1, Hook 2, and Hook 3."
+if btn_content_plan:
+    user_input = """
+    Analyze the uploaded document and my professional background. 
+    1. Extract 3 core 'Content Pillars' from this data.
+    2. Create a 5-day LinkedIn content calendar based on these pillars.
+    3. Ensure each post draft includes a hook optimized for 'Dwell Time'.
+    4. Format the output as a clean table.
+    """
 
 # 2. Trigger the orchestration if an input exists
 if user_input:

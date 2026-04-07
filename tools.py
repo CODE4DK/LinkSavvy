@@ -64,6 +64,13 @@ def extract_text_from_pdf(file_bytes):
         return text
     except Exception as e:
         return f"🚨 Error reading PDF: {str(e)}"    
+    
+def chunk_text(text, chunk_size=4000):
+    """
+    Splits long text into manageable chunks so the AI 
+    doesn't lose focus on specific details.
+    """
+    return [text[i:i+chunk_size] for i in range(0, len(text), chunk_size)]    
 
 # --- Local Testing Block ---
 # This only runs if you execute tools.py directly, not when imported.
