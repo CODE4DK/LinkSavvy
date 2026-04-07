@@ -67,17 +67,19 @@ with st.sidebar:
             wipe_memory()
             st.rerun() # Instantly refreshes the UI to show the empty state
     
-    # We store the button clicks in variables
+    # Existing buttons
     btn_polish = st.button("✨ Polish Last Message")
     btn_draft_file = st.button("📝 Draft Post from File")
-    btn_save_file = st.button("💾 Save File to Database") # NEW BUTTON
+    btn_save_file = st.button("💾 Save File to Database") 
 
-    # NEW: Clear Chat Button
     btn_clear_chat = st.button("🧹 Clear Chat History")
     if btn_clear_chat:
         st.session_state.messages = [] # Empties the chat memory
         # Note: We do not clear the uploaded file here, so you can keep chatting about the same file!
         st.rerun() # Instantly refreshes the UI to show a clean slate
+
+    # NEW: Hook Generator Button
+    btn_generate_hooks = st.button("🎣 Brainstorm Hooks")    
     
     # NEW: Save the file to session state so it survives chat reruns
     if uploaded_file:
@@ -150,6 +152,8 @@ if btn_polish:
     user_input = "Please rewrite the last generated message. Make it more punchy, professional, and perfectly formatted for a LinkedIn audience."
 if btn_draft_file:
     user_input = "Draft a highly engaging LinkedIn post based purely on the currently uploaded file. Ensure it has a strong hook, 3 short bullet points, and a clear call to action."
+if btn_generate_hooks:
+    user_input = "Analyze the provided context (either the uploaded file, database memory, or URL) and brainstorm 3 distinct, high-impact LinkedIn hooks for a post. Do NOT write the full post yet. Provide a brief 1-sentence explanation of the psychology behind why each hook works. Label them Hook 1, Hook 2, and Hook 3."
 
 # 2. Trigger the orchestration if an input exists
 if user_input:
