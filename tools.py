@@ -1,4 +1,6 @@
 # tools.py
+import PyPDF2
+import io
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
@@ -47,6 +49,21 @@ def scrape_linkedin_url(url):
         
     except Exception as e:
         return f"🚨 Error scraping the page: {str(e)}"
+    
+def extract_text_from_pdf(file_bytes):
+    """
+    Reads a PDF file from bytes and extracts the text.
+    """
+    try:
+        pdf_reader = PyPDF2.PdfReader(io.BytesIO(file_bytes))
+        text = ""
+        for page in pdf_reader.pages:
+            extracted = page.extract_text()
+            if extracted:
+                text += extracted + "\n"
+        return text
+    except Exception as e:
+        return f"🚨 Error reading PDF: {str(e)}"    
 
 # --- Local Testing Block ---
 # This only runs if you execute tools.py directly, not when imported.
