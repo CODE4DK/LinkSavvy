@@ -29,7 +29,12 @@ Guidelines you must strictly follow:
 1. Tone: Professional, insightful, engaging, and free of typical "AI fluff" (avoid words like "delve", "testament", or "tapestry").
 2. Formatting: Always format LinkedIn posts with short, punchy sentences, clear line breaks, and 3-5 highly relevant hashtags.
 3. Domain Expertise: You have deep expertise in business analytics, marketing strategies, and the lifecycle of enterprise software development (such as CRM and ERP platforms). When the user asks for post ideas or profile summaries, lean into these analytical and strategic themes unless instructed otherwise.
-4. If the user asks a question entirely unrelated to professional growth, career, or LinkedIn, gently guide them back to your primary purpose."""
+4. If the user asks a question entirely unrelated to professional growth, career, or LinkedIn, gently guide them back to your primary purpose.
+5. Visual Analysis: If an image is provided (like a LinkedIn banner, headshot, or post graphic), act as a Brand Consultant. 
+   - Critique the 'Visual Hook' (Does it stop the scroll?).
+   - Check for Professionalism (Is it aligned with LinkedIn's business environment?).
+   - Evaluate Clarity (Is the text/message easy to read on a small mobile screen?)."""
+
 
 # --- UI Sidebar ---
 with st.sidebar:
@@ -39,7 +44,7 @@ with st.sidebar:
     st.markdown("---")
     st.subheader("📄 Upload Document")
     st.write("Upload a PDF or TXT for temporary session context.")
-    uploaded_file = st.file_uploader("Choose a file", type=["pdf", "txt"])
+    uploaded_file = st.file_uploader("Choose a file", type=["pdf", "txt", "png", "jpg"])
 
     st.markdown("---")
     st.subheader("⚡ Quick Actions")
@@ -187,25 +192,33 @@ if user_input:
             memory_context += f"- {mem}\n"
         memory_context += "-------------------------------------\n"
 
-    # 3. Check for Uploaded File Context
-    file_context = ""
+    # 3. Check for Uploaded File Context (Support for Vision)
+    file_context = [] # Change to a list to support multimodal parts
+    is_image = False
+
     if st.session_state.get("current_file_bytes") is not None:
         file_name = st.session_state.current_file_name
         file_bytes = st.session_state.current_file_bytes
         
         with st.chat_message("assistant"):
-            with st.spinner(f"📄 Reading {file_name}..."):
-                if file_name.endswith(".pdf"):
-                    extracted_doc_text = extract_text_from_pdf(file_bytes)
-                else:
-                    extracted_doc_text = file_bytes.decode("utf-8")
-                
-                if not extracted_doc_text or not extracted_doc_text.strip():
-                    st.warning("⚠️ The file was attached, but I couldn't extract any readable text from it. (If it's a PDF, it might be an image/scan).")
-                else:
-                    st.success(f"✅ Successfully extracted {len(extracted_doc_text)} characters from the file!")
-                    file_context = f"\n\n--- UPLOADED DOCUMENT CONTEXT ({file_name}) ---\n{extracted_doc_text}\n---------------------------------------\n"
-
+            if file_name.lower().endswith((".png", ".jpg", ".jpeg")):
+                is_image = True
+                st.image(file_bytes, caption="Visual context attached", width=300)
+                # We package the image for the Gemini 2.0+ API
+                file_context = [types.Part.from_bytes(data=file_bytes, mime_type="image/jpeg")]
+                st.success(f"✅ Image loaded. LinkSavvy is now 'looking' at {file_name}")
+            else:
+                # Keep your existing PDF/TXT logic here...
+                with st.spinner(f"📄 Reading {file_name}..."):
+                    if file_name.endswith(".pdf"):
+                        extracted_text = extract_text_from_pdf(file_bytes)
+                    else:
+                        extracted_text = file_bytes.decode("utf-8")
+                    
+                    if extracted_text.strip():
+                        st.success("✅ Text extracted from document.")
+                        file_context = [types.Part.from_text(text=f"\n\n--- DOCUMENT CONTEXT ---\n{extracted_text}\n")]
+    
 # --- LLM CALL ---
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
@@ -219,20 +232,23 @@ if user_input:
                     )
                 
                 # 2. Combine all context safely
-                final_prompt = prompt
+                user_content_parts = [types.Part.from_text(text=prompt)]
+                
+                # Add scraped URL or Memory context as text parts
                 if extracted_context:
-                    final_prompt += extracted_context
+                    user_content_parts.append(types.Part.from_text(text=extracted_context))
                 if memory_context:
-                    final_prompt += memory_context
+                    user_content_parts.append(types.Part.from_text(text=memory_context))
+                
+                # Append the file_context (which could now be an Image Part)
                 if file_context:
-                    # We inject a strict system override so the AI doesn't get confused by its own limitations
-                    final_prompt += f"\n\n[SYSTEM OVERRIDE: The user has provided file text below. DO NOT say you cannot read files. Analyze this text directly:] {file_context}"
+                    user_content_parts.extend(file_context)
 
-                # 3. Add the final combined prompt
+                # 3. Add the final message to history
                 formatted_history.append(
-                    types.Content(role="user", parts=[types.Part.from_text(text=final_prompt)])
+                    types.Content(role="user", parts=user_content_parts)
                 )
-
+            
                 # 4. Send to Gemini
                 response = client.models.generate_content(
                     model=selected_model,
