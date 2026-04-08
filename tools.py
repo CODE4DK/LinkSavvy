@@ -46,3 +46,34 @@ def scrape_linkedin_url(url):
         return text[:3000] # Return the first 3000 characters to save tokens
     except Exception as e:
         return f"Could not extract data from URL: {str(e)}"
+    
+from fpdf import FPDF
+import io
+
+def create_pdf_carousel(text_content):
+    """Parses text for [SLIDE] tags and generates a multi-page PDF."""
+    pdf = FPDF(orientation='P', unit='mm', format=(108, 135)) # Standard 4:5 aspect ratio for LinkedIn
+    pdf.set_auto_page_break(auto=True, margin=15)
+    
+    # Split the AI's text by the [SLIDE] marker
+    slides = text_content.split("[SLIDE]")
+    
+    for slide in slides:
+        clean_slide = slide.strip()
+        if not clean_slide:
+            continue
+            
+        pdf.add_page()
+        pdf.set_font("Arial", size=16) # Using standard Arial
+        
+        # Add a simple background color (light gray)
+        pdf.set_fill_color(240, 240, 240)
+        pdf.rect(0, 0, 108, 135, 'F')
+        
+        # Add the text
+        # Encoding handles special characters that might break FPDF
+        encoded_text = clean_slide.encode('latin-1', 'replace').decode('latin-1')
+        pdf.multi_cell(0, 8, encoded_text, align='C')
+
+    # Output to a byte stream so Streamlit can download it
+    return pdf.output(dest='S').encode('latin-1')    

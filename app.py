@@ -3,7 +3,7 @@ import os
 from google import genai
 from google.genai import types
 from dotenv import load_dotenv
-from tools import scrape_linkedin_url, extract_text_from_pdf, chunk_text
+from tools import scrape_linkedin_url, extract_text_from_pdf, chunk_text, create_pdf_carousel
 from memory import save_to_memory, recall_from_memory, get_all_memories, wipe_memory, get_memory_analytics
 
 # --- 1. SETUP & CONFIG ---
@@ -68,6 +68,9 @@ with st.sidebar:
     btn_hooks = st.button("🎣 Brainstorm 3 Hooks")
     btn_save_file = st.button("💾 Save File to Database")
     btn_clear_chat = st.button("🧹 Clear Chat History")
+    btn_braindump = st.button("🎙️ Draft from Voice")
+    btn_carousel = st.button("📄 Draft PDF Carousel")
+    btn_comment = st.button("💬 Strategic Comment Replier")
 
     # Clear Chat Logic
     if btn_clear_chat:
@@ -116,7 +119,18 @@ with st.sidebar:
             # Convert the dictionary into a chart using Streamlit's native bar chart
             st.bar_chart(stats["source_counts"])
         else:
-            st.info("Not enough data to analyze. Save some files first!")        
+            st.info("Not enough data to analyze. Save some files first!") 
+
+    # NEW: Audio Input Widget
+    st.markdown("---")
+    st.subheader("🎙️ Voice Braindump")
+    audio_file = st.audio_input("Record a voice note")
+    
+    # If audio is recorded, treat it like an uploaded file
+    if audio_file:
+        st.session_state.current_file_bytes = audio_file.getvalue()
+        st.session_state.current_file_name = "voice_note.wav"
+        st.success("✅ Voice note captured!")               
 
 # --- 5. MAIN CHAT INTERFACE ---
 st.title("🔗 LinkSavvy: LinkedIn Assistant")
@@ -136,7 +150,24 @@ if btn_content_plan: user_input = "Analyze the uploaded document and my professi
 if btn_gap_analysis: user_input = "Analyze the provided Job Description URL or context against my background. Produce a structured 'Gap Analysis' table highlighting what I need to improve."
 if btn_ghostwrite: user_input = "Write a LinkedIn post about a recent professional insight. Use the '1-3-1' structure for maximum dwell time. Ensure the tone is 'Confident but Human'."
 if btn_hooks: user_input = "Analyze the provided context and brainstorm 3 distinct, high-impact LinkedIn hooks for a post. Provide a brief 1-sentence explanation of why each hook works."
-
+if btn_braindump: user_input = "Listen to the attached voice note. Extract the core insights and transform my messy thoughts into a highly engaging, 360Brew-compliant LinkedIn post using the 1-3-1 structure."
+if btn_carousel: user_input = """
+    Based on my memory context or the attached file, draft a 5-slide LinkedIn Carousel.
+    CRITICAL INSTRUCTION: You MUST start every single slide with the exact text '[SLIDE]'. 
+    Keep the text on each slide extremely short (max 3 sentences). 
+    Make Slide 1 a strong hook. Make Slide 5 a Call to Action.
+    """
+if btn_comment: user_input = """
+    Analyze the provided LinkedIn post (either from the pasted text or URL). 
+    Cross-reference this post with my professional background in your memory.
+    Generate 3 distinct, highly engaging comments I can leave on this post:
+    
+    1. 'The Value Add': Add a new, specific insight based on my background.
+    2. 'The Respectful Contrarian': Politely offer a different perspective or edge case.
+    3. 'The Story Relater': Share a brief, relevant 1-sentence personal experience.
+    
+    CRITICAL: Keep each comment under 3 sentences. Do NOT use generic praise like "Great post!" or "Thanks for sharing." Start directly with the hook.
+    """    
 # --- 7. ORCHESTRATION & API CALL ---
 if user_input:
     # Display user message
@@ -171,6 +202,13 @@ if user_input:
                 mime = "image/png" if fname.lower().endswith(".png") else "image/jpeg"
                 user_content_parts.append(types.Part.from_bytes(data=fbytes, mime_type=mime))
                 user_content_parts.append(types.Part.from_text(text="[SYSTEM OVERRIDE: Analyze the attached image as requested.]"))
+            
+            # NEW: Audio Logic
+            elif fname.lower().endswith(".wav"):
+                st.audio(fbytes, format="audio/wav")
+                user_content_parts.append(types.Part.from_bytes(data=fbytes, mime_type="audio/wav"))
+                user_content_parts.append(types.Part.from_text(text="[SYSTEM OVERRIDE: Transcribe and analyze the attached audio file.]"))
+
             else:
                 with st.spinner(f"📄 Reading {fname}..."):
                     if fname.endswith(".pdf"): text_content = extract_text_from_pdf(fbytes)
@@ -205,6 +243,17 @@ if user_input:
                 assistant_reply = response.text
                 st.markdown(assistant_reply)
                 st.session_state.messages.append({"role": "assistant", "content": assistant_reply})
+
+                # NEW: Check if this was a carousel draft and offer PDF download
+                if "[SLIDE]" in assistant_reply:
+                    st.success("✅ Carousel formatting detected!")
+                    pdf_bytes = create_pdf_carousel(assistant_reply)
+                    st.download_button(
+                        label="📥 Download PDF Carousel for LinkedIn",
+                        data=pdf_bytes,
+                        file_name="LinkSavvy_Carousel.pdf",
+                        mime="application/pdf"
+                    )
                 
             except Exception as e:
                 if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e):
