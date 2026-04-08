@@ -5,7 +5,7 @@ from google import genai
 from google.genai import types
 from dotenv import load_dotenv
 from tools import scrape_linkedin_url, extract_text_from_pdf, chunk_text, create_pdf_carousel
-from memory import save_to_memory, recall_from_memory, get_all_memories, wipe_memory, get_memory_analytics
+from memory import save_to_memory, recall_from_memory, get_all_memories, wipe_memory, get_memory_analytics, get_memory_details, delete_memory
 
 # --- 1. SETUP & CONFIG ---
 load_dotenv()
@@ -80,21 +80,42 @@ with st.sidebar:
         st.session_state.messages = []
         st.rerun()
 
-    # Save to Database Logic
+    # Save to Database Logic (Upgraded with Auto-Tagging)
     if btn_save_file:
         if st.session_state.get("current_file_bytes") is not None:
             fname = st.session_state.current_file_name
             fbytes = st.session_state.current_file_bytes
-            with st.spinner(f"Saving {fname} to memory..."):
+            
+            with st.spinner(f"Categorizing and saving {fname}..."):
+                # 1. Extract the text
                 if fname.endswith(".pdf"): text_to_save = extract_text_from_pdf(fbytes)
                 elif fname.lower().endswith((".png", ".jpg", ".jpeg")): text_to_save = "Image uploaded (cannot parse text directly to DB yet)."
                 else: text_to_save = fbytes.decode("utf-8")
                 
-                if text_to_save.strip():
-                    save_to_memory(text_to_save, source=fname)
-                    st.success(f"✅ Saved {fname} to ChromaDB!")
-                else: st.error("⚠️ No readable text to save.")
-        else: st.warning("⚠️ Upload a file first.")
+                if text_to_save.strip() and not text_to_save.startswith("Image"):
+                    # 2. The Invisible Middleman: Ask AI to categorize the text
+                    try:
+                        cat_prompt = f"""
+                        Read the following text and assign it EXACTLY ONE of these categories:
+                        [Bzyday Project, Python Learning, LinkedIn Brand, Career Background, Competitor Research].
+                        Respond with ONLY the exact category name. No other text.
+                        Text: {text_to_save[:1000]}
+                        """
+                        # Use the fast, free lite model for this background task
+                        cat_response = client.models.generate_content(
+                            model="gemini-2.0-flash-lite", 
+                            contents=cat_prompt
+                        )
+                        auto_category = cat_response.text.strip().replace("[", "").replace("]", "")
+                    except Exception:
+                        auto_category = "General" # Fallback if API fails
+                        
+                    # 3. Save with the new metadata
+                    save_to_memory(text_to_save, source=fname, category=auto_category)
+                    st.success(f"✅ Saved to DB! (Auto-Tagged as: {auto_category})")
+                else: 
+                    st.error("⚠️ No readable text to save.")
+        else: st.warning("⚠️ Upload a file first.") 
 
     st.markdown("---")
     st.subheader("🎯 Hook Tracker (Feedback Loop)")
@@ -114,15 +135,35 @@ with st.sidebar:
 
     st.markdown("---")
     with st.expander("🗄️ Database Dashboard"):
-        st.write("View or clear long-term memory.")
-        all_memories = get_all_memories()
-        if not all_memories: st.info("Database is empty.")
+        st.write("Manage your long-term memory.")
+        
+        details = get_memory_details()
+        if not details["ids"]: 
+            st.info("Database is empty.")
         else:
-            st.success(f"Total facts: {len(all_memories)}")
-            for i, mem in enumerate(all_memories): st.caption(f"{i+1}. {mem[:80]}...") 
-        if st.button("🚨 Wipe All Memory"):
-            wipe_memory()
-            st.rerun()
+            st.success(f"Total entries: {len(details['ids'])}")
+            
+            # Create a scrolling container for the memories
+            with st.container(height=300):
+                for i in range(len(details["ids"])):
+                    doc_id = details["ids"][i]
+                    doc_text = details["documents"][i]
+                    source = details["metadatas"][i].get("source", "Unknown")
+                    
+                    # Layout: Text on the left, Delete button on the right
+                    col_text, col_btn = st.columns([5, 1])
+                    with col_text:
+                        st.caption(f"**[{source}]** {doc_text[:50]}...")
+                    with col_btn:
+                        # Use the unique doc_id as the button key so Streamlit knows which one to delete
+                        if st.button("❌", key=f"del_{doc_id}"):
+                            delete_memory(doc_id)
+                            st.rerun()
+
+            st.markdown("---")                
+            if st.button("🚨 Wipe All Memory"):
+                wipe_memory()
+                st.rerun()
 
     st.markdown("---")
     with st.expander("📈 Memory Analytics"):

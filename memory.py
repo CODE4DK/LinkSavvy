@@ -6,14 +6,14 @@ chroma_client = chromadb.PersistentClient(path="./chroma_data")
 # Create or get the collection (our specific database table)
 collection = chroma_client.get_or_create_collection(name="linksavvy_memory")
 
-def save_to_memory(text, source="user_input"):
-    """Saves a piece of text to the local vector database."""
+def save_to_memory(text, source="user_input", category="General"):
+    """Saves a piece of text to the local vector database with category metadata."""
     import uuid
     doc_id = str(uuid.uuid4())
     
     collection.add(
         documents=[text],
-        metadatas=[{"source": source}],
+        metadatas=[{"source": source, "category": category}], # Added category here
         ids=[doc_id]
     )
     return True
@@ -69,3 +69,14 @@ def get_memory_analytics():
         "total_characters": total_chars,
         "source_counts": source_counts
     }
+
+def get_memory_details():
+    """Retrieves documents, metadata, and unique IDs for granular management."""
+    if collection.count() == 0:
+        return {"ids": [], "documents": [], "metadatas": []}
+    return collection.get()
+
+def delete_memory(doc_id):
+    """Deletes a specific memory by its unique ChromaDB ID."""
+    collection.delete(ids=[doc_id])
+    return True
