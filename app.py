@@ -14,6 +14,36 @@ client = genai.Client(api_key=GEMINI_API_KEY)
 
 st.set_page_config(page_title="LinkSavvy: LinkedIn Assistant", layout="wide")
 
+# --- 1.5 PREMIUM UI STYLING ---
+st.markdown("""
+<style>
+    /* Hide Streamlit default branding and menus */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    
+    /* Premium Button Styling */
+    .stButton>button {
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background-color: transparent;
+    }
+    .stButton>button:hover {
+        border-color: #0a66c2; /* LinkedIn Blue */
+        color: #0a66c2;
+        box-shadow: 0 4px 12px rgba(10, 102, 194, 0.3);
+        transform: translateY(-2px);
+    }
+    
+    /* Sidebar styling tweak */
+    [data-testid="stSidebar"] {
+        background-color: #0e1117;
+        border-right: 1px solid #1f2937;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # --- 2. SYSTEM PROMPT (The LinkedIn Persona) ---
 linksavvy_system_prompt = """
 You are LinkSavvy, a highly advanced LinkedIn Growth Strategist and Career Advisor.
@@ -74,6 +104,7 @@ with st.sidebar:
     btn_comment = st.button("💬 Strategic Comment Replier")
     btn_score_draft = st.button("📈 Score My Draft")
     btn_matrix = st.button("🕸️ Competitor Skills Matrix")
+    btn_news = st.button("📰 News Hot Take")
 
     # Clear Chat Logic
     if btn_clear_chat:
@@ -255,7 +286,16 @@ if btn_matrix: user_input = """
     2. Cross-reference them against my professional memory context.
     3. Output a detailed Markdown table with columns: 'Skill', 'Competency Mentioned', and 'My Experience Level'.
     4. Provide a 2-sentence analytical summary on how to close the biggest skill gap.
-    """       
+    """   
+if btn_news:
+    user_input = """
+    Analyze the provided news article URL(s).
+    1. Summarize the core business event or tech trend in exactly 1 sentence.
+    2. Cross-reference this trend with my professional background in your memory.
+    3. Write a "Hot Take" LinkedIn post connecting the news to my industry perspective.
+    4. Provide 2 variations: One 'Optimistic' and one 'Contrarian/Warning'.
+    5. Use the 360Brew protocol: 1-3-1 formatting, no AI cliches, punchy hooks.
+    """        
 # --- 7. ORCHESTRATION & API CALL ---
 if user_input:
     # Display user message
@@ -340,6 +380,15 @@ if user_input:
                 assistant_reply = response.text
                 st.markdown(assistant_reply)
                 st.session_state.messages.append({"role": "assistant", "content": assistant_reply})
+
+                # --- NEW: One-Click Markdown Export ---
+                st.download_button(
+                    label="⬇️ Download as .md",
+                    data=assistant_reply,
+                    file_name="LinkSavvy_Draft.md",
+                    mime="text/markdown",
+                    key=f"export_{len(st.session_state.messages)}"
+                )
 
                 # NEW: Check if this was a carousel draft and offer PDF download
                 if "[SLIDE]" in assistant_reply:
