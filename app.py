@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+import re  # NEW: Python's Regular Expression library
 from google import genai
 from google.genai import types
 from dotenv import load_dotenv
@@ -71,6 +72,8 @@ with st.sidebar:
     btn_braindump = st.button("🎙️ Draft from Voice")
     btn_carousel = st.button("📄 Draft PDF Carousel")
     btn_comment = st.button("💬 Strategic Comment Replier")
+    btn_score_draft = st.button("📈 Score My Draft")
+    btn_matrix = st.button("🕸️ Competitor Skills Matrix")
 
     # Clear Chat Logic
     if btn_clear_chat:
@@ -92,6 +95,22 @@ with st.sidebar:
                     st.success(f"✅ Saved {fname} to ChromaDB!")
                 else: st.error("⚠️ No readable text to save.")
         else: st.warning("⚠️ Upload a file first.")
+
+    st.markdown("---")
+    st.subheader("🎯 Hook Tracker (Feedback Loop)")
+    st.write("Train LinkSavvy on your preferred writing styles.")
+    
+    winning_hook = st.text_area("Paste a winning hook here:", height=100, label_visibility="collapsed", placeholder="Paste a hook that worked well...")
+    
+    if st.button("🏆 Log as Winning Hook"):
+        if winning_hook.strip():
+            # We add a strong prefix so the AI knows this is a stylistic rule, not just a random fact
+            formatted_hook = f"[USER PREFERENCE - SUCCESSFUL HOOK STYLE]: {winning_hook}"
+            save_to_memory(formatted_hook, source="Hook_Tracker")
+            st.success("✅ Hook logged! LinkSavvy will mimic this style in the future.")
+            st.rerun()
+        else:
+            st.warning("⚠️ Please paste a hook first.")    
 
     st.markdown("---")
     with st.expander("🗄️ Database Dashboard"):
@@ -167,7 +186,35 @@ if btn_comment: user_input = """
     3. 'The Story Relater': Share a brief, relevant 1-sentence personal experience.
     
     CRITICAL: Keep each comment under 3 sentences. Do NOT use generic praise like "Great post!" or "Thanks for sharing." Start directly with the hook.
+    """ 
+if btn_score_draft: user_input = """
+    Analyze the provided draft LinkedIn post against the 2026 '360Brew' algorithm protocols.
+    Provide a strict grading scorecard formatted EXACTLY like this:
+    
+    ## 📈 Algorithm Prediction Score
+    * **Hook Strength:** [Score / 20] 
+    * **Lexical Diversity (No AI cliches):** [Score / 20]
+    * **Dwell Time Formatting (White space, 1-3-1):** [Score / 20]
+    * **Authority/Authenticity:** [Score / 20]
+    * **Call to Action/Engagement Loop:** [Score / 20]
+    
+    ### 🏆 TOTAL SCORE: [Total / 100]
+    
+    **Verdict:** [Pass (Ready to Post) / Fail (Needs Revision)]
+    
+    **Top 2 Critical Fixes:**
+    1. [Fix 1]
+    2. [Fix 2]
+    
+    Be brutally honest. If it sounds like generic AI, fail it.
     """    
+if btn_matrix: user_input = """
+    Analyze the provided competitor URLs or Job Descriptions. 
+    1. Extract the top 10 most frequently mentioned hard skills or keywords.
+    2. Cross-reference them against my professional memory context.
+    3. Output a detailed Markdown table with columns: 'Skill', 'Competency Mentioned', and 'My Experience Level'.
+    4. Provide a 2-sentence analytical summary on how to close the biggest skill gap.
+    """       
 # --- 7. ORCHESTRATION & API CALL ---
 if user_input:
     # Display user message
@@ -177,11 +224,20 @@ if user_input:
 
     # Gather Extra Context
     extracted_context = ""
-    if "linkedin.com" in user_input or "http" in user_input:
-        extracted_context = scrape_linkedin_url(user_input)
+    
+    # NEW: Use Regex to find ALL URLs in the user's message
+    urls = re.findall(r'(https?://[^\s]+)', user_input)
+    
+    if urls:
+        with st.chat_message("assistant"):
+            with st.spinner(f"Scraping {len(urls)} link(s)..."):
+                for url in urls:
+                    scraped_text = scrape_linkedin_url(url)
+                    extracted_context += f"\n--- Data from {url} ---\n{scraped_text}\n"
+                st.success(f"✅ Successfully extracted data from {len(urls)} source(s).")
     
     memory_context = recall_from_memory(user_input)
-    
+        
     # Initialize Multimodal Parts List
     user_content_parts = [types.Part.from_text(text=user_input)]
     
