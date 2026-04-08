@@ -14,32 +14,60 @@ client = genai.Client(api_key=GEMINI_API_KEY)
 
 st.set_page_config(page_title="LinkSavvy: LinkedIn Assistant", layout="wide")
 
-# --- 1.5 PREMIUM UI STYLING ---
+# --- 1.5 PREMIUM UI STYLING (LinkedIn x SaaS Aesthetic) ---
 st.markdown("""
 <style>
-    /* Hide Streamlit default branding and menus */
+    /* Hide Streamlit default branding */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
-    /* Premium Button Styling */
-    .stButton>button {
-        border-radius: 8px;
-        transition: all 0.3s ease;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        background-color: transparent;
-    }
-    .stButton>button:hover {
-        border-color: #0a66c2; /* LinkedIn Blue */
-        color: #0a66c2;
-        box-shadow: 0 4px 12px rgba(10, 102, 194, 0.3);
-        transform: translateY(-2px);
+    /* Global Typography & Background */
+    html, body, [class*="css"] {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
     
-    /* Sidebar styling tweak */
+    /* Primary Button Styling (LinkedIn Blue) */
+    .stButton>button {
+        background-color: transparent;
+        color: #e8e8e8;
+        border: 1px solid #38434f;
+        border-radius: 24px; /* Pill-shaped like ChatGPT/LinkedIn UI */
+        padding: 0.5rem 1rem;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        width: 100%;
+    }
+    .stButton>button:hover {
+        background-color: #0a66c2; /* LinkedIn Brand Blue */
+        color: white;
+        border-color: #0a66c2;
+        box-shadow: 0 0 10px rgba(10, 102, 194, 0.4);
+        transform: scale(1.02);
+    }
+
+    /* Sidebar Clean-up */
     [data-testid="stSidebar"] {
-        background-color: #0e1117;
-        border-right: 1px solid #1f2937;
+        background-color: #1b1f23;
+        border-right: 1px solid #2d333b;
+    }
+    
+    /* Tabs Styling */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+    }
+    .stTabs [data-baseweb="tab"] {
+        height: 50px;
+        white-space: pre-wrap;
+        background-color: transparent;
+        border-radius: 4px 4px 0px 0px;
+        gap: 1px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+    .stTabs [aria-selected="true"] {
+        border-bottom-color: #0a66c2 !important;
+        color: #0a66c2 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -66,162 +94,128 @@ if "current_file_bytes" not in st.session_state:
 if "current_file_name" not in st.session_state:
     st.session_state.current_file_name = None
 
-# --- 4. UI SIDEBAR ---
+# --- 4. UI SIDEBAR (Tabbed Organization) ---
 with st.sidebar:
-    st.title("⚙️ LinkSavvy Settings")
-    # Using only the highest-limit free models to minimize quota errors
-    selected_model = st.selectbox("Select AI Engine:", [
-        "gemini-2.5-flash-lite", # The fastest, most forgiving free model
-        "gemini-3.1-flash-lite",   # Extremely lightweight fallback
-        "gemini-2.0-flash-lite"       # The smartest, but strictest quota
-    ])
+    st.title("🔗 LinkSavvy")
+    st.caption("Your Personal Brand Architect")
     
-    st.markdown("---")
-    st.subheader("📄 Upload Context")
-    st.write("Upload PDF, TXT, or Image (PNG/JPG)")
-    uploaded_file = st.file_uploader("Choose a file", type=["pdf", "txt", "png", "jpg", "jpeg"], label_visibility="collapsed")
+    # Create the tab navigation
+    tab_tools, tab_data, tab_settings = st.tabs(["🛠️ Tools", "🗄️ Database", "⚙️ Settings"])
     
-    if uploaded_file:
-        st.success(f"Attached: {uploaded_file.name}")
-        st.session_state.current_file_name = uploaded_file.name
-        st.session_state.current_file_bytes = uploaded_file.getvalue()
-    else:
-        st.session_state.current_file_name = None
-        st.session_state.current_file_bytes = None
-
-    st.markdown("---")
-    st.subheader("⚡ Quick Actions")
-    btn_polish = st.button("✨ Polish Last Message")
-    btn_draft_file = st.button("📝 Draft Post from File")
-    btn_content_plan = st.button("📅 Generate Content Plan")
-    btn_gap_analysis = st.button("📊 Career Gap Analysis")
-    btn_ghostwrite = st.button("✍️ Ghostwrite My Voice")
-    btn_hooks = st.button("🎣 Brainstorm 3 Hooks")
-    btn_save_file = st.button("💾 Save File to Database")
-    btn_clear_chat = st.button("🧹 Clear Chat History")
-    btn_braindump = st.button("🎙️ Draft from Voice")
-    btn_carousel = st.button("📄 Draft PDF Carousel")
-    btn_comment = st.button("💬 Strategic Comment Replier")
-    btn_score_draft = st.button("📈 Score My Draft")
-    btn_matrix = st.button("🕸️ Competitor Skills Matrix")
-    btn_news = st.button("📰 News Hot Take")
-
-    # Clear Chat Logic
-    if btn_clear_chat:
-        st.session_state.messages = []
-        st.rerun()
-
-    # Save to Database Logic (Upgraded with Auto-Tagging)
-    if btn_save_file:
-        if st.session_state.get("current_file_bytes") is not None:
-            fname = st.session_state.current_file_name
-            fbytes = st.session_state.current_file_bytes
-            
-            with st.spinner(f"Categorizing and saving {fname}..."):
-                # 1. Extract the text
-                if fname.endswith(".pdf"): text_to_save = extract_text_from_pdf(fbytes)
-                elif fname.lower().endswith((".png", ".jpg", ".jpeg")): text_to_save = "Image uploaded (cannot parse text directly to DB yet)."
-                else: text_to_save = fbytes.decode("utf-8")
-                
-                if text_to_save.strip() and not text_to_save.startswith("Image"):
-                    # 2. The Invisible Middleman: Ask AI to categorize the text
-                    try:
-                        cat_prompt = f"""
-                        Read the following text and assign it EXACTLY ONE of these categories:
-                        [Bzyday Project, Python Learning, LinkedIn Brand, Career Background, Competitor Research].
-                        Respond with ONLY the exact category name. No other text.
-                        Text: {text_to_save[:1000]}
-                        """
-                        # Use the fast, free lite model for this background task
-                        cat_response = client.models.generate_content(
-                            model="gemini-2.0-flash-lite", 
-                            contents=cat_prompt
-                        )
-                        auto_category = cat_response.text.strip().replace("[", "").replace("]", "")
-                    except Exception:
-                        auto_category = "General" # Fallback if API fails
-                        
-                    # 3. Save with the new metadata
-                    save_to_memory(text_to_save, source=fname, category=auto_category)
-                    st.success(f"✅ Saved to DB! (Auto-Tagged as: {auto_category})")
-                else: 
-                    st.error("⚠️ No readable text to save.")
-        else: st.warning("⚠️ Upload a file first.") 
-
-    st.markdown("---")
-    st.subheader("🎯 Hook Tracker (Feedback Loop)")
-    st.write("Train LinkSavvy on your preferred writing styles.")
-    
-    winning_hook = st.text_area("Paste a winning hook here:", height=100, label_visibility="collapsed", placeholder="Paste a hook that worked well...")
-    
-    if st.button("🏆 Log as Winning Hook"):
-        if winning_hook.strip():
-            # We add a strong prefix so the AI knows this is a stylistic rule, not just a random fact
-            formatted_hook = f"[USER PREFERENCE - SUCCESSFUL HOOK STYLE]: {winning_hook}"
-            save_to_memory(formatted_hook, source="Hook_Tracker")
-            st.success("✅ Hook logged! LinkSavvy will mimic this style in the future.")
-            st.rerun()
-        else:
-            st.warning("⚠️ Please paste a hook first.")    
-
-    st.markdown("---")
-    with st.expander("🗄️ Database Dashboard"):
-        st.write("Manage your long-term memory.")
+    with tab_tools:
+        st.subheader("📄 Active Context")
+        uploaded_file = st.file_uploader("Upload PDF, TXT, or Image", type=["pdf", "txt", "png", "jpg", "jpeg"], label_visibility="collapsed")
+        audio_file = st.audio_input("Record a voice note")
         
-        details = get_memory_details()
-        if not details["ids"]: 
-            st.info("Database is empty.")
+        if uploaded_file:
+            st.session_state.current_file_name = uploaded_file.name
+            st.session_state.current_file_bytes = uploaded_file.getvalue()
+        elif audio_file:
+            st.session_state.current_file_name = "voice_note.wav"
+            st.session_state.current_file_bytes = audio_file.getvalue()
         else:
-            st.success(f"Total entries: {len(details['ids'])}")
-            
-            # Create a scrolling container for the memories
-            with st.container(height=300):
-                for i in range(len(details["ids"])):
-                    doc_id = details["ids"][i]
-                    doc_text = details["documents"][i]
-                    source = details["metadatas"][i].get("source", "Unknown")
+            st.session_state.current_file_name = None
+            st.session_state.current_file_bytes = None
+
+        st.markdown("---")
+        st.subheader("⚡ Core Actions")
+        btn_ghostwrite = st.button("✍️ Ghostwrite Draft")
+        btn_braindump = st.button("🎙️ Draft from Voice")
+        btn_carousel = st.button("📄 Export PDF Carousel")
+        btn_score_draft = st.button("📈 Score My Draft")
+        
+        # Tuck the rest of our powerful tools into an expander to keep the UI clean!
+        with st.expander("🛠️ Advanced Strategy Tools"):
+            btn_polish = st.button("✨ Polish Last Message")
+            btn_draft_file = st.button("📝 Draft Post from File")
+            btn_content_plan = st.button("📅 Generate Content Plan")
+            btn_gap_analysis = st.button("📊 Career Gap Analysis")
+            btn_hooks = st.button("🎣 Brainstorm 3 Hooks")
+            btn_comment = st.button("💬 Comment Strategy")
+            btn_matrix = st.button("🕸️ Competitor Matrix")
+            btn_news = st.button("📰 News Hot Take")
+
+        st.markdown("---")
+        st.subheader("🎯 Hook Tracker")
+        winning_hook = st.text_area("Log a winning hook:", height=80, label_visibility="collapsed", placeholder="Paste a hook that worked well...")
+        if st.button("🏆 Save Hook"):
+            if winning_hook.strip():
+                save_to_memory(f"[USER PREFERENCE - SUCCESSFUL HOOK STYLE]: {winning_hook}", source="Hook_Tracker", category="LinkedIn Brand")
+                st.success("✅ Hook logged!")
+    with tab_data:
+        st.subheader("💾 Save Current Context")
+        
+        # --- THE INVISIBLE TAGGING ENGINE ---
+        if st.button("Save File to DB"):
+            if st.session_state.get("current_file_bytes") is not None:
+                fname = st.session_state.current_file_name
+                fbytes = st.session_state.current_file_bytes
+                
+                with st.spinner(f"Categorizing and saving {fname}..."):
+                    # 1. Extract the text
+                    if fname.endswith(".pdf"): text_to_save = extract_text_from_pdf(fbytes)
+                    elif fname.lower().endswith((".png", ".jpg", ".jpeg")): text_to_save = "Image uploaded (cannot parse text directly to DB)."
+                    else: text_to_save = fbytes.decode("utf-8")
                     
-                    # Layout: Text on the left, Delete button on the right
+                    if text_to_save.strip() and not text_to_save.startswith("Image"):
+                        # 2. Ask AI to categorize the text
+                        try:
+                            cat_prompt = f"""
+                            Read the following text and assign it EXACTLY ONE of these categories:
+                            [Bzyday Project, Python Learning, LinkedIn Brand, Career Background, Competitor Research].
+                            Respond with ONLY the exact category name. No other text.
+                            Text: {text_to_save[:1000]}
+                            """
+                            cat_response = client.models.generate_content(
+                                model="gemini-2.5-flash-lite", 
+                                contents=cat_prompt
+                            )
+                            auto_category = cat_response.text.strip().replace("[", "").replace("]", "")
+                        except Exception:
+                            auto_category = "General" 
+                            
+                        # 3. Save with the new metadata
+                        save_to_memory(text_to_save, source=fname, category=auto_category)
+                        st.success(f"✅ Saved to DB! (Auto-Tagged as: {auto_category})")
+                    else: 
+                        st.error("⚠️ No readable text to save.")
+            else: 
+                st.warning("⚠️ Upload a file first in the 'Tools' tab.")
+
+        st.markdown("---")
+        st.subheader("📈 Memory Analytics")
+        stats = get_memory_analytics()
+        if stats:
+            col1, col2 = st.columns(2)
+            col1.metric("Facts", stats["total_memories"])
+            col2.metric("Chars", stats["total_characters"])
+            st.bar_chart(stats["source_counts"])
+        
+        st.markdown("---")
+        st.subheader("🗄️ Manage Entries")
+        details = get_memory_details()
+        if details["ids"]:
+            with st.container(height=250):
+                for i in range(len(details["ids"])):
+                    doc_id, doc_text, source = details["ids"][i], details["documents"][i], details["metadatas"][i].get("source", "Unknown")
                     col_text, col_btn = st.columns([5, 1])
-                    with col_text:
-                        st.caption(f"**[{source}]** {doc_text[:50]}...")
+                    with col_text: st.caption(f"**[{source}]** {doc_text[:30]}...")
                     with col_btn:
-                        # Use the unique doc_id as the button key so Streamlit knows which one to delete
-                        if st.button("❌", key=f"del_{doc_id}"):
+                        if st.button("❌", key=f"del_{doc_id}"): 
                             delete_memory(doc_id)
                             st.rerun()
-
-            st.markdown("---")                
             if st.button("🚨 Wipe All Memory"):
                 wipe_memory()
                 st.rerun()
 
-    st.markdown("---")
-    with st.expander("📈 Memory Analytics"):
-        st.write("Visualize your LinkSavvy data.")
-        stats = get_memory_analytics()
-        if stats:
-            # Display high-level metrics
-            col1, col2 = st.columns(2)
-            col1.metric("Saved Facts", stats["total_memories"])
-            col2.metric("Total Characters", stats["total_characters"])
-            
-            st.markdown("**Data Sources**")
-            # Convert the dictionary into a chart using Streamlit's native bar chart
-            st.bar_chart(stats["source_counts"])
-        else:
-            st.info("Not enough data to analyze. Save some files first!") 
-
-    # NEW: Audio Input Widget
-    st.markdown("---")
-    st.subheader("🎙️ Voice Braindump")
-    audio_file = st.audio_input("Record a voice note")
-    
-    # If audio is recorded, treat it like an uploaded file
-    if audio_file:
-        st.session_state.current_file_bytes = audio_file.getvalue()
-        st.session_state.current_file_name = "voice_note.wav"
-        st.success("✅ Voice note captured!")               
+    with tab_settings:
+        st.subheader("AI Engine")
+        selected_model = st.selectbox("Select Model:", ["gemini-2.5-flash-lite", "gemini-3.1-flash-lite", "gemini-2.0-flash-lite"], label_visibility="collapsed")
+        
+        st.markdown("---")
+        if st.button("🧹 Clear Current Chat"):
+            st.session_state.messages = []
+            st.rerun()               
 
 # --- 5. MAIN CHAT INTERFACE ---
 st.title("🔗 LinkSavvy: LinkedIn Assistant")
