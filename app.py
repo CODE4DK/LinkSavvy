@@ -4,7 +4,7 @@ from google import genai
 from google.genai import types
 from dotenv import load_dotenv
 from tools import scrape_linkedin_url, extract_text_from_pdf, chunk_text
-from memory import save_to_memory, recall_from_memory, get_all_memories, wipe_memory
+from memory import save_to_memory, recall_from_memory, get_all_memories, wipe_memory, get_memory_analytics
 
 # --- 1. SETUP & CONFIG ---
 load_dotenv()
@@ -101,6 +101,22 @@ with st.sidebar:
         if st.button("🚨 Wipe All Memory"):
             wipe_memory()
             st.rerun()
+
+    st.markdown("---")
+    with st.expander("📈 Memory Analytics"):
+        st.write("Visualize your LinkSavvy data.")
+        stats = get_memory_analytics()
+        if stats:
+            # Display high-level metrics
+            col1, col2 = st.columns(2)
+            col1.metric("Saved Facts", stats["total_memories"])
+            col2.metric("Total Characters", stats["total_characters"])
+            
+            st.markdown("**Data Sources**")
+            # Convert the dictionary into a chart using Streamlit's native bar chart
+            st.bar_chart(stats["source_counts"])
+        else:
+            st.info("Not enough data to analyze. Save some files first!")        
 
 # --- 5. MAIN CHAT INTERFACE ---
 st.title("🔗 LinkSavvy: LinkedIn Assistant")
