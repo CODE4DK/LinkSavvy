@@ -7,6 +7,8 @@ from dotenv import load_dotenv
 from tools import scrape_linkedin_url, extract_text_from_pdf, chunk_text, create_pdf_carousel
 from memory import save_to_memory, recall_from_memory, get_all_memories, wipe_memory, get_memory_analytics, get_memory_details, delete_memory
 import json
+import requests
+import urllib.parse
 
 # --- 1. SETUP & CONFIG ---
 load_dotenv()
@@ -14,9 +16,6 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 client = genai.Client(api_key=GEMINI_API_KEY)
 
 st.set_page_config(page_title="LinkSavvy: LinkedIn Assistant", layout="wide", initial_sidebar_state="expanded")
-
-import requests
-import urllib.parse
 
 # --- 1.6 USER AUTHENTICATION (OAuth 2.0 via LinkedIn) ---
 LINKEDIN_CLIENT_ID = os.getenv("LINKEDIN_CLIENT_ID")
@@ -182,6 +181,8 @@ else:
         st.session_state.current_file_bytes = None
     if "current_file_name" not in st.session_state:
         st.session_state.current_file_name = None
+    if "pipeline" not in st.session_state:
+        st.session_state.pipeline = [] # Stores our Kanban cards    
 
     # --- 4. UI SIDEBAR (Tabbed Organization) ---
     with st.sidebar:
@@ -344,48 +345,122 @@ else:
                 st.session_state.authenticated = False
                 st.rerun()
 
-    # --- 4.5 AGENT INBOX ---
+    # --- 5. MAIN UI TABS ---
     st.title("🔗 LinkSavvy: LinkedIn Assistant")
     
-    if os.path.exists("agent_drafts.json"):
-        with open("agent_drafts.json", "r", encoding="utf-8") as f:
-            try:
-                agent_drafts = json.load(f)
-            except:
-                agent_drafts = []
-                
-        # Filter for drafts that haven't been reviewed yet
-        pending_drafts = [d for d in agent_drafts if d.get("status") == "PENDING_REVIEW"]
-        
-        if pending_drafts:
-            st.markdown("---")
-            st.subheader("📬 Agent Inbox")
-            st.info(f"✨ LinkSavvy woke up early and drafted **{len(pending_drafts)}** post(s) based on breaking news!")
+    # Split the main view into Chat and Kanban
+    main_tab_chat, main_tab_pipeline = st.tabs(["💬 Assistant & Inbox", "📋 Content Pipeline"])
+    
+    with main_tab_chat:
+        # --- 4.5 AGENT INBOX ---
+        if os.path.exists("agent_drafts.json"):
+            with open("agent_drafts.json", "r", encoding="utf-8") as f:
+                try:
+                    agent_drafts = json.load(f)
+                except:
+                    agent_drafts = []
+                    
+            pending_drafts = [d for d in agent_drafts if d.get("status") == "PENDING_REVIEW"]
             
-            for i, draft in enumerate(pending_drafts):
-                with st.expander(f"📰 Breaking: {draft['source_title']}", expanded=True):
-                    st.caption(f"Source: [Read Article]({draft['source_link']}) | Drafted: {draft['timestamp']}")
-                    
-                    # Allow the user to edit the draft directly in the UI
-                    edited_draft = st.text_area("Review & Edit Draft:", value=draft['draft_content'], height=250, key=f"draft_{i}")
-                    
-                    col1, col2 = st.columns([1, 5])
-                    with col1:
-                        if st.button("✅ Approve", key=f"approve_{i}"):
-                            # In a full app, this would change the status in the JSON and clear the inbox
-                            st.success("Draft Approved! Ready to post to LinkedIn.")
-                    with col2:
-                        if st.button("🗑️ Dismiss", key=f"dismiss_{i}"):
-                            st.warning("Draft dismissed.")
-            st.markdown("---")
+            if pending_drafts:
+                st.subheader("📬 Agent Inbox")
+                st.info(f"✨ LinkSavvy drafted **{len(pending_drafts)}** post(s) in the background!")
+                
+                for i, draft in enumerate(pending_drafts):
+                    with st.expander(f"📰 Breaking: {draft['source_title']}", expanded=True):
+                        st.caption(f"Source: [Read Article]({draft['source_link']})")
+                        edited_draft = st.text_area("Review Draft:", value=draft['draft_content'], height=200, key=f"draft_{i}")
+                        
+                        col1, col2 = st.columns([1, 5])
+                        with col1:
+                            if st.button("➡️ Send to Pipeline", key=f"approve_{i}"):
+                                # Move from inbox to Kanban board!
+                                new_card = {"id": len(st.session_state.pipeline) + 1, "content": edited_draft, "status": "Drafts"}
+                                st.session_state.pipeline.append(new_card)
+                                
+                                # Mark as reviewed in JSON (Basic implementation)
+                                agent_drafts[i]["status"] = "REVIEWED"
+                                with open("agent_drafts.json", "w", encoding="utf-8") as file:
+                                    json.dump(agent_drafts, file, indent=4)
+                                st.success("Moved to Kanban Drafts!")
+                                st.rerun()
+                        with col2:
+                            if st.button("🗑️ Dismiss", key=f"dismiss_{i}"):
+                                st.warning("Draft dismissed.")
+                st.markdown("---")
 
-    # --- 5. MAIN CHAT INTERFACE ---
-    st.title("🔗 LinkSavvy: LinkedIn Assistant")
+        # --- 5.1 MAIN CHAT INTERFACE ---
+        for message in st.session_state.messages:
+            with st.chat_message(message["role"]):
+                st.markdown(message["content"])
 
-    # Display chat history
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+    with main_tab_pipeline:
+        # --- 5.2 THE KANBAN BOARD ---
+        st.subheader("Content Pipeline")
+        
+        # Add a manual drafting button directly on the board
+        new_idea = st.text_input("Quick Add New Draft:")
+        if st.button("➕ Add to Board"):
+            if new_idea:
+                st.session_state.pipeline.append({"id": len(st.session_state.pipeline) + 1, "content": new_idea, "status": "Drafts"})
+                st.rerun()
+
+        st.markdown("---")
+        
+        # Create the 3 Kanban Columns
+        col_drafts, col_review, col_ready = st.columns(3)
+        
+        # Helper function to move cards without refreshing the whole script manually
+        def move_card(card_id, new_status):
+            for card in st.session_state.pipeline:
+                if card["id"] == card_id:
+                    card["status"] = new_status
+
+        # COLUMN 1: DRAFTS
+        with col_drafts:
+            st.markdown("<h4 style='text-align: center; color: #888;'>📝 Drafts</h4>", unsafe_allow_html=True)
+            for card in st.session_state.pipeline:
+                if card["status"] == "Drafts":
+                    with st.container(border=True):
+                        st.caption(f"Card #{card['id']}")
+                        st.write(card["content"][:80] + "..." if len(card["content"]) > 80 else card["content"])
+                        if st.button("Move to Review ➡️", key=f"d2r_{card['id']}"):
+                            move_card(card["id"], "Review")
+                            st.rerun()
+
+        # COLUMN 2: REVIEW
+        with col_review:
+            st.markdown("<h4 style='text-align: center; color: #d97706;'>🧐 Review</h4>", unsafe_allow_html=True)
+            for card in st.session_state.pipeline:
+                if card["status"] == "Review":
+                    with st.container(border=True):
+                        st.caption(f"Card #{card['id']}")
+                        st.write(card["content"][:80] + "..." if len(card["content"]) > 80 else card["content"])
+                        
+                        c1, c2 = st.columns(2)
+                        with c1:
+                            if st.button("⬅️ Back", key=f"r2d_{card['id']}"):
+                                move_card(card["id"], "Drafts")
+                                st.rerun()
+                        with c2:
+                            if st.button("Ready ➡️", key=f"r2ready_{card['id']}"):
+                                move_card(card["id"], "Ready")
+                                st.rerun()
+
+        # COLUMN 3: READY
+        with col_ready:
+            st.markdown("<h4 style='text-align: center; color: #10b981;'>✅ Ready</h4>", unsafe_allow_html=True)
+            for card in st.session_state.pipeline:
+                if card["status"] == "Ready":
+                    with st.container(border=True):
+                        st.caption(f"Card #{card['id']}")
+                        st.write(card["content"][:80] + "..." if len(card["content"]) > 80 else card["content"])
+                        if st.button("⬅️ Review", key=f"ready2r_{card['id']}"):
+                            move_card(card["id"], "Review")
+                            st.rerun()
+                        if st.button("🗑️ Delete", key=f"del_{card['id']}"):
+                            st.session_state.pipeline = [c for c in st.session_state.pipeline if c["id"] != card["id"]]
+                            st.rerun()
 
     # --- 6. INPUT ROUTING ---
     user_input = st.chat_input("Ask LinkSavvy a question or paste a URL...")
