@@ -231,6 +231,10 @@ else:
                 btn_matrix = st.button("🕸️ Competitor Matrix")
                 btn_news = st.button("📰 News Hot Take")
 
+            # NEW: Outbound Strategy Tool
+            st.markdown("---")
+            btn_outbound = st.button("🎯 Target Analyzer")    
+
             st.markdown("---")
             st.subheader("🎯 Hook Tracker")
             winning_hook = st.text_area("Log a winning hook:", height=80, label_visibility="collapsed", placeholder="Paste a hook that worked well...")
@@ -528,7 +532,15 @@ else:
         3. Write a "Hot Take" LinkedIn post connecting the news to my industry perspective.
         4. Provide 2 variations: One 'Optimistic' and one 'Contrarian/Warning'.
         5. Use the 360Brew protocol: 1-3-1 formatting, no AI cliches, punchy hooks.
-        """        
+        """ 
+    if btn_outbound: user_input = """
+        Analyze the provided LinkedIn profile or company URL.
+        
+        1. 🧠 **Core Themes:** Extract their top 3 strategic themes or core values based on their recent activity/page data.
+        2. 🤝 **The Bridge:** Cross-reference their themes with my professional background in your memory. Find the strongest piece of common ground.
+        3. 📨 **The Icebreaker:** Write a highly personalized Connection Request (Strictly under 200 characters) that leverages this common ground. Do NOT sound salesy.
+        4. 🗣️ **The Conversation Starter:** Provide 2 insightful, open-ended questions I can ask them in a DM to start a meaningful dialogue.
+        """           
     # --- 7. ORCHESTRATION & API CALL ---
     if user_input:
         # Display user message
