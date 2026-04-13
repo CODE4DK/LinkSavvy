@@ -17,13 +17,25 @@ client = genai.Client(api_key=GEMINI_API_KEY)
 
 st.set_page_config(page_title="LinkSavvy: LinkedIn Assistant", layout="wide", initial_sidebar_state="expanded")
 
-# --- 1.6 USER AUTHENTICATION (OAuth 2.0 via LinkedIn) ---
+import requests
+import urllib.parse
+
+# --- 1.6 OAUTH CREDENTIALS & URLS ---
+# LinkedIn
 LINKEDIN_CLIENT_ID = os.getenv("LINKEDIN_CLIENT_ID")
 LINKEDIN_CLIENT_SECRET = os.getenv("LINKEDIN_CLIENT_SECRET")
+LINKEDIN_AUTH_URL = "https://www.linkedin.com/oauth/v2/authorization"
+LINKEDIN_TOKEN_URL = "https://www.linkedin.com/oauth/v2/accessToken"
+LINKEDIN_USERINFO_URL = "https://api.linkedin.com/v2/userinfo"
+
+# Google
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
+GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
+GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
+GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo"
+
 REDIRECT_URI = "http://localhost:8501"
-AUTH_URL = "https://www.linkedin.com/oauth/v2/authorization"
-TOKEN_URL = "https://www.linkedin.com/oauth/v2/accessToken"
-USERINFO_URL = "https://api.linkedin.com/v2/userinfo"
 
 # Set up the session states
 if 'authenticated' not in st.session_state:
@@ -37,67 +49,89 @@ if 'user_info' not in st.session_state:
 if not st.session_state.authenticated:
     
     st.markdown("<h1 style='text-align: center; color: #0a66c2;'>🔗 LinkSavvy</h1>", unsafe_allow_html=True)
-    st.markdown("<h3 style='text-align: center;'>Sign in to continue</h3>", unsafe_allow_html=True)
+    st.markdown("<h4 style='text-align: center; color: #555;'>The AI workspace for LinkedIn Creators</h4>", unsafe_allow_html=True)
+    st.write("") # Spacer
     
-    # 1. Check if LinkedIn redirected back with an authorization code
+    # --- OAUTH REDIRECT HANDLER ---
     query_params = st.query_params
     if "code" in query_params:
         auth_code = query_params["code"]
+        state = query_params.get("state", "")
         
-        # 2. Exchange the authorization code for an Access Token
-        token_data = {
-            "grant_type": "authorization_code",
-            "code": auth_code,
-            "redirect_uri": REDIRECT_URI,
-            "client_id": LINKEDIN_CLIENT_ID,
-            "client_secret": LINKEDIN_CLIENT_SECRET
-        }
-        
-        with st.spinner("Authenticating with LinkedIn..."):
-            token_response = requests.post(TOKEN_URL, data=token_data)
+        with st.spinner("Authenticating..."):
+            # Determine which provider sent the code
+            if state == "linkedin_auth":
+                token_data = {"grant_type": "authorization_code", "code": auth_code, "redirect_uri": REDIRECT_URI, "client_id": LINKEDIN_CLIENT_ID, "client_secret": LINKEDIN_CLIENT_SECRET}
+                token_response = requests.post(LINKEDIN_TOKEN_URL, data=token_data)
+                if token_response.status_code == 200:
+                    access_token = token_response.json().get("access_token")
+                    user_info_response = requests.get(LINKEDIN_USERINFO_URL, headers={"Authorization": f"Bearer {access_token}"})
+                    if user_info_response.status_code == 200:
+                        st.session_state.user_info = user_info_response.json()
+                        st.session_state.authenticated = True
             
-            if token_response.status_code == 200:
-                access_token = token_response.json().get("access_token")
-                
-                # 3. Use the Access Token to get User Profile Info (Name & Email)
-                headers = {"Authorization": f"Bearer {access_token}"}
-                user_info_response = requests.get(USERINFO_URL, headers=headers)
-                
-                if user_info_response.status_code == 200:
-                    st.session_state.user_info = user_info_response.json()
-                    st.session_state.authenticated = True
-                    st.query_params.clear() # Clear the URL so refreshing doesn't break it
-                    st.rerun()
-                else:
-                    st.error("⚠️ Failed to retrieve profile from LinkedIn.")
+            elif state == "google_auth":
+                token_data = {"grant_type": "authorization_code", "code": auth_code, "redirect_uri": REDIRECT_URI, "client_id": GOOGLE_CLIENT_ID, "client_secret": GOOGLE_CLIENT_SECRET}
+                token_response = requests.post(GOOGLE_TOKEN_URL, data=token_data)
+                if token_response.status_code == 200:
+                    access_token = token_response.json().get("access_token")
+                    user_info_response = requests.get(GOOGLE_USERINFO_URL, headers={"Authorization": f"Bearer {access_token}"})
+                    if user_info_response.status_code == 200:
+                        st.session_state.user_info = user_info_response.json()
+                        st.session_state.authenticated = True
+
+            if st.session_state.authenticated:
+                st.query_params.clear()
+                st.rerun()
             else:
-                st.error("⚠️ Authentication failed. Please check your Client ID and Secret in your .env file.")
+                st.error("⚠️ Authentication failed. Please try again.")
 
     else:
-        # 4. Display the "Sign in with LinkedIn" Button
+        # --- THE LOGIN UI ---
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
-            st.info("LinkSavvy requires your professional LinkedIn context to generate accurate brand content.")
+            tab_login, tab_signup = st.tabs(["Log In", "Sign Up"])
             
-            # Construct the secure OAuth 2.0 URL
-            oauth_params = {
-                "response_type": "code",
-                "client_id": LINKEDIN_CLIENT_ID,
-                "redirect_uri": REDIRECT_URI,
-                "scope": "openid profile email",
-                "state": "linksavvy_secure_state"
-            }
-            auth_link = f"{AUTH_URL}?{urllib.parse.urlencode(oauth_params)}"
-            
-            # Render a custom link that looks like a LinkedIn button
-            st.markdown(f"""
-            <a href="{auth_link}" target="_self" style="text-decoration: none;">
-                <button style="width: 100%; padding: 12px; background-color: #0a66c2; color: white; border: none; border-radius: 24px; font-weight: bold; cursor: pointer; font-size: 16px;">
-                    Sign in with LinkedIn
-                </button>
-            </a>
-            """, unsafe_allow_html=True)
+            with tab_login:
+                with st.form("email_login_form"):
+                    st.text_input("Email")
+                    st.text_input("Password", type="password")
+                    if st.form_submit_button("Log In (Email)"):
+                        st.warning("Email/Password database connection pending cloud deployment.")
+                
+                st.markdown("<div style='text-align: center; margin: 15px 0;'><b>OR</b></div>", unsafe_allow_html=True)
+                
+                # Google OAuth Link
+                google_params = {"response_type": "code", "client_id": GOOGLE_CLIENT_ID, "redirect_uri": REDIRECT_URI, "scope": "openid profile email", "state": "google_auth", "prompt": "select_account"}
+                google_link = f"{GOOGLE_AUTH_URL}?{urllib.parse.urlencode(google_params)}"
+                st.markdown(f"""
+                <a href="{google_link}" target="_self" style="text-decoration: none;">
+                    <button style="width: 100%; padding: 10px; background-color: #ffffff; color: #444; border: 1px solid #ccc; border-radius: 24px; font-weight: bold; cursor: pointer; margin-bottom: 10px;">
+                        🌐 Sign in with Google
+                    </button>
+                </a>
+                """, unsafe_allow_html=True)
 
+                # LinkedIn OAuth Link
+                linkedin_params = {"response_type": "code", "client_id": LINKEDIN_CLIENT_ID, "redirect_uri": REDIRECT_URI, "scope": "openid profile email", "state": "linkedin_auth"}
+                linkedin_link = f"{LINKEDIN_AUTH_URL}?{urllib.parse.urlencode(linkedin_params)}"
+                st.markdown(f"""
+                <a href="{linkedin_link}" target="_self" style="text-decoration: none;">
+                    <button style="width: 100%; padding: 10px; background-color: #0a66c2; color: white; border: none; border-radius: 24px; font-weight: bold; cursor: pointer;">
+                        Sign in with LinkedIn
+                    </button>
+                </a>
+                """, unsafe_allow_html=True)
+
+            with tab_signup:
+                with st.form("email_signup_form"):
+                    st.text_input("First Name")
+                    st.text_input("Email Address")
+                    st.text_input("Create Password", type="password")
+                    st.text_input("Confirm Password", type="password")
+                    if st.form_submit_button("Create Account"):
+                        st.info("User database initialization pending. Please use Google or LinkedIn for now.")
+                        
 # ==========================================
 # PART 3: YOUR ACTUAL APP (Properly Indented)
 # ==========================================
