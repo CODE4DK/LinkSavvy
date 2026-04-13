@@ -12,18 +12,24 @@ load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 client = genai.Client(api_key=GEMINI_API_KEY)
 
-st.set_page_config(page_title="LinkSavvy: LinkedIn Assistant", layout="wide")
+st.set_page_config(page_title="LinkSavvy: LinkedIn Assistant", layout="wide", initial_sidebar_state="expanded")
 
-# --- 1.6 USER AUTHENTICATION (SIMPLE PROTOTYPE) ---
-# For a local app, we will use hardcoded credentials.
-ADMIN_CREDENTIALS = {
-    "username": "Admin",
-    "password": "Admin123" # CHANGE THIS PASSWORD!
-}
+import requests
+import urllib.parse
 
-# Set up the login flag
+# --- 1.6 USER AUTHENTICATION (OAuth 2.0 via LinkedIn) ---
+LINKEDIN_CLIENT_ID = os.getenv("LINKEDIN_CLIENT_ID")
+LINKEDIN_CLIENT_SECRET = os.getenv("LINKEDIN_CLIENT_SECRET")
+REDIRECT_URI = "http://localhost:8501"
+AUTH_URL = "https://www.linkedin.com/oauth/v2/authorization"
+TOKEN_URL = "https://www.linkedin.com/oauth/v2/accessToken"
+USERINFO_URL = "https://api.linkedin.com/v2/userinfo"
+
+# Set up the session states
 if 'authenticated' not in st.session_state:
     st.session_state.authenticated = False
+if 'user_info' not in st.session_state:
+    st.session_state.user_info = None
 
 # ==========================================
 # PART 2: THE LOGIN SCREEN 
@@ -31,23 +37,66 @@ if 'authenticated' not in st.session_state:
 if not st.session_state.authenticated:
     
     st.markdown("<h1 style='text-align: center; color: #0a66c2;'>🔗 LinkSavvy</h1>", unsafe_allow_html=True)
-    st.markdown("<h3 style='text-align: center;'>Please Sign In</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: center;'>Sign in to continue</h3>", unsafe_allow_html=True)
     
-    # Use columns to center the login box nicely
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        with st.form("login_form"):
-            username = st.text_input("Username")
-            password = st.text_input("Password", type="password")
-            btn_login = st.form_submit_button("Log In")
+    # 1. Check if LinkedIn redirected back with an authorization code
+    query_params = st.query_params
+    if "code" in query_params:
+        auth_code = query_params["code"]
+        
+        # 2. Exchange the authorization code for an Access Token
+        token_data = {
+            "grant_type": "authorization_code",
+            "code": auth_code,
+            "redirect_uri": REDIRECT_URI,
+            "client_id": LINKEDIN_CLIENT_ID,
+            "client_secret": LINKEDIN_CLIENT_SECRET
+        }
+        
+        with st.spinner("Authenticating with LinkedIn..."):
+            token_response = requests.post(TOKEN_URL, data=token_data)
             
-            if btn_login:
-                if username == ADMIN_CREDENTIALS["username"] and password == ADMIN_CREDENTIALS["password"]:
+            if token_response.status_code == 200:
+                access_token = token_response.json().get("access_token")
+                
+                # 3. Use the Access Token to get User Profile Info (Name & Email)
+                headers = {"Authorization": f"Bearer {access_token}"}
+                user_info_response = requests.get(USERINFO_URL, headers=headers)
+                
+                if user_info_response.status_code == 200:
+                    st.session_state.user_info = user_info_response.json()
                     st.session_state.authenticated = True
-                    st.success("✅ Login successful! Loading dashboard...")
+                    st.query_params.clear() # Clear the URL so refreshing doesn't break it
                     st.rerun()
                 else:
-                    st.error("⚠️ Invalid username or password.")
+                    st.error("⚠️ Failed to retrieve profile from LinkedIn.")
+            else:
+                st.error("⚠️ Authentication failed. Please check your Client ID and Secret in your .env file.")
+
+    else:
+        # 4. Display the "Sign in with LinkedIn" Button
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            st.info("LinkSavvy requires your professional LinkedIn context to generate accurate brand content.")
+            
+            # Construct the secure OAuth 2.0 URL
+            oauth_params = {
+                "response_type": "code",
+                "client_id": LINKEDIN_CLIENT_ID,
+                "redirect_uri": REDIRECT_URI,
+                "scope": "openid profile email",
+                "state": "linksavvy_secure_state"
+            }
+            auth_link = f"{AUTH_URL}?{urllib.parse.urlencode(oauth_params)}"
+            
+            # Render a custom link that looks like a LinkedIn button
+            st.markdown(f"""
+            <a href="{auth_link}" target="_self" style="text-decoration: none;">
+                <button style="width: 100%; padding: 12px; background-color: #0a66c2; color: white; border: none; border-radius: 24px; font-weight: bold; cursor: pointer; font-size: 16px;">
+                    Sign in with LinkedIn
+                </button>
+            </a>
+            """, unsafe_allow_html=True)
 
 # ==========================================
 # PART 3: YOUR ACTUAL APP (Properly Indented)
@@ -59,7 +108,6 @@ else:
         /* Hide Streamlit default branding */
         #MainMenu {visibility: hidden;}
         footer {visibility: hidden;}
-        header {visibility: hidden;}
         
         /* Global Typography & Background */
         html, body, [class*="css"] {
@@ -135,7 +183,13 @@ else:
 
     # --- 4. UI SIDEBAR (Tabbed Organization) ---
     with st.sidebar:
-        st.title("🔗 LinkSavvy")
+        # Dynamically greet the LinkedIn user
+        if st.session_state.user_info:
+            first_name = st.session_state.user_info.get("given_name", "Creator")
+            st.title(f"👋 Welcome, {first_name}")
+        else:
+            st.title("🔗 LinkSavvy")
+            
         st.caption("Your Personal Brand Architect")
         
         # Create the tab navigation
