@@ -535,16 +535,19 @@ else:
         Make Slide 1 a strong hook. Make Slide 5 a Call to Action.
         """
     if btn_comment: user_input = """
-        Analyze the provided LinkedIn post (either from the pasted text or URL). 
-        Cross-reference this post with my professional background in your memory.
-        Generate 3 distinct, highly engaging comments I can leave on this post:
+        [BULK COMMENT ENGINE] I am going to paste a block of comments from my recent LinkedIn post. 
         
-        1. 'The Value Add': Add a new, specific insight based on my background.
-        2. 'The Respectful Contrarian': Politely offer a different perspective or edge case.
-        3. 'The Story Relater': Share a brief, relevant 1-sentence personal experience.
+        For EACH distinct comment you find in the text, generate a structured response block. 
+        Cross-reference my professional background in your memory to make the replies personal.
         
-        CRITICAL: Keep each comment under 3 sentences. Do NOT use generic praise like "Great post!" or "Thanks for sharing." Start directly with the hook.
-        """ 
+        Format your output EXACTLY like this for every single comment:
+        
+        **Comment by [Name if available, or 'User']:** "[Snippet of their comment]"
+        * 🤝 **Option 1 (The Grateful Expert):** [A warm 1-2 sentence reply adding a tiny bit of extra value]
+        * 🤔 **Option 2 (The Question Bounce):** [A 1-sentence reply ending with an open-ended question to keep them talking]
+        
+        ---
+        """
     if btn_score_draft: user_input = """
         Analyze the provided draft LinkedIn post against the 2026 '360Brew' algorithm protocols.
         Provide a strict grading scorecard formatted EXACTLY like this:
