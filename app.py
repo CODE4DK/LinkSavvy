@@ -1,24 +1,31 @@
 import streamlit as st
+
+# MUST BE THE FIRST STREAMLIT COMMAND
+st.set_page_config(page_title="LinkSavvy: LinkedIn Assistant", layout="wide", initial_sidebar_state="expanded")
+
 import os
-import re  # NEW: Python's Regular Expression library
-from google import genai
-from google.genai import types
-from dotenv import load_dotenv
-from tools import scrape_linkedin_url, extract_text_from_pdf, chunk_text, create_pdf_carousel
-from memory import save_to_memory, recall_from_memory, get_all_memories, wipe_memory, get_memory_analytics, get_memory_details, delete_memory
+import re
 import json
 import requests
 import urllib.parse
+from google import genai
+from google.genai import types
+from dotenv import load_dotenv
+from supabase import create_client, Client
+
+# Local module imports
+from tools import scrape_linkedin_url, extract_text_from_pdf, chunk_text, create_pdf_carousel
+from memory import save_to_memory, recall_from_memory, get_all_memories, wipe_memory, get_memory_analytics, get_memory_details, delete_memory
 
 # --- 1. SETUP & CONFIG ---
 load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 client = genai.Client(api_key=GEMINI_API_KEY)
 
-st.set_page_config(page_title="LinkSavvy: LinkedIn Assistant", layout="wide", initial_sidebar_state="expanded")
-
-import requests
-import urllib.parse
+# Supabase Connection
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # --- 1.6 OAUTH CREDENTIALS & URLS ---
 # LinkedIn
@@ -133,7 +140,7 @@ if not st.session_state.authenticated:
                         st.info("User database initialization pending. Please use Google or LinkedIn for now.")
                         
 # ==========================================
-# PART 3: YOUR ACTUAL APP (Properly Indented)
+# PART 3: YOUR ACTUAL APP
 # ==========================================
 else:
     # --- 1.5 PREMIUM UI STYLING (LinkedIn x SaaS Aesthetic) ---
@@ -207,6 +214,7 @@ else:
     6. CONTENT PLANNING: If asked to plan content based on a document, extract 3 "Content Pillars" and format a calendar in a clean table.
     7. THE DATA MOAT: If the Memory Context includes a "[HIGH PERFORMING POST]", you MUST deeply analyze its formatting, hook style, and tone. Treat it as your primary template. Mimic its exact structure for the new draft, as it is statistically proven to work for this user's audience.
     """
+    
     # --- 2. MULTI-AGENT PROMPTS ---
     critic_system_prompt = """
     You are 'The Cynic', a ruthlessly critical LinkedIn audience member who hates generic AI content.
@@ -291,6 +299,7 @@ else:
                 if winning_hook.strip():
                     save_to_memory(f"[USER PREFERENCE - SUCCESSFUL HOOK STYLE]: {winning_hook}", source="Hook_Tracker", category="LinkedIn Brand")
                     st.success("✅ Hook logged!")
+                    
         with tab_data:
             st.subheader("💾 Save Current Context")
             
@@ -385,7 +394,7 @@ else:
 
         with tab_settings:
             st.subheader("AI Engine")
-            selected_model = st.selectbox("Select Model:", ["gemini-2.5-flash-lite", "gemini-3.1-flash-lite", "gemini-2.0-flash-lite"], label_visibility="collapsed")
+            selected_model = st.selectbox("Select Model:", ["gemini-2.5-flash-lite", "gemini-2.5-flash", "gemini-2.5-pro"], label_visibility="collapsed")
             
             st.markdown("---")
             if st.button("🧹 Clear Current Chat"):
@@ -398,6 +407,9 @@ else:
                 st.session_state.authenticated = False
                 st.rerun()
 
+    # Ensure we know WHO is logged in (for multi-player security)
+    user_email = st.session_state.user_info.get("email", "unknown@user.com")
+
     # --- 5. MAIN UI TABS ---
     st.title("🔗 LinkSavvy: LinkedIn Assistant")
     
@@ -405,42 +417,35 @@ else:
     main_tab_chat, main_tab_pipeline = st.tabs(["💬 Assistant & Inbox", "📋 Content Pipeline"])
     
     with main_tab_chat:
-        # --- 4.5 AGENT INBOX ---
-        if os.path.exists("agent_drafts.json"):
-            with open("agent_drafts.json", "r", encoding="utf-8") as f:
-                try:
-                    agent_drafts = json.load(f)
-                except:
-                    agent_drafts = []
-                    
-            pending_drafts = [d for d in agent_drafts if d.get("status") == "PENDING_REVIEW"]
+        # --- 4.5 CLOUD AGENT INBOX ---
+        # Fetch pending drafts directly from Supabase for this specific user
+        inbox_response = supabase.table("agent_inbox").select("*").eq("user_email", user_email).eq("status", "PENDING_REVIEW").execute()
+        pending_drafts = inbox_response.data
+        
+        if pending_drafts:
+            st.subheader("📬 Agent Inbox")
+            st.info(f"✨ LinkSavvy drafted **{len(pending_drafts)}** post(s) in the background!")
             
-            if pending_drafts:
-                st.subheader("📬 Agent Inbox")
-                st.info(f"✨ LinkSavvy drafted **{len(pending_drafts)}** post(s) in the background!")
-                
-                for i, draft in enumerate(pending_drafts):
-                    with st.expander(f"📰 Breaking: {draft['source_title']}", expanded=True):
-                        st.caption(f"Source: [Read Article]({draft['source_link']})")
-                        edited_draft = st.text_area("Review Draft:", value=draft['draft_content'], height=200, key=f"draft_{i}")
-                        
-                        col1, col2 = st.columns([1, 5])
-                        with col1:
-                            if st.button("➡️ Send to Pipeline", key=f"approve_{i}"):
-                                # Move from inbox to Kanban board!
-                                new_card = {"id": len(st.session_state.pipeline) + 1, "content": edited_draft, "status": "Drafts"}
-                                st.session_state.pipeline.append(new_card)
-                                
-                                # Mark as reviewed in JSON (Basic implementation)
-                                agent_drafts[i]["status"] = "REVIEWED"
-                                with open("agent_drafts.json", "w", encoding="utf-8") as file:
-                                    json.dump(agent_drafts, file, indent=4)
-                                st.success("Moved to Kanban Drafts!")
-                                st.rerun()
-                        with col2:
-                            if st.button("🗑️ Dismiss", key=f"dismiss_{i}"):
-                                st.warning("Draft dismissed.")
-                st.markdown("---")
+            for i, draft in enumerate(pending_drafts):
+                with st.expander(f"📰 Breaking: {draft.get('source_title', 'Update')}", expanded=True):
+                    st.caption(f"Source: [Read Article]({draft.get('source_link', '#')})")
+                    edited_draft = st.text_area("Review Draft:", value=draft['draft_content'], height=200, key=f"draft_{draft['id']}")
+                    
+                    col1, col2 = st.columns([1, 5])
+                    with col1:
+                        if st.button("➡️ Send to Pipeline", key=f"approve_{draft['id']}"):
+                            # 1. Insert into Kanban cloud table
+                            supabase.table("kanban_pipeline").insert({"user_email": user_email, "content": edited_draft, "status": "Drafts"}).execute()
+                            # 2. Mark as reviewed in Agent Inbox cloud table
+                            supabase.table("agent_inbox").update({"status": "REVIEWED"}).eq("id", draft['id']).execute()
+                            st.success("Moved to Kanban Drafts!")
+                            st.rerun()
+                    with col2:
+                        if st.button("🗑️ Dismiss", key=f"dismiss_{draft['id']}"):
+                            supabase.table("agent_inbox").update({"status": "DISMISSED"}).eq("id", draft['id']).execute()
+                            st.rerun()
+                            
+            st.markdown("---")
 
         # --- 5.1 MAIN CHAT INTERFACE ---
         for message in st.session_state.messages:
@@ -448,71 +453,68 @@ else:
                 st.markdown(message["content"])
 
     with main_tab_pipeline:
-        # --- 5.2 THE KANBAN BOARD ---
+        # --- 5.2 THE CLOUD KANBAN BOARD ---
         st.subheader("Content Pipeline")
         
         # Add a manual drafting button directly on the board
         new_idea = st.text_input("Quick Add New Draft:")
         if st.button("➕ Add to Board"):
             if new_idea:
-                st.session_state.pipeline.append({"id": len(st.session_state.pipeline) + 1, "content": new_idea, "status": "Drafts"})
+                supabase.table("kanban_pipeline").insert({"user_email": user_email, "content": new_idea, "status": "Drafts"}).execute()
                 st.rerun()
 
         st.markdown("---")
         
-        # Create the 3 Kanban Columns
+        # Fetch the entire Kanban board for this user from Supabase
+        pipeline_response = supabase.table("kanban_pipeline").select("*").eq("user_email", user_email).execute()
+        cloud_pipeline = pipeline_response.data
+        
         col_drafts, col_review, col_ready = st.columns(3)
         
-        # Helper function to move cards without refreshing the whole script manually
-        def move_card(card_id, new_status):
-            for card in st.session_state.pipeline:
-                if card["id"] == card_id:
-                    card["status"] = new_status
+        # Helper function to update cloud status
+        def update_cloud_card(card_id, new_status):
+            supabase.table("kanban_pipeline").update({"status": new_status}).eq("id", card_id).execute()
 
         # COLUMN 1: DRAFTS
         with col_drafts:
             st.markdown("<h4 style='text-align: center; color: #888;'>📝 Drafts</h4>", unsafe_allow_html=True)
-            for card in st.session_state.pipeline:
+            for card in cloud_pipeline:
                 if card["status"] == "Drafts":
                     with st.container(border=True):
-                        st.caption(f"Card #{card['id']}")
                         st.write(card["content"][:80] + "..." if len(card["content"]) > 80 else card["content"])
                         if st.button("Move to Review ➡️", key=f"d2r_{card['id']}"):
-                            move_card(card["id"], "Review")
+                            update_cloud_card(card["id"], "Review")
                             st.rerun()
 
         # COLUMN 2: REVIEW
         with col_review:
             st.markdown("<h4 style='text-align: center; color: #d97706;'>🧐 Review</h4>", unsafe_allow_html=True)
-            for card in st.session_state.pipeline:
+            for card in cloud_pipeline:
                 if card["status"] == "Review":
                     with st.container(border=True):
-                        st.caption(f"Card #{card['id']}")
                         st.write(card["content"][:80] + "..." if len(card["content"]) > 80 else card["content"])
-                        
                         c1, c2 = st.columns(2)
                         with c1:
                             if st.button("⬅️ Back", key=f"r2d_{card['id']}"):
-                                move_card(card["id"], "Drafts")
+                                update_cloud_card(card["id"], "Drafts")
                                 st.rerun()
                         with c2:
                             if st.button("Ready ➡️", key=f"r2ready_{card['id']}"):
-                                move_card(card["id"], "Ready")
+                                update_cloud_card(card["id"], "Ready")
                                 st.rerun()
 
         # COLUMN 3: READY
         with col_ready:
             st.markdown("<h4 style='text-align: center; color: #10b981;'>✅ Ready</h4>", unsafe_allow_html=True)
-            for card in st.session_state.pipeline:
+            for card in cloud_pipeline:
                 if card["status"] == "Ready":
                     with st.container(border=True):
-                        st.caption(f"Card #{card['id']}")
                         st.write(card["content"][:80] + "..." if len(card["content"]) > 80 else card["content"])
                         if st.button("⬅️ Review", key=f"ready2r_{card['id']}"):
-                            move_card(card["id"], "Review")
+                            update_cloud_card(card["id"], "Review")
                             st.rerun()
                         if st.button("🗑️ Delete", key=f"del_{card['id']}"):
-                            st.session_state.pipeline = [c for c in st.session_state.pipeline if c["id"] != card["id"]]
+                            supabase.table("kanban_pipeline").delete().eq("id", card["id"]).execute()
                             st.rerun()
 
     # --- 6. INPUT ROUTING ---
@@ -520,11 +522,9 @@ else:
 
     # Intercept Quick Action Buttons
     if btn_polish: user_input = "Please rewrite the last generated message. Make it more punchy, professional, and perfectly formatted for a LinkedIn audience."
-    # NEW: Updated to trigger the Data Moat
     if btn_draft_file: user_input = "Draft a highly engaging LinkedIn post based purely on the currently uploaded file. Search your memory for my '[HIGH PERFORMING POST]' entries and use their exact formatting as your template."
     if btn_content_plan: user_input = "Analyze the uploaded document and my professional background. Extract 3 core 'Content Pillars' and create a 5-day LinkedIn content calendar formatted as a clean table."
     if btn_gap_analysis: user_input = "Analyze the provided Job Description URL or context against my background. Produce a structured 'Gap Analysis' table highlighting what I need to improve."
-    # NEW: Updated to trigger the Multi-Agent Routine
     if btn_ghostwrite: user_input = "[MULTI-AGENT ROUTINE] Write a LinkedIn post about a recent professional insight. Search your memory for any '[HIGH PERFORMING POST]' entries and mimic their exact tone and structure."
     if btn_hooks: user_input = "Analyze the provided context and brainstorm 3 distinct, high-impact LinkedIn hooks for a post. Provide a brief 1-sentence explanation of why each hook works."
     if btn_braindump: user_input = "Listen to the attached voice note. Extract the core insights and transform my messy thoughts into a highly engaging, 360Brew-compliant LinkedIn post using the 1-3-1 structure."
@@ -576,8 +576,7 @@ else:
         3. Output a detailed Markdown table with columns: 'Skill', 'Competency Mentioned', and 'My Experience Level'.
         4. Provide a 2-sentence analytical summary on how to close the biggest skill gap.
         """   
-    if btn_news:
-        user_input = """
+    if btn_news: user_input = """
         Analyze the provided news article URL(s).
         1. Summarize the core business event or tech trend in exactly 1 sentence.
         2. Cross-reference this trend with my professional background in your memory.
@@ -593,6 +592,7 @@ else:
         3. 📨 **The Icebreaker:** Write a highly personalized Connection Request (Strictly under 200 characters) that leverages this common ground. Do NOT sound salesy.
         4. 🗣️ **The Conversation Starter:** Provide 2 insightful, open-ended questions I can ask them in a DM to start a meaningful dialogue.
         """           
+
     # --- 7. ORCHESTRATION & API CALL ---
     if user_input:
         # Display user message
@@ -620,7 +620,7 @@ else:
         user_content_parts = [types.Part.from_text(text=user_input)]
         
         if extracted_context:
-            user_content_parts.append(types.Part.from_text(text=f"\nhttps://www.merriam-webster.com/dictionary/context: {extracted_context}"))
+            user_content_parts.append(types.Part.from_text(text=f"\n[Extracted Data Context]: {extracted_context}"))
         if memory_context:
             user_content_parts.append(types.Part.from_text(text=f"\n[Memory Context]: {memory_context}"))
             
@@ -632,12 +632,11 @@ else:
             with st.chat_message("assistant"):
                 if fname.lower().endswith((".png", ".jpg", ".jpeg")):
                     st.image(fbytes, caption=f"Analyzing {fname}", width=250)
-                    # Correctly assign the MIME type based on file extension
                     mime = "image/png" if fname.lower().endswith(".png") else "image/jpeg"
                     user_content_parts.append(types.Part.from_bytes(data=fbytes, mime_type=mime))
                     user_content_parts.append(types.Part.from_text(text="[SYSTEM OVERRIDE: Analyze the attached image as requested.]"))
                 
-                # NEW: Audio Logic
+                # Audio Logic
                 elif fname.lower().endswith(".wav"):
                     st.audio(fbytes, format="audio/wav")
                     user_content_parts.append(types.Part.from_bytes(data=fbytes, mime_type="audio/wav"))
@@ -709,18 +708,6 @@ else:
                     st.session_state.messages.append({"role": "assistant", "content": assistant_reply})
 
                     # One-Click Markdown Export
-                    st.download_button(label="⬇️ Download as .md", data=assistant_reply, file_name="LinkSavvy_Draft.md", mime="text/markdown", key=f"export_{len(st.session_state.messages)}")
-
-                    # Carousel check
-                    if "[SLIDE]" in assistant_reply:
-                        st.success("✅ Carousel formatting detected!")
-                        pdf_bytes = create_pdf_carousel(assistant_reply)
-                        st.download_button(label="📥 Download PDF Carousel", data=pdf_bytes, file_name="LinkSavvy_Carousel.pdf", mime="application/pdf")
-                    
-                    st.markdown(assistant_reply)
-                    st.session_state.messages.append({"role": "assistant", "content": assistant_reply})
-
-                    # --- NEW: One-Click Markdown Export ---
                     st.download_button(
                         label="⬇️ Download as .md",
                         data=assistant_reply,
@@ -729,7 +716,7 @@ else:
                         key=f"export_{len(st.session_state.messages)}"
                     )
 
-                    # NEW: Check if this was a carousel draft and offer PDF download
+                    # Carousel check
                     if "[SLIDE]" in assistant_reply:
                         st.success("✅ Carousel formatting detected!")
                         pdf_bytes = create_pdf_carousel(assistant_reply)
