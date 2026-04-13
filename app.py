@@ -6,6 +6,7 @@ from google.genai import types
 from dotenv import load_dotenv
 from tools import scrape_linkedin_url, extract_text_from_pdf, chunk_text, create_pdf_carousel
 from memory import save_to_memory, recall_from_memory, get_all_memories, wipe_memory, get_memory_analytics, get_memory_details, delete_memory
+import json
 
 # --- 1. SETUP & CONFIG ---
 load_dotenv()
@@ -171,6 +172,7 @@ else:
     4. MULTIMODAL VISION: If an image is provided, act as a Brand Consultant. Critique the visual hook, text readability, and overall professional alignment for LinkedIn.
     5. GAP ANALYSIS: If a job description is provided, output a Markdown table comparing "Required Skill", "My Status", and "Action Item" using emojis.
     6. CONTENT PLANNING: If asked to plan content based on a document, extract 3 "Content Pillars" and format a calendar in a clean table.
+    7. THE DATA MOAT: If the Memory Context includes a "[HIGH PERFORMING POST]", you MUST deeply analyze its formatting, hook style, and tone. Treat it as your primary template. Mimic its exact structure for the new draft, as it is statistically proven to work for this user's audience.
     """
 
     # --- 3. SESSION STATE INITIALIZATION ---
@@ -276,6 +278,32 @@ else:
                     st.warning("⚠️ Upload a file first in the 'Tools' tab.")
 
             st.markdown("---")
+            st.subheader("📊 Post Performance Tracker")
+            st.caption("Feed your data moat. Log your successful posts here.")
+            
+            with st.form("performance_logger"):
+                log_url = st.text_input("LinkedIn Post URL (Optional)")
+                log_content = st.text_area("Paste the Post Content")
+                
+                col1, col2, col3 = st.columns(3)
+                with col1: views = st.number_input("Views", min_value=0, step=100)
+                with col2: likes = st.number_input("Likes", min_value=0, step=1)
+                with col3: comments = st.number_input("Comments", min_value=0, step=1)
+                
+                if st.form_submit_button("💾 Save to Data Moat"):
+                    if log_content.strip() and (views > 0 or likes > 0 or comments > 0):
+                        # Calculate a crude "Engagement Score"
+                        engagement_score = likes + (comments * 2) 
+                        
+                        memory_text = f"[HIGH PERFORMING POST] Views: {views} | Likes: {likes} | Comments: {comments} | Score: {engagement_score}\n\nContent: {log_content}"
+                        
+                        # Save to our vector DB with a specific category
+                        save_to_memory(memory_text, source=log_url or "Manual_Entry", category="Proven_Content")
+                        st.success(f"✅ Logged! LinkSavvy will study this for future drafts.")
+                    else:
+                        st.error("Please add content and at least some metric (views, likes, or comments).")        
+
+            st.markdown("---")
             st.subheader("📈 Memory Analytics")
             stats = get_memory_analytics()
             if stats:
@@ -316,6 +344,41 @@ else:
                 st.session_state.authenticated = False
                 st.rerun()
 
+    # --- 4.5 AGENT INBOX ---
+    st.title("🔗 LinkSavvy: LinkedIn Assistant")
+    
+    if os.path.exists("agent_drafts.json"):
+        with open("agent_drafts.json", "r", encoding="utf-8") as f:
+            try:
+                agent_drafts = json.load(f)
+            except:
+                agent_drafts = []
+                
+        # Filter for drafts that haven't been reviewed yet
+        pending_drafts = [d for d in agent_drafts if d.get("status") == "PENDING_REVIEW"]
+        
+        if pending_drafts:
+            st.markdown("---")
+            st.subheader("📬 Agent Inbox")
+            st.info(f"✨ LinkSavvy woke up early and drafted **{len(pending_drafts)}** post(s) based on breaking news!")
+            
+            for i, draft in enumerate(pending_drafts):
+                with st.expander(f"📰 Breaking: {draft['source_title']}", expanded=True):
+                    st.caption(f"Source: [Read Article]({draft['source_link']}) | Drafted: {draft['timestamp']}")
+                    
+                    # Allow the user to edit the draft directly in the UI
+                    edited_draft = st.text_area("Review & Edit Draft:", value=draft['draft_content'], height=250, key=f"draft_{i}")
+                    
+                    col1, col2 = st.columns([1, 5])
+                    with col1:
+                        if st.button("✅ Approve", key=f"approve_{i}"):
+                            # In a full app, this would change the status in the JSON and clear the inbox
+                            st.success("Draft Approved! Ready to post to LinkedIn.")
+                    with col2:
+                        if st.button("🗑️ Dismiss", key=f"dismiss_{i}"):
+                            st.warning("Draft dismissed.")
+            st.markdown("---")
+
     # --- 5. MAIN CHAT INTERFACE ---
     st.title("🔗 LinkSavvy: LinkedIn Assistant")
 
@@ -329,10 +392,12 @@ else:
 
     # Intercept Quick Action Buttons
     if btn_polish: user_input = "Please rewrite the last generated message. Make it more punchy, professional, and perfectly formatted for a LinkedIn audience."
-    if btn_draft_file: user_input = "Draft a highly engaging LinkedIn post based purely on the currently uploaded file. Ensure it has a strong hook, 3 short bullet points, and a clear call to action."
+    # NEW: Updated to trigger the Data Moat
+    if btn_draft_file: user_input = "Draft a highly engaging LinkedIn post based purely on the currently uploaded file. Search your memory for my '[HIGH PERFORMING POST]' entries and use their exact formatting as your template."
     if btn_content_plan: user_input = "Analyze the uploaded document and my professional background. Extract 3 core 'Content Pillars' and create a 5-day LinkedIn content calendar formatted as a clean table."
     if btn_gap_analysis: user_input = "Analyze the provided Job Description URL or context against my background. Produce a structured 'Gap Analysis' table highlighting what I need to improve."
-    if btn_ghostwrite: user_input = "Write a LinkedIn post about a recent professional insight. Use the '1-3-1' structure for maximum dwell time. Ensure the tone is 'Confident but Human'."
+    # NEW: Updated to trigger the Data Moat
+    if btn_ghostwrite: user_input = "Write a LinkedIn post about a recent professional insight. Search your memory for any '[HIGH PERFORMING POST]' entries and mimic their exact tone and structure."
     if btn_hooks: user_input = "Analyze the provided context and brainstorm 3 distinct, high-impact LinkedIn hooks for a post. Provide a brief 1-sentence explanation of why each hook works."
     if btn_braindump: user_input = "Listen to the attached voice note. Extract the core insights and transform my messy thoughts into a highly engaging, 360Brew-compliant LinkedIn post using the 1-3-1 structure."
     if btn_carousel: user_input = """
