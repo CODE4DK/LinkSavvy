@@ -207,6 +207,21 @@ else:
     6. CONTENT PLANNING: If asked to plan content based on a document, extract 3 "Content Pillars" and format a calendar in a clean table.
     7. THE DATA MOAT: If the Memory Context includes a "[HIGH PERFORMING POST]", you MUST deeply analyze its formatting, hook style, and tone. Treat it as your primary template. Mimic its exact structure for the new draft, as it is statistically proven to work for this user's audience.
     """
+    # --- 2. MULTI-AGENT PROMPTS ---
+    critic_system_prompt = """
+    You are 'The Cynic', a ruthlessly critical LinkedIn audience member who hates generic AI content.
+    Your job is to read the provided draft and tear it apart. 
+    1. Call out any AI cliches ("In today's fast-paced world", "delve", "testament to").
+    2. Point out if the hook is boring or fails to create a "Pattern Interrupt".
+    3. Check if the dwell-time formatting (1-3-1 structure) is violated.
+    Provide 3 harsh, specific bullet points on what MUST be changed. Do not rewrite the post yourself.
+    """
+
+    editor_system_prompt = """
+    You are the 'Final Polish Editor'. You are receiving a raw draft and a list of harsh critiques from 'The Cynic'.
+    Your job is to rewrite the original draft, strictly fixing every single issue the Critic pointed out.
+    Ensure the final output is punchy, human, adheres to the 1-3-1 formatting, and contains absolutely zero AI cliches.
+    """
 
     # --- 3. SESSION STATE INITIALIZATION ---
     if "messages" not in st.session_state:
@@ -509,8 +524,8 @@ else:
     if btn_draft_file: user_input = "Draft a highly engaging LinkedIn post based purely on the currently uploaded file. Search your memory for my '[HIGH PERFORMING POST]' entries and use their exact formatting as your template."
     if btn_content_plan: user_input = "Analyze the uploaded document and my professional background. Extract 3 core 'Content Pillars' and create a 5-day LinkedIn content calendar formatted as a clean table."
     if btn_gap_analysis: user_input = "Analyze the provided Job Description URL or context against my background. Produce a structured 'Gap Analysis' table highlighting what I need to improve."
-    # NEW: Updated to trigger the Data Moat
-    if btn_ghostwrite: user_input = "Write a LinkedIn post about a recent professional insight. Search your memory for any '[HIGH PERFORMING POST]' entries and mimic their exact tone and structure."
+    # NEW: Updated to trigger the Multi-Agent Routine
+    if btn_ghostwrite: user_input = "[MULTI-AGENT ROUTINE] Write a LinkedIn post about a recent professional insight. Search your memory for any '[HIGH PERFORMING POST]' entries and mimic their exact tone and structure."
     if btn_hooks: user_input = "Analyze the provided context and brainstorm 3 distinct, high-impact LinkedIn hooks for a post. Provide a brief 1-sentence explanation of why each hook works."
     if btn_braindump: user_input = "Listen to the attached voice note. Extract the core insights and transform my messy thoughts into a highly engaging, 360Brew-compliant LinkedIn post using the 1-3-1 structure."
     if btn_carousel: user_input = """
@@ -644,19 +659,61 @@ else:
                         role = "user" if msg["role"] == "user" else "model"
                         formatted_history.append(types.Content(role=role, parts=[types.Part.from_text(text=msg["content"])]))
                     
-                    # Append the newly built current message
                     formatted_history.append(types.Content(role="user", parts=user_content_parts))
 
-                    response = client.models.generate_content(
-                        model=selected_model,
-                        contents=formatted_history,
-                        config=types.GenerateContentConfig(
-                            system_instruction=linksavvy_system_prompt,
-                            temperature=0.7 
+                    # --- MULTI-AGENT ROUTINE ---
+                    if "[MULTI-AGENT ROUTINE]" in user_input:
+                        with st.status("🤖 Running Multi-Agent Quality Control...", expanded=True) as status:
+                            st.write("✍️ **Agent 1 (The Creator)** is writing the initial draft...")
+                            creator_response = client.models.generate_content(
+                                model=selected_model, contents=formatted_history,
+                                config=types.GenerateContentConfig(system_instruction=linksavvy_system_prompt, temperature=0.7)
+                            )
+                            raw_draft = creator_response.text
+
+                            st.write("🧐 **Agent 2 (The Cynic)** is tearing the draft apart...")
+                            critic_response = client.models.generate_content(
+                                model=selected_model, contents=f"Critique this draft:\n\n{raw_draft}",
+                                config=types.GenerateContentConfig(system_instruction=critic_system_prompt, temperature=0.2)
+                            )
+                            critique = critic_response.text
+
+                            st.write("✨ **Agent 3 (The Editor)** is rewriting based on feedback...")
+                            final_prompt = f"Original Draft:\n{raw_draft}\n\nCritic's Feedback:\n{critique}\n\nRewrite the draft to fix all the issues mentioned by the critic."
+                            final_response = client.models.generate_content(
+                                model=selected_model, contents=final_prompt,
+                                config=types.GenerateContentConfig(system_instruction=editor_system_prompt, temperature=0.5)
+                            )
+                            assistant_reply = final_response.text
+                            status.update(label="✅ Multi-Agent Revision Complete!", state="complete", expanded=False)
+                        
+                        # Add a dropdown so you can see the AI debate behind the scenes!
+                        with st.expander("👀 See the Behind-the-Scenes Agent Debate"):
+                            st.markdown("**Original Draft:**\n" + raw_draft)
+                            st.markdown("---")
+                            st.markdown("**The Cynic's Critique:**\n" + critique)
+
+                    # --- STANDARD SINGLE-AGENT ROUTINE ---
+                    else:
+                        response = client.models.generate_content(
+                            model=selected_model, contents=formatted_history,
+                            config=types.GenerateContentConfig(system_instruction=linksavvy_system_prompt, temperature=0.7)
                         )
-                    )
+                        assistant_reply = response.text
+
+                    # Standard UI Output
+                    st.markdown(assistant_reply)
+                    st.session_state.messages.append({"role": "assistant", "content": assistant_reply})
+
+                    # One-Click Markdown Export
+                    st.download_button(label="⬇️ Download as .md", data=assistant_reply, file_name="LinkSavvy_Draft.md", mime="text/markdown", key=f"export_{len(st.session_state.messages)}")
+
+                    # Carousel check
+                    if "[SLIDE]" in assistant_reply:
+                        st.success("✅ Carousel formatting detected!")
+                        pdf_bytes = create_pdf_carousel(assistant_reply)
+                        st.download_button(label="📥 Download PDF Carousel", data=pdf_bytes, file_name="LinkSavvy_Carousel.pdf", mime="application/pdf")
                     
-                    assistant_reply = response.text
                     st.markdown(assistant_reply)
                     st.session_state.messages.append({"role": "assistant", "content": assistant_reply})
 
