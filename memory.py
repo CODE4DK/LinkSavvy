@@ -1,82 +1,121 @@
-import chromadb
+import os
+import streamlit as st
+from google import genai
+from google.genai import types  # NEW: Required for model configuration
+from supabase import create_client, Client
+from dotenv import load_dotenv
 
-# Initialize the local ChromaDB client (saves to a folder named 'chroma_data')
-chroma_client = chromadb.PersistentClient(path="./chroma_data")
+# --- SETUP ---
+load_dotenv()
 
-# Create or get the collection (our specific database table)
-collection = chroma_client.get_or_create_collection(name="linksavvy_memory")
+# Initialize Gemini
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+client = genai.Client(api_key=GEMINI_API_KEY)
 
-def save_to_memory(text, source="user_input", category="General"):
-    """Saves a piece of text to the local vector database with category metadata."""
-    import uuid
-    doc_id = str(uuid.uuid4())
-    
-    collection.add(
-        documents=[text],
-        metadatas=[{"source": source, "category": category}], # Added category here
-        ids=[doc_id]
+# Initialize Supabase
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+def get_user_email():
+    """Helper to securely get the current logged-in user's email."""
+    if 'user_info' in st.session_state and st.session_state.user_info:
+        return st.session_state.user_info.get("email", "unknown@user.com")
+    return "unknown@user.com"
+
+def get_embedding(text):
+    """Generates a 768-dimensional vector embedding using the new Gemini model."""
+    response = client.models.embed_content(
+        model="gemini-embedding-001",
+        contents=text,
+        # We MUST force 768 dimensions so it matches our Postgres schema!
+        config=types.EmbedContentConfig(output_dimensionality=768)
     )
-    return True
+    return response.embeddings[0].values
 
-def recall_from_memory(query, n_results=2):
-    """Searches the database for information relevant to the user's query."""
-    if collection.count() == 0:
+def save_to_memory(text, source="user", category="general"):
+    """Embeds text and saves it securely to the user's Supabase cloud table."""
+    email = get_user_email()
+    embedding = get_embedding(text) # Translate text to math
+    
+    data = {
+        "user_email": email,
+        "content": text,
+        "source": source,
+        "category": category,
+        "embedding": embedding
+    }
+    supabase.table("ai_memory").insert(data).execute()
+
+def recall_from_memory(query, threshold=0.4, match_count=5):
+    """Searches Postgres for mathematically similar memories."""
+    email = get_user_email()
+    query_embedding = get_embedding(query)
+    
+    # Call the powerful Postgres Similarity Search function we just built!
+    response = supabase.rpc("match_memories", {
+        "query_embedding": query_embedding,
+        "match_email": email,
+        "match_threshold": threshold,
+        "match_count": match_count
+    }).execute()
+    
+    matches = response.data
+    
+    if not matches:
         return ""
         
-    results = collection.query(
-        query_texts=[query],
-        n_results=min(n_results, collection.count())
-    )
-    
-    if results['documents'] and results['documents'][0]:
-        # Combine the found memories into a single string
-        return "\n".join(results['documents'][0])
-    return ""
-
-def get_all_memories():
-    """Retrieves all documents currently stored in the database."""
-    if collection.count() == 0:
-        return []
-    results = collection.get() 
-    return results['documents']
-
-def wipe_memory():
-    """Deletes all items in the current collection."""
-    if collection.count() > 0:
-        results = collection.get()
-        collection.delete(ids=results['ids'])
-    return True
+    context = ""
+    for match in matches:
+        context += f"\n- [{match['category']} | Source: {match['source']}]: {match['content']}"
+        
+    return context
 
 def get_memory_analytics():
-    """Extracts structured data from ChromaDB for analytics visualization."""
-    if collection.count() == 0:
+    """Fetches stats directly from the cloud for the UI dashboard."""
+    email = get_user_email()
+    response = supabase.table("ai_memory").select("content, source").eq("user_email", email).execute()
+    data = response.data
+    
+    if not data:
         return None
         
-    results = collection.get()
+    total_memories = len(data)
+    total_chars = sum(len(row["content"]) for row in data)
     
-    # Python dictionary to count how many facts came from each source
     source_counts = {}
-    for meta in results['metadatas']:
-        # Fallback to 'Unknown' if the source isn't labeled
-        src = meta.get('source', 'Unknown') 
+    for row in data:
+        src = row.get("source", "Unknown")
         source_counts[src] = source_counts.get(src, 0) + 1
         
-    # Calculate the total volume of text stored
-    total_chars = sum(len(doc) for doc in results['documents'])
-    
     return {
-        "total_memories": collection.count(),
+        "total_memories": total_memories,
         "total_characters": total_chars,
         "source_counts": source_counts
     }
 
 def get_memory_details():
-    """Retrieves documents, metadata, and unique IDs for granular management."""
-    if collection.count() == 0:
-        return {"ids": [], "documents": [], "metadatas": []}
-    return collection.get()
+    """Formats the cloud data to perfectly match what app.py expects."""
+    email = get_user_email()
+    response = supabase.table("ai_memory").select("id, content, source, category").eq("user_email", email).execute()
+    data = response.data
+    
+    ids = [row["id"] for row in data]
+    documents = [row["content"] for row in data]
+    metadatas = [{"source": row["source"], "category": row["category"]} for row in data]
+    
+    return {"ids": ids, "documents": documents, "metadatas": metadatas}
 
 def delete_memory(doc_id):
-    """Deletes a specific memory by its unique ChromaDB ID."""
-    collection.delete(ids=[doc_id])
-    return True
+    """Deletes a specific memory from the cloud."""
+    email = get_user_email()
+    supabase.table("ai_memory").delete().eq("id", doc_id).eq("user_email", email).execute()
+
+def wipe_memory():
+    """Wipes all memories from the cloud for the current user."""
+    email = get_user_email()
+    supabase.table("ai_memory").delete().eq("user_email", email).execute()
+    
+def get_all_memories():
+    """Fallback function for backward compatibility."""
+    return get_memory_details()
