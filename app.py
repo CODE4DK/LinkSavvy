@@ -288,9 +288,10 @@ else:
                 btn_matrix = st.button("🕸️ Competitor Matrix")
                 btn_news = st.button("📰 News Hot Take")
 
-            # NEW: Outbound Strategy Tool
+            # NEW: Outbound Strategy Tools
             st.markdown("---")
-            btn_outbound = st.button("🎯 Target Analyzer")    
+            btn_outbound = st.button("🎯 Target Analyzer (LinkedIn)")    
+            btn_cold_email = st.button("📧 Cold Email Generator")  
 
             st.markdown("---")
             st.subheader("🎯 Hook Tracker")
@@ -591,7 +592,20 @@ else:
         2. 🤝 **The Bridge:** Cross-reference their themes with my professional background in your memory. Find the strongest piece of common ground.
         3. 📨 **The Icebreaker:** Write a highly personalized Connection Request (Strictly under 200 characters) that leverages this common ground. Do NOT sound salesy.
         4. 🗣️ **The Conversation Starter:** Provide 2 insightful, open-ended questions I can ask them in a DM to start a meaningful dialogue.
-        """           
+        """   
+    if btn_cold_email: user_input = """
+        Analyze the provided prospect URL, LinkedIn profile, or company text.
+        
+        1. 🕵️ **Prospect Research:** Identify a specific recent milestone, challenge, or initiative from their data.
+        2. 🧠 **The Bridge:** Cross-reference their data with my professional background and case studies in your memory. 
+        3. ✉️ **The Cold Email Draft:** Write a highly personalized, short B2B cold email using this exact structure:
+           * **Subject Line:** Short, curious, lowercase, and no generic marketing words.
+           * **Paragraph 1 (The Observation):** A hyper-specific, genuine observation about their recent work to prove this isn't an automated blast.
+           * **Paragraph 2 (The Value):** A 1-2 sentence pitch connecting my specific background to a problem they likely have.
+           * **Paragraph 3 (The CTA):** A low-friction, interest-based Call to Action (e.g., "Open to seeing a quick framework on how we solved this?").
+        
+        Do NOT use words like "synergy", "delve", or "transform". Keep it punchy and human.
+        """            
 
     # --- 7. ORCHESTRATION & API CALL ---
     if user_input:
