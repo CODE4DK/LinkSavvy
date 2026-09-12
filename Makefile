@@ -1,12 +1,19 @@
-.PHONY: dev test lint migrate seed contracts
+.PHONY: bootstrap dev down test lint migrate seed contracts
 
 API_DIR := apps/api
 WEB_DIR := apps/web
 
+# First-time setup: docker compose up, generate apps/api/.env, install
+# dependencies, migrate, seed. Safe to re-run.
+bootstrap:
+	./scripts/bootstrap.sh
+
+# Runs the API (:8000) and web app (:5173) together. Ctrl+C stops both.
 dev:
-	docker compose up -d
-	( cd $(API_DIR) && uv run fastapi dev app/main.py --port 8000 ) & \
-	( cd $(WEB_DIR) && npm run dev )
+	./scripts/dev.sh
+
+down:
+	docker compose down
 
 test:
 	cd $(API_DIR) && uv run pytest
