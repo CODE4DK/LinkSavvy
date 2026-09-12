@@ -44,6 +44,10 @@ class Settings(BaseSettings):
     linkedin_client_id: str | None = None
     linkedin_client_secret: str | None = None
     linkedin_redirect_uri: str | None = None
+    # A second registered redirect URI for the profile-connect flow (Phase
+    # 02), kept separate from sign-in's so the callback never has to guess
+    # which flow it's completing.
+    linkedin_profile_redirect_uri: str | None = None
 
     login_rate_limit_per_minute: int = 10
     register_rate_limit_per_minute: int = 5

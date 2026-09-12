@@ -1,4 +1,5 @@
-"""Symmetric encryption for OAuth provider tokens at rest."""
+"""Symmetric encryption for data at rest: OAuth provider tokens and raw
+profile paste/upload content (see app/profiles/service.py)."""
 
 from __future__ import annotations
 
@@ -20,3 +21,11 @@ def encrypt(plaintext: str) -> str:
 
 def decrypt(ciphertext: str) -> str:
     return _fernet().decrypt(ciphertext.encode("utf-8")).decode("utf-8")
+
+
+def encrypt_bytes(plaintext: bytes) -> bytes:
+    return _fernet().encrypt(plaintext)
+
+
+def decrypt_bytes(ciphertext: bytes) -> bytes:
+    return _fernet().decrypt(ciphertext)
