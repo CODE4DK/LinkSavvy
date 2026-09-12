@@ -168,9 +168,7 @@ def _parse_prompt_file(path: Path, *, prompts_dir: Path) -> PromptTemplate:
 def validate_required_context(template: PromptTemplate, context: Mapping[str, Any]) -> None:
     missing = [key for key in template.required_context if key not in context]
     if missing:
-        raise PromptContextError(
-            f"prompt {template.id!r} is missing required context key(s): {missing}"
-        )
+        raise PromptContextError(template.id, missing=missing)
 
 
 class PromptRegistry:
@@ -188,12 +186,9 @@ class PromptRegistry:
     def get(self, prompt_id: str, *, version: int | None = None) -> PromptTemplate:
         template = self._by_id.get(prompt_id)
         if template is None:
-            raise PromptNotFound(f"no prompt registered with id {prompt_id!r}")
+            raise PromptNotFound(prompt_id)
         if version is not None and template.version != version:
-            raise PromptVersionMismatch(
-                f"prompt {prompt_id!r} is pinned to version {version}, "
-                f"but the currently loaded version is {template.version}"
-            )
+            raise PromptVersionMismatch(prompt_id, pinned=version, current=template.version)
         return template
 
     def all(self) -> list[PromptTemplate]:

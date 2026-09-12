@@ -67,3 +67,20 @@ def resolve_secondary_provider() -> LLMProvider:
 def tier_timeout_seconds(tier: ModelTier) -> float:
     config = _load_config()
     return float(config["timeouts_seconds"][tier.value])
+
+
+def currency() -> str:
+    config = _load_config()
+    return str(config["currency"])
+
+
+def cost_per_million_tokens_minor(model: str) -> tuple[int, int]:
+    """Returns `(input_rate, output_rate)` in minor currency units per
+    million tokens. Falls back to zero-cost for an unrecognized model
+    (e.g. a fixture-only fake model) rather than raising — cost accounting
+    degrading to zero is safe; refusing to record an invocation isn't."""
+    config = _load_config()
+    rates = config["costs_per_million_tokens_minor"].get(model)
+    if rates is None:
+        return 0, 0
+    return int(rates["input"]), int(rates["output"])

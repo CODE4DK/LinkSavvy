@@ -19,7 +19,7 @@ os.environ.setdefault("ENCRYPTION_KEY", Fernet.generate_key().decode())
 os.environ.setdefault("SMTP_HOST", "localhost")
 os.environ.setdefault("SMTP_PORT", "1025")
 
-from collections.abc import AsyncIterator  # noqa: E402
+from collections.abc import AsyncIterator, Iterator  # noqa: E402
 
 import pytest  # noqa: E402
 import pytest_asyncio  # noqa: E402
@@ -96,7 +96,7 @@ async def registered_user(client: AsyncClient, sent_emails: list[dict[str, str]]
 
 
 @pytest.fixture(autouse=True)
-def _fake_ai_providers(monkeypatch: pytest.MonkeyPatch) -> None:
+def _fake_ai_providers(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
     """Every test gets `FakeProvider` in place of a real OpenAI/Gemini call
     (see app/ai/providers/fake_provider.py and .../registry.py) — this is
     what guarantees the whole suite runs with zero network calls, without

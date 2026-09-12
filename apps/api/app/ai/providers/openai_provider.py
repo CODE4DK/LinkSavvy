@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import json
 import time
-from collections.abc import AsyncIterator
+from collections.abc import AsyncGenerator
 from typing import Any
 
 import httpx
@@ -111,7 +111,7 @@ class OpenAIProvider:
             finish_reason=_map_finish_reason(choice.get("finish_reason")),
         )
 
-    async def stream(self, request: LLMRequest) -> AsyncIterator[LLMChunk]:
+    async def stream(self, request: LLMRequest) -> AsyncGenerator[LLMChunk, None]:
         tokens_out_estimate = 0
         finish_reason: FinishReason = "stop"
         try:

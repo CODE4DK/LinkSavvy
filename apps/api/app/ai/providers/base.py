@@ -9,7 +9,7 @@ prompt template or a caller.
 
 from __future__ import annotations
 
-from collections.abc import AsyncIterator
+from collections.abc import AsyncGenerator
 from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Any, Literal, Protocol
@@ -112,4 +112,4 @@ class LLMProvider(Protocol):
 
     async def complete(self, request: LLMRequest) -> LLMResponse: ...
 
-    def stream(self, request: LLMRequest) -> AsyncIterator[LLMChunk]: ...
+    def stream(self, request: LLMRequest) -> AsyncGenerator[LLMChunk, None]: ...

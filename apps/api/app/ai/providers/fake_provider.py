@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import json
 import time
-from collections.abc import AsyncIterator
+from collections.abc import AsyncGenerator
 from pathlib import Path
 from typing import Any
 
@@ -72,7 +72,7 @@ class FakeProvider:
             finish_reason="stop",
         )
 
-    async def stream(self, request: LLMRequest) -> AsyncIterator[LLMChunk]:
+    async def stream(self, request: LLMRequest) -> AsyncGenerator[LLMChunk, None]:
         text, _parsed, tokens_out = self._render(request)
         tokens_in = sum(len(m.content) for m in request.messages) // 4 or 1
         chunk_size = max(1, len(text) // 5)

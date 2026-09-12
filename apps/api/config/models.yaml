@@ -39,3 +39,22 @@ timeouts_seconds:
 # down provider can't be trusted to serve any tier reliably.
 secondary_provider: gemini
 secondary_fallback_model: gemini-1.5-flash
+
+# Cost per million tokens, in integer minor currency units (USD cents),
+# keyed by model — same rule as everything else in this file: nowhere
+# else in the codebase names a model, so this is the only place a cost
+# rate can live too. Illustrative rates, not vendor-verified pricing.
+currency: USD
+costs_per_million_tokens_minor:
+  gpt-4o-mini:
+    input: 1500
+    output: 6000
+  gpt-4o:
+    input: 250000
+    output: 1000000
+  gemini-1.5-flash:
+    input: 750
+    output: 3000
+  fake-model:
+    input: 0
+    output: 0
