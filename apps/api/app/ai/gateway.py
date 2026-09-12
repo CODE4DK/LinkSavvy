@@ -12,6 +12,7 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import json
+import logging
 import random
 import time
 import uuid
@@ -41,6 +42,7 @@ from app.ai.providers.base import (
     ModelTier,
     ProviderError,
 )
+from app.ai.redact import redact_text
 from app.ai.safety.output_policy import OutputPolicyViolation, check_output_policy
 from app.ai.safety.sanitize import sanitize_context
 from app.billing.quota import check_and_reserve, release
@@ -48,6 +50,8 @@ from app.errors import ApiError, ErrorCode
 from app.models.ai_cache import AICache
 from app.models.ai_invocation import AIInvocation
 from app.models.user import User
+
+logger = logging.getLogger("app.ai.gateway")
 
 MAX_RETRIES = 3
 BASE_BACKOFF_SECONDS = 0.5
@@ -182,6 +186,30 @@ async def _record_invocation(
     db.add(invocation)
     await db.commit()
     await db.refresh(invocation)
+
+    # Structured, fixed-shape fields only — never a prompt body or user
+    # content, by construction (there's no field here that could carry
+    # either). This is the log line an aggregator/alerting system reads;
+    # the ai_invocations row above is the one a query reads.
+    logger.info(
+        "ai_invocation",
+        extra={
+            "correlation_id": correlation_id,
+            "invocation_id": str(invocation.id),
+            "prompt_id": template.id,
+            "prompt_version": template.version,
+            "tier": tier.value,
+            "provider": provider_name,
+            "model": model,
+            "tokens_in": tokens_in,
+            "tokens_out": tokens_out,
+            "cost_minor": cost_minor,
+            "latency_ms": round(latency_ms),
+            "cached": cached,
+            "fallback_used": fallback_used,
+            "outcome": outcome,
+        },
+    )
     return invocation
 
 
@@ -217,8 +245,16 @@ async def _call_with_fallback(
             response = await _call_with_retry(provider, request, timeout=timeout)
             circuit_breaker.record_success(provider.name)
             return response, False
-        except (ProviderError, TimeoutError):
+        except (ProviderError, TimeoutError) as exc:
             circuit_breaker.record_failure(provider.name)
+            logger.warning(
+                "ai_provider_failed",
+                extra={
+                    "correlation_id": request.correlation_id,
+                    "provider": provider.name,
+                    "error_summary": redact_text(str(exc)),
+                },
+            )
 
     secondary = registry.resolve_secondary_provider()
     secondary_timeout = registry.tier_timeout_seconds(ModelTier.STANDARD)
@@ -228,6 +264,14 @@ async def _call_with_fallback(
         return response, True
     except (ProviderError, TimeoutError) as exc:
         circuit_breaker.record_failure(secondary.name)
+        logger.warning(
+            "ai_provider_failed",
+            extra={
+                "correlation_id": request.correlation_id,
+                "provider": secondary.name,
+                "error_summary": redact_text(str(exc)),
+            },
+        )
         raise AIProviderUnavailable(request.prompt_id) from exc
 
 
