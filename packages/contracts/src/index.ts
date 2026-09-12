@@ -14,6 +14,8 @@ import type { components, paths } from "./schema";
 export type { paths };
 export type Schemas = components["schemas"];
 
+export * from "./profile-schema";
+
 export type RegisterRequest = Schemas["RegisterRequest"];
 export type MessageResponse = Schemas["MessageResponse"];
 export type VerifyEmailRequest = Schemas["VerifyEmailRequest"];

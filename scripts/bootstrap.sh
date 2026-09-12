@@ -7,7 +7,6 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 API_DIR="$ROOT_DIR/apps/api"
-WEB_DIR="$ROOT_DIR/apps/web"
 
 log() { printf '\033[1;34m==>\033[0m %s\n' "$1"; }
 fail() { printf '\033[1;31merror:\033[0m %s\n' "$1" >&2; exit 1; }
@@ -43,8 +42,8 @@ fi
 log "Installing API dependencies (uv sync)"
 (cd "$API_DIR" && uv sync)
 
-log "Installing web dependencies (npm install)"
-(cd "$WEB_DIR" && npm install)
+log "Installing web dependencies (npm install, workspace root)"
+(cd "$ROOT_DIR" && npm install)
 
 log "Running database migrations"
 (cd "$API_DIR" && uv run alembic upgrade head)

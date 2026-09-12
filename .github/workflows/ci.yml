@@ -41,9 +41,6 @@ jobs:
   web:
     name: Web (lint, typecheck, test)
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/web
     steps:
       - uses: actions/checkout@v4
 
@@ -52,16 +49,21 @@ jobs:
         with:
           node-version: "22"
           cache: "npm"
-          cache-dependency-path: apps/web/package-lock.json
+          cache-dependency-path: package-lock.json
 
+      # npm workspaces: one lockfile and one node_modules at the repo
+      # root, covering apps/web and packages/contracts together.
       - name: Install dependencies
         run: npm ci
 
       - name: Lint
+        working-directory: apps/web
         run: npm run lint
 
       - name: Typecheck
+        working-directory: apps/web
         run: npm run typecheck
 
       - name: Vitest
+        working-directory: apps/web
         run: npm run test -- --run
