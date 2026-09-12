@@ -1,0 +1,35 @@
+services:
+  mysql:
+    image: mysql:9.7
+    container_name: linksavvy-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: linksavvy_root
+      MYSQL_DATABASE: linksavvy
+      MYSQL_USER: linksavvy
+      MYSQL_PASSWORD: linksavvy
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
+      - --default-authentication-plugin=caching_sha2_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - linksavvy_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-plinksavvy_root"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    container_name: linksavvy-mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025" # SMTP
+      - "8025:8025" # Web UI
+
+volumes:
+  linksavvy_mysql_data:
+    name: linksavvy_mysql_data
