@@ -6,6 +6,7 @@ from app.models.audit_log import AuditLog
 from app.models.base import Base
 from app.models.email_verification import EmailVerification
 from app.models.feature_flag import FeatureFlag, UserFeatureFlag
+from app.models.job import Job
 from app.models.linkedin_connection import LinkedInConnection
 from app.models.login_attempt import LoginAttempt
 from app.models.oauth_identity import OAuthIdentity
@@ -25,6 +26,7 @@ __all__ = [
     "Base",
     "EmailVerification",
     "FeatureFlag",
+    "Job",
     "LinkedInConnection",
     "LoginAttempt",
     "OAuthIdentity",
