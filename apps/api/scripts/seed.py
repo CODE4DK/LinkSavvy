@@ -6,16 +6,20 @@ Idempotent — safe to run repeatedly against the same database.
 from __future__ import annotations
 
 import asyncio
+import sys
 from datetime import UTC, datetime
+from pathlib import Path
 
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from app.db import AsyncSessionLocal
-from app.models.feature_flag import FeatureFlag
-from app.models.user import User
-from app.security.passwords import hash_password
-from app.services.feature_flags import ALL_DEFAULT_FLAG_KEYS
+from sqlalchemy import select  # noqa: E402
+from sqlalchemy.ext.asyncio import AsyncSession  # noqa: E402
+
+from app.db import AsyncSessionLocal  # noqa: E402
+from app.models.feature_flag import FeatureFlag  # noqa: E402
+from app.models.user import User  # noqa: E402
+from app.security.passwords import hash_password  # noqa: E402
+from app.services.feature_flags import ALL_DEFAULT_FLAG_KEYS  # noqa: E402
 
 ADMIN_EMAIL = "admin@linksavvy.dev"
 ADMIN_PASSWORD = "AdminPass123!"

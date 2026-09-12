@@ -266,22 +266,7 @@ async def login(
     return LoginResponse(
         access_token=access_token,
         expires_in=settings.access_token_ttl_minutes * 60,
-        user=_to_user_public(user),
-    )
-
-
-def _to_user_public(user: User) -> UserPublic:
-    return UserPublic(
-        id=str(user.id),
-        email=user.email,
-        full_name=user.full_name,
-        avatar_url=user.avatar_url,
-        locale=user.locale,
-        timezone=user.timezone,
-        role=user.role,
-        plan=user.plan,
-        email_verified=user.email_verified_at is not None,
-        created_at=user.created_at,
+        user=UserPublic.from_model(user),
     )
 
 
@@ -583,5 +568,5 @@ async def linkedin_callback(
     return LoginResponse(
         access_token=access_token,
         expires_in=settings.access_token_ttl_minutes * 60,
-        user=_to_user_public(user),
+        user=UserPublic.from_model(user),
     )

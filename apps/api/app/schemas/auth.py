@@ -105,3 +105,7 @@ class SessionOut(BaseModel):
 
 class LinkedInStartResponse(BaseModel):
     authorization_url: str
+
+
+class DeleteAccountRequest(BaseModel):
+    current_password: str | None = None
