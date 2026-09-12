@@ -11,6 +11,8 @@ The codebase MUST NOT, under any circumstance:
 
 The ONLY network calls permitted to LinkedIn are to its official OAuth and API hosts, for authentication and for whatever profile fields the official API grants us. Every feature must also work for a user who never connects LinkedIn at all — this is the "parity path": upload, paste, or type. API path and parity path must reach the same capability. If a task seems to require a prohibited action, stop and say so instead of implementing it.
 
+This rule is enforced in CI, not just by convention: `scripts/check_compliance.py` scans every source file under `apps/api/app`, `apps/api/alembic`, `apps/web/src`, and `packages/contracts/src` and fails the build if it finds a `linkedin.com` host reference outside `apps/api/app/services/linkedin.py` (the one allowlisted OAuth/API client), an import of a browser-automation library (selenium/playwright/puppeteer) outside a test file, an import of an HTML-scraping library (BeautifulSoup/bs4/cheerio), or a scraping-shaped declaration (a function, class, or variable named `scrape*`/`crawl*`). Run it locally with `python3 scripts/check_compliance.py`. If it flags something that genuinely needs a new LinkedIn endpoint, extend the OAuth/API client rather than the allowlist.
+
 ## Stack
 - Monorepo: `apps/web` (React 18, Vite 5, TypeScript strict), `apps/api` (Python 3.11, FastAPI async), `packages/contracts` (TypeScript types generated from the API's OpenAPI schema).
 - Database: MySQL 9.7, the sole datastore. No Redis, no Celery, no separate vector database. Background jobs use a `jobs` table plus a worker loop. Search uses MySQL FULLTEXT.

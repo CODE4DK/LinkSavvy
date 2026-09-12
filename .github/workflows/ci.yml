@@ -6,6 +6,15 @@ on:
   pull_request:
 
 jobs:
+  compliance:
+    name: LinkedIn compliance guard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for scraping/browser-automation/unofficial LinkedIn access
+        run: python3 scripts/check_compliance.py
+
   api:
     name: API (lint, typecheck, test)
     runs-on: ubuntu-latest
