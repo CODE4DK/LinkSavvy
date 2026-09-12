@@ -1,0 +1,7 @@
+{
+  "response": {
+    "intent": "rewrite_headline",
+    "confidence": 0.92
+  },
+  "tokens_out": 12
+}

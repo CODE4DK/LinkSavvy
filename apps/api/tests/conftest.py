@@ -91,6 +91,22 @@ async def registered_user(client: AsyncClient, sent_emails: list[dict[str, str]]
     return {"email": email, "password": password}
 
 
+@pytest.fixture(autouse=True)
+def _fake_ai_providers(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Every test gets `FakeProvider` in place of a real OpenAI/Gemini call
+    (see app/ai/providers/fake_provider.py and .../registry.py) — this is
+    what guarantees the whole suite runs with zero network calls, without
+    every test needing to remember to patch it itself."""
+    from app.ai.providers import registry
+    from app.ai.providers.fake_provider import FakeProvider
+
+    registry._build_provider.cache_clear()
+    monkeypatch.setitem(registry._PROVIDER_CLASSES, "openai", FakeProvider)
+    monkeypatch.setitem(registry._PROVIDER_CLASSES, "gemini", FakeProvider)
+    yield
+    registry._build_provider.cache_clear()
+
+
 @pytest.fixture
 def sent_emails(monkeypatch: pytest.MonkeyPatch) -> list[dict[str, str]]:
     """Captures verification/reset emails instead of sending them."""

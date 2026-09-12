@@ -13,6 +13,7 @@ dependencies = [
     "fastapi[standard]>=0.141.1",
     "httpx>=0.27",
     "jinja2>=3.1",
+    "jsonschema>=4.21",
     "pdfplumber>=0.11",
     "pydantic>=2.6",
     "pydantic-settings>=2.2",
@@ -63,5 +64,5 @@ plugins = []
 exclude = ["alembic/versions"]
 
 [[tool.mypy.overrides]]
-module = ["uuid6.*", "aiosmtplib.*", "argon2.*", "pypdfium2.*"]
+module = ["uuid6.*", "aiosmtplib.*", "argon2.*", "pypdfium2.*", "jsonschema.*"]
 ignore_missing_imports = true
