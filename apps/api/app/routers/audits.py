@@ -12,6 +12,7 @@ from datetime import UTC, datetime, timedelta
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.audit.presenters import to_category_result_response, to_recommendation_response
 from app.audit.service import (
     enqueue_manual_audit,
     get_audit_for_user,
@@ -25,12 +26,9 @@ from app.audit.service import (
 from app.deps import get_current_user, get_db
 from app.errors import ApiError, ErrorCode
 from app.models.audit import Audit
-from app.models.recommendation import Recommendation
 from app.models.user import User
 from app.schemas.audit import (
-    AuditCategoryResultResponse,
     AuditDetailResponse,
-    AuditFindingResponse,
     AuditRunRequest,
     AuditRunResponse,
     RecommendationListResponse,
@@ -65,25 +63,7 @@ async def _to_detail_response(db: AsyncSession, audit: Audit) -> AuditDetailResp
     category_results = await get_category_results(db, audit_id=audit.id)
     findings_by_category = await get_findings_by_category(db, audit_id=audit.id)
     categories = [
-        AuditCategoryResultResponse(
-            category=result.category,
-            score=result.score,
-            status=result.status,
-            inputs_available=result.inputs_available,
-            detail=result.detail,
-            findings=[
-                AuditFindingResponse(
-                    id=str(finding.id),
-                    category=finding.category,
-                    code=finding.code,
-                    severity=finding.severity,
-                    title=finding.title,
-                    evidence=finding.evidence,
-                    deterministic=finding.deterministic,
-                )
-                for finding in findings_by_category.get(result.category, [])
-            ],
-        )
+        to_category_result_response(result, findings_by_category.get(result.category, []))
         for result in category_results
     ]
     return AuditDetailResponse(
@@ -97,23 +77,6 @@ async def _to_detail_response(db: AsyncSession, audit: Audit) -> AuditDetailResp
         duration_ms=audit.duration_ms,
         error=audit.error,
         categories=categories,
-    )
-
-
-def _to_recommendation_response(recommendation: Recommendation) -> RecommendationResponse:
-    return RecommendationResponse(
-        id=str(recommendation.id),
-        audit_id=str(recommendation.audit_id),
-        category=recommendation.category,
-        priority=recommendation.priority,
-        title=recommendation.title,
-        why=recommendation.why,
-        action_label=recommendation.action_label,
-        action_route=recommendation.action_route,
-        action_tool_id=recommendation.action_tool_id,
-        estimated_impact_points=recommendation.estimated_impact_points,
-        status=recommendation.status,
-        completed_at=recommendation.completed_at,
     )
 
 
@@ -200,7 +163,7 @@ async def get_recommendations(
     )
     next_cursor = str(rows[-1].priority) if len(rows) == limit else None
     return RecommendationListResponse(
-        items=[_to_recommendation_response(row) for row in rows],
+        items=[to_recommendation_response(row) for row in rows],
         next_cursor=next_cursor,
     )
 
@@ -222,4 +185,4 @@ async def update_recommendation(
     recommendation.completed_at = datetime.now(UTC) if payload.status == "done" else None
     await db.commit()
     await db.refresh(recommendation)
-    return _to_recommendation_response(recommendation)
+    return to_recommendation_response(recommendation)
