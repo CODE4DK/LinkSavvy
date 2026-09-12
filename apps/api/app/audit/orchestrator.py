@@ -96,6 +96,7 @@ async def run_audit(
     trigger: str,
     target_role: str | None = None,
     content_history: list[str] | None = None,
+    job_id: uuid.UUID | None = None,
     session_factory: SessionFactory = AsyncSessionLocal,
 ) -> Audit:
     started = time.monotonic()
@@ -123,6 +124,7 @@ async def run_audit(
     audit = Audit(
         user_id=user.id,
         profile_snapshot_id=snapshot_row.id,
+        job_id=job_id,
         status="running",
         scoring_version=config.scoring_version,
         started_at=datetime.now(UTC),

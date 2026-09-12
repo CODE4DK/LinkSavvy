@@ -65,6 +65,14 @@ class Audit(PrimaryKeyMixin, TimestampMixin, Base):
     profile_snapshot_id: Mapped[uuid.UUID | None] = mapped_column(
         UUIDBinary, ForeignKey("profile_snapshots.id", ondelete="SET NULL"), nullable=True
     )
+    # The background job that ran this audit, if any -- lets the jobs
+    # router's progress calculator find this row while the job is still
+    # running (see app/audit/job_handler.py). Nullable since not every
+    # Audit necessarily has to come from a job (tests construct one
+    # directly), and SET NULL so an audit's history outlives the job row.
+    job_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUIDBinary, ForeignKey("jobs.id", ondelete="SET NULL"), nullable=True
+    )
     status: Mapped[str] = mapped_column(AuditStatus, nullable=False, default="pending")
     scoring_version: Mapped[str] = mapped_column(String(32), nullable=False)
     overall_score: Mapped[int | None] = mapped_column(Integer, nullable=True)

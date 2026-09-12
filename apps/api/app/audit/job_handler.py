@@ -10,14 +10,22 @@ from __future__ import annotations
 
 from typing import Any
 
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.audit.orchestrator import run_audit
 from app.db import SessionFactory
-from app.jobs.registry import register_handler
+from app.jobs.registry import register_handler, register_progress_calculator
+from app.models.audit import Audit, AuditCategoryResult
 from app.models.job import Job
 from app.models.user import User
 from app.profiles.service import get_active_snapshot
+
+_CATEGORY_COUNT = 5
+# Reserve the first 10% for "leased, orchestrator hasn't created the Audit
+# row yet" and spread the rest evenly across the five categories finishing.
+_BASE_PERCENT = 10
+_PER_CATEGORY_PERCENT = (100 - _BASE_PERCENT) // _CATEGORY_COUNT
 
 
 @register_handler("audit")
@@ -39,6 +47,7 @@ async def run_audit_job(
         trigger=job.payload.get("trigger", "manual"),
         target_role=job.payload.get("target_role"),
         content_history=job.payload.get("content_history"),
+        job_id=job.id,
         session_factory=session_factory,
     )
     return {
@@ -46,3 +55,23 @@ async def run_audit_job(
         "status": audit.status,
         "overall_score": audit.overall_score,
     }
+
+
+@register_progress_calculator("audit")
+async def audit_job_progress(job: Job, db: AsyncSession) -> int:
+    """Finer-grained than the generic leased-job fallback: how many of the
+    five categories have reported back yet, once the orchestrator's Audit
+    row exists."""
+    audit_id = (
+        await db.execute(select(Audit.id).where(Audit.job_id == job.id))
+    ).scalar_one_or_none()
+    if audit_id is None:
+        return _BASE_PERCENT
+    completed = (
+        await db.execute(
+            select(func.count())
+            .select_from(AuditCategoryResult)
+            .where(AuditCategoryResult.audit_id == audit_id)
+        )
+    ).scalar_one()
+    return min(99, _BASE_PERCENT + completed * _PER_CATEGORY_PERCENT)
