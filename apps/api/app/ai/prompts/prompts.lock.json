@@ -1,0 +1,14 @@
+{
+  "meta.classify_intent.v1": {
+    "body_sha256": "064db24061bf02c656a90769bf3639b6212b27bafc8700ad38174fd3983bc58b",
+    "version": 1
+  },
+  "profile.headline.v1": {
+    "body_sha256": "fae8b144dfcb8cd89e59ab46dec0e1cf8bc5a8ee3976c246b027602792d01824",
+    "version": 1
+  },
+  "text.summarise.v1": {
+    "body_sha256": "43ef23c8fc955e7e6405add47ff04edd7da01747fba471068ca9d7748f8a2614",
+    "version": 1
+  }
+}

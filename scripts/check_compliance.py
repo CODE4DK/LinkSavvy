@@ -41,8 +41,22 @@ LINKEDIN_HOST_ALLOWLIST = {
 }
 
 LINKEDIN_HOST_RE = re.compile(r"[a-z0-9.-]*linkedin\.com", re.IGNORECASE)
-BROWSER_AUTOMATION_RE = re.compile(r"\b(selenium|playwright|pyppeteer|puppeteer)\b", re.IGNORECASE)
-HTML_SCRAPING_IMPORT_RE = re.compile(r"\b(beautifulsoup4?|bs4|BeautifulSoup|cheerio)\b")
+# Import-shaped only (python "import X" / "from X import", JS/TS "import
+# ... from 'X'" / "require('X')") -- not any prose mention of the word.
+# output_policy.py's own policy patterns legitimately name these libraries
+# as strings to detect automation *instructions*, which isn't an import.
+_AUTOMATION_LIBS = r"(selenium|playwright|pyppeteer|puppeteer)"
+BROWSER_AUTOMATION_RE = re.compile(
+    rf"\b(import|from)\b[^\n]{{0,40}}\b{_AUTOMATION_LIBS}\b"
+    rf"|require\([^\n]{{0,20}}\b{_AUTOMATION_LIBS}\b",
+    re.IGNORECASE,
+)
+_HTML_SCRAPING_LIBS = r"(beautifulsoup4?|bs4|cheerio)"
+HTML_SCRAPING_IMPORT_RE = re.compile(
+    rf"\b(import|from)\b[^\n]{{0,40}}\b{_HTML_SCRAPING_LIBS}\b"
+    rf"|require\([^\n]{{0,20}}\b{_HTML_SCRAPING_LIBS}\b",
+    re.IGNORECASE,
+)
 # Matches a *declaration* shaped like a scraping helper (function/class/
 # variable/type named scrape-something), not the word appearing in prose --
 # comments and UI copy legitimately say things like "never scraped".
