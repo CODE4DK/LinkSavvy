@@ -256,6 +256,177 @@ export interface paths {
         patch: operations["update_me_api_v1_me_patch"];
         trace?: never;
     };
+    "/api/v1/profile/connect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Connect */
+        post: operations["connect_api_v1_profile_connect_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/profile/connect/callback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Connect Callback */
+        get: operations["connect_callback_api_v1_profile_connect_callback_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/profile/sync": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sync */
+        post: operations["sync_api_v1_profile_sync_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/profile/sync/commit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Commit Sync */
+        post: operations["commit_sync_api_v1_profile_sync_commit_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/profile/imports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Paste Import */
+        post: operations["create_paste_import_api_v1_profile_imports_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/profile/imports/upload": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Upload Import */
+        post: operations["create_upload_import_api_v1_profile_imports_upload_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/profile/imports/{import_id}/commit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Commit Import */
+        post: operations["commit_import_api_v1_profile_imports__import_id__commit_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/profile/snapshot": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Current Snapshot */
+        get: operations["get_current_snapshot_api_v1_profile_snapshot_get"];
+        /** Put Manual Snapshot */
+        put: operations["put_manual_snapshot_api_v1_profile_snapshot_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/profile/snapshots": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Snapshots */
+        get: operations["get_snapshots_api_v1_profile_snapshots_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/profile/snapshots/{version_a}/diff/{version_b}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Snapshot Diff */
+        get: operations["get_snapshot_diff_api_v1_profile_snapshots__version_a__diff__version_b__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -277,6 +448,23 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** Body_create_upload_import_api_v1_profile_imports_upload_post */
+        Body_create_upload_import_api_v1_profile_imports_upload_post: {
+            /** File */
+            file: string;
+        };
+        /** Certification */
+        Certification: {
+            /** Name */
+            name?: string | null;
+            /** Issuer */
+            issuer?: string | null;
+            issued?: components["schemas"]["DatePart"] | null;
+            /** Credential Id */
+            credential_id?: string | null;
+            /** Url */
+            url?: string | null;
+        };
         /** ChangePasswordRequest */
         ChangePasswordRequest: {
             /** Current Password */
@@ -284,10 +472,75 @@ export interface components {
             /** New Password */
             new_password: string;
         };
+        /** CommitImportRequest */
+        CommitImportRequest: {
+            payload: components["schemas"]["ProfileSnapshot"];
+        };
+        /**
+         * DatePart
+         * @description A partial date as LinkedIn and resumes actually give it to us.
+         */
+        DatePart: {
+            /** Year */
+            year?: number | null;
+            /** Month */
+            month?: number | null;
+        };
         /** DeleteAccountRequest */
         DeleteAccountRequest: {
             /** Current Password */
             current_password?: string | null;
+        };
+        /** Education */
+        Education: {
+            /** School */
+            school?: string | null;
+            /** Degree */
+            degree?: string | null;
+            /** Field */
+            field?: string | null;
+            /** Start Year */
+            start_year?: number | null;
+            /** End Year */
+            end_year?: number | null;
+            /** Description */
+            description?: string | null;
+        };
+        /** Experience */
+        Experience: {
+            /** Company */
+            company?: string | null;
+            /** Title */
+            title?: string | null;
+            /** Employment Type */
+            employment_type?: string | null;
+            /** Location */
+            location?: string | null;
+            start?: components["schemas"]["DatePart"] | null;
+            end?: components["schemas"]["DatePart"] | null;
+            /** Is Current */
+            is_current?: boolean | null;
+            /** Description */
+            description?: string | null;
+            /** Bullets */
+            bullets?: string[] | null;
+            /** Skills */
+            skills?: string[] | null;
+        };
+        /** FieldChange */
+        FieldChange: {
+            /** Path */
+            path: string;
+            /** Before */
+            before: unknown | null;
+            /** After */
+            after: unknown | null;
+        };
+        /** FieldProvenance */
+        FieldProvenance: {
+            source: components["schemas"]["ProfileSource"];
+            /** Confidence */
+            confidence: number;
         };
         /** ForgotPasswordRequest */
         ForgotPasswordRequest: {
@@ -302,10 +555,72 @@ export interface components {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
+        /** Identity */
+        Identity: {
+            /** Full Name */
+            full_name?: string | null;
+            /** Headline */
+            headline?: string | null;
+            /** Custom Url */
+            custom_url?: string | null;
+            /** Industry */
+            industry?: string | null;
+            /** Location */
+            location?: string | null;
+            /** Profile Picture Url */
+            profile_picture_url?: string | null;
+        };
+        /** ImportPasteRequest */
+        ImportPasteRequest: {
+            /** Text */
+            text: string;
+        };
+        /** ImportResponse */
+        ImportResponse: {
+            /** Import Id */
+            import_id: string;
+            /** Status */
+            status: string;
+            draft?: components["schemas"]["ProfileSnapshot"] | null;
+            /**
+             * Parse Warnings
+             * @default []
+             */
+            parse_warnings: string[];
+            /** Error */
+            error?: string | null;
+        };
+        /** Language */
+        Language: {
+            /** Name */
+            name?: string | null;
+            /** Proficiency */
+            proficiency?: string | null;
+        };
         /** LinkedInStartResponse */
         LinkedInStartResponse: {
             /** Authorization Url */
             authorization_url: string;
+        };
+        /** ListItemChange */
+        ListItemChange: {
+            /** Key */
+            key: string;
+            /** Change */
+            change: string;
+            /** Before */
+            before?: {
+                [key: string]: unknown;
+            } | null;
+            /** After */
+            after?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Field Changes
+             * @default []
+             */
+            field_changes: components["schemas"]["FieldChange"][];
         };
         /** LoginRequest */
         LoginRequest: {
@@ -342,6 +657,68 @@ export interface components {
         MessageResponse: {
             /** Message */
             message: string;
+        };
+        /** Metrics */
+        Metrics: {
+            /** Connections */
+            connections?: number | null;
+            /** Followers */
+            followers?: number | null;
+            /** Recommendations Received */
+            recommendations_received?: number | null;
+        };
+        /**
+         * ProfileSnapshot
+         * @description The one canonical shape every input path must converge on.
+         */
+        ProfileSnapshot: {
+            /**
+             * Version
+             * @default 1
+             */
+            version: number;
+            source: components["schemas"]["ProfileSource"];
+            /**
+             * Captured At
+             * Format: date-time
+             */
+            captured_at: string;
+            identity?: components["schemas"]["Identity"] | null;
+            /** About */
+            about?: string | null;
+            /** Experiences */
+            experiences?: components["schemas"]["Experience"][] | null;
+            /** Education */
+            education?: components["schemas"]["Education"][] | null;
+            /** Skills */
+            skills?: components["schemas"]["Skill"][] | null;
+            /** Certifications */
+            certifications?: components["schemas"]["Certification"][] | null;
+            /** Languages */
+            languages?: components["schemas"]["Language"][] | null;
+            /** Projects */
+            projects?: components["schemas"]["Project"][] | null;
+            metrics?: components["schemas"]["Metrics"] | null;
+            /** Field Provenance */
+            field_provenance?: {
+                [key: string]: components["schemas"]["FieldProvenance"];
+            };
+        };
+        /**
+         * ProfileSource
+         * @enum {string}
+         */
+        ProfileSource: "linkedin_api" | "paste" | "upload_pdf" | "upload_docx" | "manual" | "merged";
+        /** Project */
+        Project: {
+            /** Name */
+            name?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Url */
+            url?: string | null;
+            start?: components["schemas"]["DatePart"] | null;
+            end?: components["schemas"]["DatePart"] | null;
         };
         /** RefreshResponse */
         RefreshResponse: {
@@ -400,6 +777,71 @@ export interface components {
             expires_at: string;
             /** Current */
             current: boolean;
+        };
+        /** Skill */
+        Skill: {
+            /** Name */
+            name?: string | null;
+            /** Endorsements */
+            endorsements?: number | null;
+            /** Is Top */
+            is_top?: boolean | null;
+        };
+        /** SnapshotDetail */
+        SnapshotDetail: {
+            /** Version */
+            version: number;
+            /** Source */
+            source: string;
+            /**
+             * Captured At
+             * Format: date-time
+             */
+            captured_at: string;
+            /** Completeness Score */
+            completeness_score: number | null;
+            /** Is Active */
+            is_active: boolean;
+            payload: components["schemas"]["ProfileSnapshot"];
+        };
+        /** SnapshotDiff */
+        SnapshotDiff: {
+            /** From Version */
+            from_version: number;
+            /** To Version */
+            to_version: number;
+            /** Field Changes */
+            field_changes: components["schemas"]["FieldChange"][];
+            /** List Changes */
+            list_changes: {
+                [key: string]: components["schemas"]["ListItemChange"][];
+            };
+        };
+        /**
+         * SnapshotSummary
+         * @description One row of `GET /api/v1/profile/snapshots` — no payload, just enough
+         *     to list and pick a version.
+         */
+        SnapshotSummary: {
+            /** Version */
+            version: number;
+            /** Source */
+            source: string;
+            /**
+             * Captured At
+             * Format: date-time
+             */
+            captured_at: string;
+            /** Completeness Score */
+            completeness_score: number | null;
+            /** Is Active */
+            is_active: boolean;
+        };
+        /** SyncResponse */
+        SyncResponse: {
+            draft: components["schemas"]["ProfileSnapshot"];
+            /** Available Fields */
+            available_fields: string[];
         };
         /** UpdateProfileRequest */
         UpdateProfileRequest: {
@@ -930,6 +1372,317 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["UserPublic"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    connect_api_v1_profile_connect_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LinkedInStartResponse"];
+                };
+            };
+        };
+    };
+    connect_callback_api_v1_profile_connect_callback_get: {
+        parameters: {
+            query: {
+                code: string;
+                state: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    sync_api_v1_profile_sync_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SyncResponse"];
+                };
+            };
+        };
+    };
+    commit_sync_api_v1_profile_sync_commit_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommitImportRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SnapshotSummary"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_paste_import_api_v1_profile_imports_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImportPasteRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_upload_import_api_v1_profile_imports_upload_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_create_upload_import_api_v1_profile_imports_upload_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    commit_import_api_v1_profile_imports__import_id__commit_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                import_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommitImportRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SnapshotSummary"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_current_snapshot_api_v1_profile_snapshot_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SnapshotDetail"];
+                };
+            };
+        };
+    };
+    put_manual_snapshot_api_v1_profile_snapshot_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProfileSnapshot"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SnapshotSummary"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_snapshots_api_v1_profile_snapshots_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SnapshotSummary"][];
+                };
+            };
+        };
+    };
+    get_snapshot_diff_api_v1_profile_snapshots__version_a__diff__version_b__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                version_a: number;
+                version_b: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SnapshotDiff"];
                 };
             };
             /** @description Validation Error */

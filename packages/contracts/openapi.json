@@ -594,6 +594,411 @@
         }
       }
     },
+    "/api/v1/profile/connect": {
+      "post": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Connect",
+        "operationId": "connect_api_v1_profile_connect_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkedInStartResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/profile/connect/callback": {
+      "get": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Connect Callback",
+        "operationId": "connect_callback_api_v1_profile_connect_callback_get",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "State"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/profile/sync": {
+      "post": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Sync",
+        "operationId": "sync_api_v1_profile_sync_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/profile/sync/commit": {
+      "post": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Commit Sync",
+        "operationId": "commit_sync_api_v1_profile_sync_commit_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommitImportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SnapshotSummary"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/profile/imports": {
+      "post": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Create Paste Import",
+        "operationId": "create_paste_import_api_v1_profile_imports_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportPasteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/profile/imports/upload": {
+      "post": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Create Upload Import",
+        "operationId": "create_upload_import_api_v1_profile_imports_upload_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_create_upload_import_api_v1_profile_imports_upload_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/profile/imports/{import_id}/commit": {
+      "post": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Commit Import",
+        "operationId": "commit_import_api_v1_profile_imports__import_id__commit_post",
+        "parameters": [
+          {
+            "name": "import_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Import Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommitImportRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SnapshotSummary"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/profile/snapshot": {
+      "get": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Get Current Snapshot",
+        "operationId": "get_current_snapshot_api_v1_profile_snapshot_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SnapshotDetail"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Put Manual Snapshot",
+        "operationId": "put_manual_snapshot_api_v1_profile_snapshot_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfileSnapshot"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SnapshotSummary"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/profile/snapshots": {
+      "get": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Get Snapshots",
+        "operationId": "get_snapshots_api_v1_profile_snapshots_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SnapshotSummary"
+                  },
+                  "type": "array",
+                  "title": "Response Get Snapshots Api V1 Profile Snapshots Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/profile/snapshots/{version_a}/diff/{version_b}": {
+      "get": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Get Snapshot Diff",
+        "operationId": "get_snapshot_diff_api_v1_profile_snapshots__version_a__diff__version_b__get",
+        "parameters": [
+          {
+            "name": "version_a",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Version A"
+            }
+          },
+          {
+            "name": "version_b",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Version B"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SnapshotDiff"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "summary": "Health",
@@ -619,6 +1024,81 @@
   },
   "components": {
     "schemas": {
+      "Body_create_upload_import_api_v1_profile_imports_upload_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_create_upload_import_api_v1_profile_imports_upload_post"
+      },
+      "Certification": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "issuer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Issuer"
+          },
+          "issued": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DatePart"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "credential_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Credential Id"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "Certification"
+      },
       "ChangePasswordRequest": {
         "properties": {
           "current_password": {
@@ -637,6 +1117,50 @@
         ],
         "title": "ChangePasswordRequest"
       },
+      "CommitImportRequest": {
+        "properties": {
+          "payload": {
+            "$ref": "#/components/schemas/ProfileSnapshot"
+          }
+        },
+        "type": "object",
+        "required": [
+          "payload"
+        ],
+        "title": "CommitImportRequest"
+      },
+      "DatePart": {
+        "properties": {
+          "year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          },
+          "month": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 12.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Month"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "DatePart",
+        "description": "A partial date as LinkedIn and resumes actually give it to us."
+      },
       "DeleteAccountRequest": {
         "properties": {
           "current_password": {
@@ -653,6 +1177,253 @@
         },
         "type": "object",
         "title": "DeleteAccountRequest"
+      },
+      "Education": {
+        "properties": {
+          "school": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "School"
+          },
+          "degree": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Degree"
+          },
+          "field": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Field"
+          },
+          "start_year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Year"
+          },
+          "end_year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Year"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "Education"
+      },
+      "Experience": {
+        "properties": {
+          "company": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Company"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "employment_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Employment Type"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location"
+          },
+          "start": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DatePart"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "end": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DatePart"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "is_current": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Current"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "bullets": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bullets"
+          },
+          "skills": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Skills"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "Experience"
+      },
+      "FieldChange": {
+        "properties": {
+          "path": {
+            "type": "string",
+            "title": "Path"
+          },
+          "before": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Before"
+          },
+          "after": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "title": "After"
+          }
+        },
+        "type": "object",
+        "required": [
+          "path",
+          "before",
+          "after"
+        ],
+        "title": "FieldChange"
+      },
+      "FieldProvenance": {
+        "properties": {
+          "source": {
+            "$ref": "#/components/schemas/ProfileSource"
+          },
+          "confidence": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source",
+          "confidence"
+        ],
+        "title": "FieldProvenance"
       },
       "ForgotPasswordRequest": {
         "properties": {
@@ -681,6 +1452,168 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
+      "Identity": {
+        "properties": {
+          "full_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Full Name"
+          },
+          "headline": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Headline"
+          },
+          "custom_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Url"
+          },
+          "industry": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Industry"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location"
+          },
+          "profile_picture_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile Picture Url"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "Identity"
+      },
+      "ImportPasteRequest": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "title": "ImportPasteRequest"
+      },
+      "ImportResponse": {
+        "properties": {
+          "import_id": {
+            "type": "string",
+            "title": "Import Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "draft": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProfileSnapshot"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "parse_warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Parse Warnings",
+            "default": []
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "import_id",
+          "status"
+        ],
+        "title": "ImportResponse"
+      },
+      "Language": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "proficiency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Proficiency"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "Language"
+      },
       "LinkedInStartResponse": {
         "properties": {
           "authorization_url": {
@@ -693,6 +1626,56 @@
           "authorization_url"
         ],
         "title": "LinkedInStartResponse"
+      },
+      "ListItemChange": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "change": {
+            "type": "string",
+            "title": "Change"
+          },
+          "before": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Before"
+          },
+          "after": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "After"
+          },
+          "field_changes": {
+            "items": {
+              "$ref": "#/components/schemas/FieldChange"
+            },
+            "type": "array",
+            "title": "Field Changes",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "change"
+        ],
+        "title": "ListItemChange"
       },
       "LoginRequest": {
         "properties": {
@@ -772,6 +1755,265 @@
           "message"
         ],
         "title": "MessageResponse"
+      },
+      "Metrics": {
+        "properties": {
+          "connections": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Connections"
+          },
+          "followers": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Followers"
+          },
+          "recommendations_received": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recommendations Received"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "Metrics"
+      },
+      "ProfileSnapshot": {
+        "properties": {
+          "version": {
+            "type": "integer",
+            "title": "Version",
+            "default": 1
+          },
+          "source": {
+            "$ref": "#/components/schemas/ProfileSource"
+          },
+          "captured_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Captured At"
+          },
+          "identity": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Identity"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "about": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "About"
+          },
+          "experiences": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/Experience"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Experiences"
+          },
+          "education": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/Education"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Education"
+          },
+          "skills": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/Skill"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Skills"
+          },
+          "certifications": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/Certification"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Certifications"
+          },
+          "languages": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/Language"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Languages"
+          },
+          "projects": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/Project"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Projects"
+          },
+          "metrics": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Metrics"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "field_provenance": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/FieldProvenance"
+            },
+            "type": "object",
+            "title": "Field Provenance"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source",
+          "captured_at"
+        ],
+        "title": "ProfileSnapshot",
+        "description": "The one canonical shape every input path must converge on."
+      },
+      "ProfileSource": {
+        "type": "string",
+        "enum": [
+          "linkedin_api",
+          "paste",
+          "upload_pdf",
+          "upload_docx",
+          "manual",
+          "merged"
+        ],
+        "title": "ProfileSource"
+      },
+      "Project": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "start": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DatePart"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "end": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DatePart"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "Project"
       },
       "RefreshResponse": {
         "properties": {
@@ -893,6 +2135,190 @@
           "current"
         ],
         "title": "SessionOut"
+      },
+      "Skill": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "endorsements": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endorsements"
+          },
+          "is_top": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Top"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "Skill"
+      },
+      "SnapshotDetail": {
+        "properties": {
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "captured_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Captured At"
+          },
+          "completeness_score": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completeness Score"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/ProfileSnapshot"
+          }
+        },
+        "type": "object",
+        "required": [
+          "version",
+          "source",
+          "captured_at",
+          "completeness_score",
+          "is_active",
+          "payload"
+        ],
+        "title": "SnapshotDetail"
+      },
+      "SnapshotDiff": {
+        "properties": {
+          "from_version": {
+            "type": "integer",
+            "title": "From Version"
+          },
+          "to_version": {
+            "type": "integer",
+            "title": "To Version"
+          },
+          "field_changes": {
+            "items": {
+              "$ref": "#/components/schemas/FieldChange"
+            },
+            "type": "array",
+            "title": "Field Changes"
+          },
+          "list_changes": {
+            "additionalProperties": {
+              "items": {
+                "$ref": "#/components/schemas/ListItemChange"
+              },
+              "type": "array"
+            },
+            "type": "object",
+            "title": "List Changes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "from_version",
+          "to_version",
+          "field_changes",
+          "list_changes"
+        ],
+        "title": "SnapshotDiff"
+      },
+      "SnapshotSummary": {
+        "properties": {
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "captured_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Captured At"
+          },
+          "completeness_score": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completeness Score"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          }
+        },
+        "type": "object",
+        "required": [
+          "version",
+          "source",
+          "captured_at",
+          "completeness_score",
+          "is_active"
+        ],
+        "title": "SnapshotSummary",
+        "description": "One row of `GET /api/v1/profile/snapshots` \u2014 no payload, just enough\nto list and pick a version."
+      },
+      "SyncResponse": {
+        "properties": {
+          "draft": {
+            "$ref": "#/components/schemas/ProfileSnapshot"
+          },
+          "available_fields": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Available Fields"
+          }
+        },
+        "type": "object",
+        "required": [
+          "draft",
+          "available_fields"
+        ],
+        "title": "SyncResponse"
       },
       "UpdateProfileRequest": {
         "properties": {
