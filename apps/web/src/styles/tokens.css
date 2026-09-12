@@ -1,0 +1,120 @@
+/**
+ * Design tokens. Every color, spacing, radius, and type value the app
+ * uses lives here as a CSS custom property — components must read
+ * tokens (via Tailwind's `theme()`/utility classes below), never a
+ * literal hex code or pixel value.
+ *
+ * Colors are stored as "H S% L%" triplets (no hsl() wrapper) so Tailwind
+ * can compose them with an alpha channel: hsl(var(--color-primary) / 0.5).
+ */
+
+:root {
+  /* Light theme (default) */
+  --color-bg: 0 0% 100%;
+  --color-bg-subtle: 220 20% 97%;
+  --color-fg: 222 47% 11%;
+  --color-fg-muted: 215 16% 40%;
+  --color-border: 220 13% 88%;
+  --color-border-strong: 220 13% 78%;
+
+  --color-primary: 217 91% 45%;
+  --color-primary-foreground: 0 0% 100%;
+  --color-accent: 262 83% 58%;
+  --color-accent-foreground: 0 0% 100%;
+
+  --color-success: 142 71% 35%;
+  --color-warning: 38 92% 42%;
+  --color-danger: 0 72% 47%;
+  --color-danger-foreground: 0 0% 100%;
+
+  --color-card: 0 0% 100%;
+  --color-overlay: 222 47% 11%;
+
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 1px 2px 0 hsl(222 47% 11% / 0.05);
+  --shadow-md: 0 4px 12px -2px hsl(222 47% 11% / 0.1);
+  --shadow-lg: 0 12px 32px -8px hsl(222 47% 11% / 0.18);
+
+  --sidebar-width: 16rem;
+  --sidebar-width-collapsed: 4.5rem;
+  --topbar-height: 3.5rem;
+}
+
+:root[data-theme="dark"] {
+  --color-bg: 222 47% 8%;
+  --color-bg-subtle: 222 40% 12%;
+  --color-fg: 210 40% 96%;
+  --color-fg-muted: 215 16% 65%;
+  --color-border: 217 33% 22%;
+  --color-border-strong: 217 33% 30%;
+
+  --color-primary: 217 91% 65%;
+  --color-primary-foreground: 222 47% 8%;
+  --color-accent: 262 83% 70%;
+  --color-accent-foreground: 222 47% 8%;
+
+  --color-success: 142 71% 55%;
+  --color-warning: 38 92% 60%;
+  --color-danger: 0 72% 62%;
+  --color-danger-foreground: 222 47% 8%;
+
+  --color-card: 222 40% 11%;
+  --color-overlay: 222 47% 4%;
+
+  --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.3);
+  --shadow-md: 0 4px 12px -2px hsl(0 0% 0% / 0.4);
+  --shadow-lg: 0 12px 32px -8px hsl(0 0% 0% / 0.5);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg: 222 47% 8%;
+    --color-bg-subtle: 222 40% 12%;
+    --color-fg: 210 40% 96%;
+    --color-fg-muted: 215 16% 65%;
+    --color-border: 217 33% 22%;
+    --color-border-strong: 217 33% 30%;
+
+    --color-primary: 217 91% 65%;
+    --color-primary-foreground: 222 47% 8%;
+    --color-accent: 262 83% 70%;
+    --color-accent-foreground: 222 47% 8%;
+
+    --color-success: 142 71% 55%;
+    --color-warning: 38 92% 60%;
+    --color-danger: 0 72% 62%;
+    --color-danger-foreground: 222 47% 8%;
+
+    --color-card: 222 40% 11%;
+    --color-overlay: 222 47% 4%;
+
+    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.3);
+    --shadow-md: 0 4px 12px -2px hsl(0 0% 0% / 0.4);
+    --shadow-lg: 0 12px 32px -8px hsl(0 0% 0% / 0.5);
+  }
+}
