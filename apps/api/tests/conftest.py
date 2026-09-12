@@ -31,10 +31,12 @@ from sqlalchemy.ext.asyncio import (  # noqa: E402
 )
 from sqlalchemy.pool import StaticPool  # noqa: E402
 
+from app.billing.plan_limits_seed import DEFAULT_PLAN_LIMITS  # noqa: E402
 from app.db import get_db  # noqa: E402
 from app.main import app  # noqa: E402
 from app.models.base import Base  # noqa: E402
 from app.models.feature_flag import FeatureFlag  # noqa: E402
+from app.models.plan_limit import PlanLimit  # noqa: E402
 from app.services.feature_flags import ALL_DEFAULT_FLAG_KEYS  # noqa: E402
 
 
@@ -53,6 +55,8 @@ async def db_session() -> AsyncIterator[AsyncSession]:
     async with session_maker() as seed_session:
         for key in ALL_DEFAULT_FLAG_KEYS:
             seed_session.add(FeatureFlag(key=key, enabled_globally=False, rollout_percent=0))
+        for row in DEFAULT_PLAN_LIMITS:
+            seed_session.add(PlanLimit(**row))
         await seed_session.commit()
 
     async def override_get_db() -> AsyncIterator[AsyncSession]:
