@@ -23,9 +23,7 @@ depends_on: Sequence[str] | None = None
 
 
 def upgrade() -> None:
-    op.add_column(
-        "audits", sa.Column("job_id", app.db_types.UUIDBinary(length=16), nullable=True)
-    )
+    op.add_column("audits", sa.Column("job_id", app.db_types.UUIDBinary(length=16), nullable=True))
     op.create_foreign_key(
         "fk_audits_job_id_jobs", "audits", "jobs", ["job_id"], ["id"], ondelete="SET NULL"
     )
