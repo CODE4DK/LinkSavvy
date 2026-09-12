@@ -67,3 +67,63 @@ export async function apiFetch<T>(path: string, options: RequestOptions = {}): P
 
   return payload as T;
 }
+
+/**
+ * POST a JSON body and read the response as Server-Sent Events, invoking
+ * `onFrame` for each parsed `data: <json>` event. Used by the developer
+ * playground's streaming button (see app/ai/gateway.py's `_stream` on the
+ * API side, which this mirrors frame-for-frame).
+ *
+ * Passing `signal` lets the caller cancel mid-stream — aborting the fetch
+ * closes the connection, which is what actually aborts the upstream
+ * provider request on the server.
+ */
+export async function streamSSE<T>(
+  path: string,
+  body: unknown,
+  onFrame: (frame: T) => void,
+  options: { signal?: AbortSignal } = {},
+): Promise<void> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
+
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    method: "POST",
+    headers,
+    credentials: "include",
+    body: JSON.stringify(body),
+    signal: options.signal,
+  });
+
+  if (!response.ok || !response.body) {
+    const payload = await response.json().catch(() => null);
+    if (payload && typeof payload === "object" && "error" in payload) {
+      throw new ApiError(response.status, (payload as ApiErrorEnvelope).error);
+    }
+    throw new ApiError(response.status, {
+      code: "INTERNAL",
+      message: "Something went wrong. Please try again.",
+      details: {},
+    });
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    let separatorIndex = buffer.indexOf("\n\n");
+    while (separatorIndex !== -1) {
+      const rawEvent = buffer.slice(0, separatorIndex);
+      buffer = buffer.slice(separatorIndex + 2);
+      const dataLine = rawEvent.split("\n").find((line) => line.startsWith("data: "));
+      if (dataLine) {
+        onFrame(JSON.parse(dataLine.slice("data: ".length)) as T);
+      }
+      separatorIndex = buffer.indexOf("\n\n");
+    }
+  }
+}

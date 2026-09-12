@@ -72,6 +72,20 @@ export function DashboardPage() {
           );
         })}
       </div>
+
+      {user?.role === "admin" && featureFlags["dev.playground"] && (
+        <Link to="/dev/playground" className="mt-8 block">
+          <Card className="border-dashed transition-shadow hover:shadow-md">
+            <CardHeader className="flex-row items-center justify-between space-y-0">
+              <CardTitle>AI Playground</CardTitle>
+              <Badge variant="primary">Admin</Badge>
+            </CardHeader>
+            <CardDescription>
+              Run or stream any registered prompt through the gateway directly.
+            </CardDescription>
+          </Card>
+        </Link>
+      )}
     </div>
   );
 }
