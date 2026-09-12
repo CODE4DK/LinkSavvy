@@ -14,6 +14,8 @@ import type { components, paths } from "./schema";
 export type { paths };
 export type Schemas = components["schemas"];
 
+export * from "./profile-schema";
+
 export type RegisterRequest = Schemas["RegisterRequest"];
 export type MessageResponse = Schemas["MessageResponse"];
 export type VerifyEmailRequest = Schemas["VerifyEmailRequest"];
@@ -31,6 +33,16 @@ export type MeResponse = Schemas["MeResponse"];
 export type HTTPValidationError = Schemas["HTTPValidationError"];
 export type UpdateProfileRequest = Schemas["UpdateProfileRequest"];
 export type DeleteAccountRequest = Schemas["DeleteAccountRequest"];
+
+export type SnapshotSummary = Schemas["SnapshotSummary"];
+export type SnapshotDetail = Schemas["SnapshotDetail"];
+export type SyncResponse = Schemas["SyncResponse"];
+export type ImportPasteRequest = Schemas["ImportPasteRequest"];
+export type ImportResponse = Schemas["ImportResponse"];
+export type CommitImportRequest = Schemas["CommitImportRequest"];
+export type SnapshotDiff = Schemas["SnapshotDiff"];
+export type FieldChange = Schemas["FieldChange"];
+export type ListItemChange = Schemas["ListItemChange"];
 
 /** The `{"error": {code, message, details}}` envelope every API error uses. */
 export interface ApiErrorEnvelope {

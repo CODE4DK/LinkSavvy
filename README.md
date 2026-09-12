@@ -33,7 +33,8 @@ schema after changing any request/response model).
    touched — edit it yourself if you need to change anything (e.g. LinkedIn
    OAuth credentials).
 3. `cd apps/api && uv sync` — installs API dependencies into `.venv`.
-4. `cd apps/web && npm install` — installs web dependencies.
+4. `npm install` (repo root) — installs web + contracts dependencies; `apps/web`
+   and `packages/contracts` are npm workspaces sharing one lockfile.
 5. `cd apps/api && uv run alembic upgrade head` — runs migrations.
 6. `cd apps/api && uv run python scripts/seed.py` — seeds feature flags plus
    the admin/demo users above.
@@ -48,6 +49,9 @@ rather run the steps yourself or adapt them.
 - `apps/api` — FastAPI (async SQLAlchemy 2.0, Alembic, Pydantic v2)
 - `apps/web` — Vite + React 18 + TypeScript
 - `packages/contracts` — TypeScript types generated from the API's OpenAPI
-  schema; the web app imports request/response types from here, never
-  redeclares them
+  schema, plus hand-maintained Zod mirrors (e.g. `ProfileSnapshot`) for
+  request/response shapes the web app needs to validate at runtime, not just
+  type-check; the web app imports both from here, never redeclares them.
+  An npm workspace alongside `apps/web` (one root `package.json` and
+  lockfile) so its runtime dependencies like `zod` resolve correctly.
 - `docs/adr` — architecture decision records

@@ -44,9 +44,21 @@ class Settings(BaseSettings):
     linkedin_client_id: str | None = None
     linkedin_client_secret: str | None = None
     linkedin_redirect_uri: str | None = None
+    # A second registered redirect URI for the profile-connect flow (Phase
+    # 02), kept separate from sign-in's so the callback never has to guess
+    # which flow it's completing.
+    linkedin_profile_redirect_uri: str | None = None
 
     login_rate_limit_per_minute: int = 10
     register_rate_limit_per_minute: int = 5
+
+    # How long raw pasted/uploaded profile input is retained (encrypted at
+    # rest) before it's eligible for purge. The parsed ProfileSnapshot it
+    # produced is kept indefinitely as a normal snapshot version; this only
+    # governs the original text/file.
+    profile_import_retention_days: int = 30
+    profile_paste_max_bytes: int = 200_000
+    profile_upload_max_bytes: int = 10_000_000
 
 
 @lru_cache

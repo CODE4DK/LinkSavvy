@@ -34,15 +34,18 @@ interface RequestOptions {
 }
 
 export async function apiFetch<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  const isFormData = options.body instanceof FormData;
   const headers: Record<string, string> = {};
-  if (options.body !== undefined) headers["Content-Type"] = "application/json";
+  // FormData sets its own multipart Content-Type (with boundary) — the
+  // browser only does that correctly if we leave the header unset.
+  if (options.body !== undefined && !isFormData) headers["Content-Type"] = "application/json";
   if (accessToken && !options.skipAuth) headers.Authorization = `Bearer ${accessToken}`;
 
   const response = await fetch(`${API_BASE_URL}${path}`, {
     method: options.method ?? "GET",
     headers,
     credentials: "include",
-    body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
+    body: isFormData ? (options.body as FormData) : options.body !== undefined ? JSON.stringify(options.body) : undefined,
   });
 
   if (response.status === 204) {

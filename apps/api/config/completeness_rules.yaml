@@ -1,0 +1,66 @@
+# Weighted completeness rules for ProfileSnapshot.
+#
+# Each rule's boolean logic lives in app/profiles/completeness.py's CHECKS
+# registry, keyed by `code` — YAML can't express "at least 3 bullets"
+# without inventing a mini expression language, so this file owns the
+# weight, section, severity, and user-facing copy, while Python owns the
+# actual predicate. `weight` values must sum to 100.
+#
+# Changing a weight or message here does not require a code change;
+# adding a new check does (register its predicate in CHECKS first).
+rules:
+  - code: headline_present_and_substantial
+    section: identity
+    weight: 15
+    severity: high
+    message: "Your headline is missing or very short."
+    fix_hint: "Write a headline longer than 40 characters that says what you do and for whom."
+
+  - code: about_present_and_substantial
+    section: about
+    weight: 15
+    severity: high
+    message: "Your About section is missing or too short."
+    fix_hint: "Add an About section of at least 3 sentences describing your experience and goals."
+
+  - code: has_minimum_experiences
+    section: experience
+    weight: 20
+    severity: high
+    message: "You have fewer than 2 work experiences listed."
+    fix_hint: "Add at least 2 roles, even short ones — recruiters read this section first."
+
+  - code: current_role_has_detailed_description
+    section: experience
+    weight: 15
+    severity: medium
+    message: "Your current role doesn't have a detailed description."
+    fix_hint: "Add at least 3 bullet points describing what you did in your current role."
+
+  - code: has_minimum_skills
+    section: skills
+    weight: 15
+    severity: medium
+    message: "You have fewer than 10 skills listed."
+    fix_hint: "List at least 10 skills relevant to your target roles."
+
+  - code: has_certification_or_project
+    section: certifications_and_projects
+    weight: 10
+    severity: low
+    message: "You don't have any certifications or projects listed."
+    fix_hint: "Add at least one certification or project to show applied experience."
+
+  - code: has_custom_url
+    section: identity
+    weight: 5
+    severity: low
+    message: "You haven't claimed a custom profile URL."
+    fix_hint: "Claim a custom URL so your profile link looks professional."
+
+  - code: has_profile_photo
+    section: identity
+    weight: 5
+    severity: low
+    message: "Your profile doesn't have a photo."
+    fix_hint: "Add a profile photo — profiles with photos get far more views."

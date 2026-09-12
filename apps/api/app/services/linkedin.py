@@ -21,6 +21,7 @@ from app.settings import settings
 AUTHORIZATION_URL = "https://www.linkedin.com/oauth/v2/authorization"
 TOKEN_URL = "https://www.linkedin.com/oauth/v2/accessToken"
 JWKS_URL = "https://www.linkedin.com/oauth/openid/jwks"
+USERINFO_URL = "https://api.linkedin.com/v2/userinfo"
 ISSUER = "https://www.linkedin.com/oauth"
 SCOPE = "openid profile email"
 
@@ -44,13 +45,16 @@ def generate_nonce() -> str:
     return secrets.token_urlsafe(32)
 
 
-def build_authorization_url(*, state: str, nonce: str, code_challenge: str) -> str:
-    if not settings.linkedin_client_id or not settings.linkedin_redirect_uri:
+def build_authorization_url(
+    *, state: str, nonce: str, code_challenge: str, redirect_uri: str | None = None
+) -> str:
+    redirect_uri = redirect_uri or settings.linkedin_redirect_uri
+    if not settings.linkedin_client_id or not redirect_uri:
         raise LinkedInOAuthError("LinkedIn OAuth is not configured")
     params = {
         "response_type": "code",
         "client_id": settings.linkedin_client_id,
-        "redirect_uri": settings.linkedin_redirect_uri,
+        "redirect_uri": redirect_uri,
         "scope": SCOPE,
         "state": state,
         "nonce": nonce,
@@ -60,13 +64,16 @@ def build_authorization_url(*, state: str, nonce: str, code_challenge: str) -> s
     return f"{AUTHORIZATION_URL}?{urlencode(params)}"
 
 
-async def exchange_code_for_tokens(*, code: str, code_verifier: str) -> dict[str, Any]:
+async def exchange_code_for_tokens(
+    *, code: str, code_verifier: str, redirect_uri: str | None = None
+) -> dict[str, Any]:
+    redirect_uri = redirect_uri or settings.linkedin_redirect_uri
     if not settings.linkedin_client_id or not settings.linkedin_client_secret:
         raise LinkedInOAuthError("LinkedIn OAuth is not configured")
     data = {
         "grant_type": "authorization_code",
         "code": code,
-        "redirect_uri": settings.linkedin_redirect_uri,
+        "redirect_uri": redirect_uri,
         "client_id": settings.linkedin_client_id,
         "client_secret": settings.linkedin_client_secret,
         "code_verifier": code_verifier,
@@ -75,6 +82,21 @@ async def exchange_code_for_tokens(*, code: str, code_verifier: str) -> dict[str
         response = await client.post(TOKEN_URL, data=data)
     if response.status_code != 200:
         raise LinkedInOAuthError(f"token exchange failed: {response.text}")
+    return cast(dict[str, Any], response.json())
+
+
+async def fetch_userinfo(access_token: str) -> dict[str, Any]:
+    """Calls LinkedIn's OIDC userinfo endpoint with a stored access token —
+    used by `POST /api/v1/profile/sync` to re-fetch identity claims without
+    repeating the full OAuth dance every time. Returns exactly what the
+    `openid profile email` scope grants: sub, name, given_name, family_name,
+    picture, email, email_verified — nothing else exists to fetch."""
+    async with httpx.AsyncClient(timeout=10) as client:
+        response = await client.get(
+            USERINFO_URL, headers={"Authorization": f"Bearer {access_token}"}
+        )
+    if response.status_code != 200:
+        raise LinkedInOAuthError(f"userinfo request failed: {response.text}")
     return cast(dict[str, Any], response.json())
 
 

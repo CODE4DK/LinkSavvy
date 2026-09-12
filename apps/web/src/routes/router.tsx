@@ -16,6 +16,8 @@ import { GrowthHubPage } from "@/pages/hubs/GrowthHubPage";
 import { WorkspaceHubPage } from "@/pages/hubs/WorkspaceHubPage";
 import { SettingsPage } from "@/pages/SettingsPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
+import { OnboardingPage } from "@/pages/onboarding/OnboardingPage";
+import { ProfileConnectCallbackPage } from "@/pages/ProfileConnectCallbackPage";
 
 export const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
@@ -26,6 +28,8 @@ export const router = createBrowserRouter([
   {
     element: <RequireAuth />,
     children: [
+      { path: "/onboarding", element: <OnboardingPage /> },
+      { path: "/profile/connect/callback", element: <ProfileConnectCallbackPage /> },
       {
         element: <AppShell />,
         children: [

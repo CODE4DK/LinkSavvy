@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+import uuid
 from datetime import datetime
 
-from sqlalchemy import String
+from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.db_types import UTCDateTime
+from app.db_types import UTCDateTime, UUIDBinary
 from app.models.base import Base, PrimaryKeyMixin
 
 
@@ -14,6 +15,12 @@ class OAuthLoginState(PrimaryKeyMixin, Base):
 
     Short-lived (a few minutes) and consumed on callback; kept in MySQL
     rather than memory so it works correctly behind multiple API workers.
+
+    `user_id` is set only for the profile-connect flow (Phase 02): an
+    already-authenticated user linking LinkedIn for data sync, where the
+    browser redirect round-trip can't carry their Authorization header,
+    so this is how the callback knows whose account to attach tokens to.
+    It's left null for the sign-in flow (Phase 01), which has no user yet.
     """
 
     __tablename__ = "oauth_login_states"
@@ -23,3 +30,6 @@ class OAuthLoginState(PrimaryKeyMixin, Base):
     code_verifier: Mapped[str] = mapped_column(String(128), nullable=False)
     nonce: Mapped[str] = mapped_column(String(128), nullable=False)
     expires_at: Mapped[datetime] = mapped_column(UTCDateTime(), nullable=False)
+    user_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUIDBinary, ForeignKey("users.id", ondelete="CASCADE"), nullable=True
+    )
