@@ -33,6 +33,18 @@ def _timestamp_columns() -> list[sa.Column]:
 
 
 def upgrade() -> None:
+    # The profile-connect flow (see app/routers/profile.py) needs to know
+    # which already-authenticated user a LinkedIn OAuth callback belongs
+    # to, since the browser redirect can't carry an Authorization header.
+    # batch_alter_table: SQLite can't ALTER a constraint onto an existing
+    # table outside of batch (copy-and-move) mode; it's a plain ALTER on
+    # MySQL either way.
+    with op.batch_alter_table("oauth_login_states") as batch_op:
+        batch_op.add_column(sa.Column("user_id", app.db_types.UUIDBinary(length=16), nullable=True))
+        batch_op.create_foreign_key(
+            "fk_oauth_login_states_user_id", "users", ["user_id"], ["id"], ondelete="CASCADE"
+        )
+
     op.create_table(
         "profile_import_blobs",
         sa.Column("id", app.db_types.UUIDBinary(length=16), nullable=False),
@@ -140,3 +152,6 @@ def downgrade() -> None:
     op.drop_index("ix_profile_imports_user_id", table_name="profile_imports")
     op.drop_table("profile_imports")
     op.drop_table("profile_import_blobs")
+    with op.batch_alter_table("oauth_login_states") as batch_op:
+        batch_op.drop_constraint("fk_oauth_login_states_user_id", type_="foreignkey")
+        batch_op.drop_column("user_id")
