@@ -54,7 +54,11 @@ async def db_session() -> AsyncIterator[AsyncSession]:
 
     async with session_maker() as seed_session:
         for key in ALL_DEFAULT_FLAG_KEYS:
-            seed_session.add(FeatureFlag(key=key, enabled_globally=False, rollout_percent=0))
+            # Every default flag ships dark except dev.playground, which
+            # migration 0004 seeds enabled in production since it's
+            # admin-gated regardless -- mirrored here for the same reason.
+            enabled = key == "dev.playground"
+            seed_session.add(FeatureFlag(key=key, enabled_globally=enabled, rollout_percent=0))
         for row in DEFAULT_PLAN_LIMITS:
             seed_session.add(PlanLimit(**row))
         await seed_session.commit()
