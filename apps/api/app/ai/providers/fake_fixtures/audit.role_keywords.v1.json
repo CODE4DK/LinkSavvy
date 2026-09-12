@@ -1,0 +1,25 @@
+{
+  "response": {
+    "keywords": [
+      "backend",
+      "distributed systems",
+      "microservices",
+      "API design",
+      "cloud infrastructure",
+      "scalability",
+      "reliability",
+      "Python",
+      "Kubernetes",
+      "system design"
+    ],
+    "must_have_skills": [
+      "Python",
+      "Distributed Systems",
+      "API Design",
+      "Kubernetes",
+      "SQL",
+      "System Design"
+    ]
+  },
+  "tokens_out": 60
+}

@@ -64,7 +64,10 @@ async def test_prompts_list_returns_seed_prompts(
     response = await client.get("/internal/playground/prompts", headers=headers)
     assert response.status_code == 200
     ids = {p["id"] for p in response.json()}
-    assert ids == {"profile.headline.v1", "text.summarise.v1", "meta.classify_intent.v1"}
+    # The Phase 3 seed prompts must always be listed -- other phases (like
+    # Phase 4's Audit Engine) register their own prompts alongside these,
+    # so this checks a subset rather than an exact, ever-growing set.
+    assert {"profile.headline.v1", "text.summarise.v1", "meta.classify_intent.v1"} <= ids
     headline = next(p for p in response.json() if p["id"] == "profile.headline.v1")
     assert headline["output_schema"] is not None
     assert "profile_summary" in headline["required_context"]
