@@ -18,7 +18,7 @@ HUB_FLAG_KEYS = [
     "hub.growth",
     "hub.workspace",
 ]
-ALL_DEFAULT_FLAG_KEYS = [*HUB_FLAG_KEYS, "assistant", "audit"]
+ALL_DEFAULT_FLAG_KEYS = [*HUB_FLAG_KEYS, "assistant", "audit", "dev.playground"]
 
 
 def _bucket_percent(user_id: uuid.UUID, key: str) -> int:

@@ -44,6 +44,11 @@ export type SnapshotDiff = Schemas["SnapshotDiff"];
 export type FieldChange = Schemas["FieldChange"];
 export type ListItemChange = Schemas["ListItemChange"];
 
+export type GatewayMetricsResponse = Schemas["GatewayMetricsResponse"];
+export type PlaygroundPromptSummary = Schemas["PlaygroundPromptSummary"];
+export type PlaygroundRunRequest = Schemas["PlaygroundRunRequest"];
+export type PlaygroundRunResponse = Schemas["PlaygroundRunResponse"];
+
 /** The `{"error": {code, message, details}}` envelope every API error uses. */
 export interface ApiErrorEnvelope {
   error: {
@@ -56,8 +61,26 @@ export interface ApiErrorEnvelope {
       | "FORBIDDEN"
       | "NOT_FOUND"
       | "VALIDATION_FAILED"
-      | "INTERNAL";
+      | "INTERNAL"
+      | "QUOTA_EXCEEDED"
+      | "AI_OUTPUT_INVALID"
+      | "AI_POLICY_BLOCKED"
+      | "AI_PROVIDER_UNAVAILABLE";
     message: string;
     details: Record<string, unknown>;
   };
 }
+
+/** One SSE frame from POST /internal/playground/stream. */
+export type PlaygroundStreamFrame =
+  | { type: "meta"; correlation_id: string; model: string; provider: string; cached: boolean }
+  | { type: "delta"; text: string }
+  | { type: "error"; code: string; message: string }
+  | {
+      type: "done";
+      tokens_in: number;
+      tokens_out: number;
+      cost_minor: number;
+      latency_ms?: number;
+      fallback_used?: boolean;
+    };

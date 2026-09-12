@@ -427,6 +427,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/internal/metrics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Gateway Metrics */
+        get: operations["get_gateway_metrics_internal_metrics_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/playground/prompts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Playground Prompts */
+        get: operations["list_playground_prompts_internal_playground_prompts_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/playground/run": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Run Playground Prompt */
+        post: operations["run_playground_prompt_internal_playground_run_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/playground/stream": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Stream Playground Prompt */
+        post: operations["stream_playground_prompt_internal_playground_stream_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -550,6 +618,27 @@ export interface components {
              */
             email: string;
         };
+        /** GatewayMetricsResponse */
+        GatewayMetricsResponse: {
+            /** Window Hours */
+            window_hours: number;
+            /** Total Invocations */
+            total_invocations: number;
+            /** Latency P50 Ms */
+            latency_p50_ms: number | null;
+            /** Latency P95 Ms */
+            latency_p95_ms: number | null;
+            /** Cache Hit Rate */
+            cache_hit_rate: number | null;
+            /** Fallback Rate */
+            fallback_rate: number | null;
+            /** Invalid Output Rate */
+            invalid_output_rate: number | null;
+            /** Cost Per User Per Day Minor */
+            cost_per_user_per_day_minor: {
+                [key: string]: number;
+            };
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -666,6 +755,67 @@ export interface components {
             followers?: number | null;
             /** Recommendations Received */
             recommendations_received?: number | null;
+        };
+        /** PlaygroundPromptSummary */
+        PlaygroundPromptSummary: {
+            /** Id */
+            id: string;
+            /** Version */
+            version: number;
+            /** Tier */
+            tier: string;
+            /** Description */
+            description: string;
+            /** Required Context */
+            required_context: string[];
+            /** Output Schema */
+            output_schema: {
+                [key: string]: unknown;
+            } | null;
+            /** Max Output Tokens */
+            max_output_tokens: number;
+            /** Temperature */
+            temperature: number;
+            /** Cache Ttl Seconds */
+            cache_ttl_seconds: number;
+        };
+        /** PlaygroundRunRequest */
+        PlaygroundRunRequest: {
+            /** Prompt Id */
+            prompt_id: string;
+            /** Context */
+            context: {
+                [key: string]: string;
+            };
+            /** Tier Override */
+            tier_override?: string | null;
+        };
+        /** PlaygroundRunResponse */
+        PlaygroundRunResponse: {
+            /** Text */
+            text: string | null;
+            /** Parsed */
+            parsed: unknown | null;
+            /** Model */
+            model: string;
+            /** Provider */
+            provider: string;
+            /** Tokens In */
+            tokens_in: number;
+            /** Tokens Out */
+            tokens_out: number;
+            /** Cost Minor */
+            cost_minor: number;
+            /** Currency */
+            currency: string;
+            /** Latency Ms */
+            latency_ms: number;
+            /** Cached */
+            cached: boolean;
+            /** Fallback Used */
+            fallback_used: boolean;
+            /** Correlation Id */
+            correlation_id: string;
         };
         /**
          * ProfileSnapshot
@@ -1683,6 +1833,123 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SnapshotDiff"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_gateway_metrics_internal_metrics_get: {
+        parameters: {
+            query?: {
+                window_hours?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GatewayMetricsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_playground_prompts_internal_playground_prompts_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlaygroundPromptSummary"][];
+                };
+            };
+        };
+    };
+    run_playground_prompt_internal_playground_run_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlaygroundRunRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlaygroundRunResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    stream_playground_prompt_internal_playground_stream_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlaygroundRunRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */

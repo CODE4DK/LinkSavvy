@@ -60,6 +60,15 @@ class Settings(BaseSettings):
     profile_paste_max_bytes: int = 200_000
     profile_upload_max_bytes: int = 10_000_000
 
+    # AI Gateway (Phase 03). No model string lives here or anywhere else —
+    # see config/models.yaml and app/ai/providers/registry.py. Both keys
+    # are optional so the app still boots without them; a provider raises
+    # a clear, non-retryable ProviderError the first time it's actually
+    # called without its key configured.
+    openai_api_key: str | None = None
+    gemini_api_key: str | None = None
+    ai_cache_default_ttl_seconds: int = 3600
+
 
 @lru_cache
 def get_settings() -> Settings:

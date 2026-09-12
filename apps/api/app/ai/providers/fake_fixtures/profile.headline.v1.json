@@ -1,0 +1,22 @@
+{
+  "response": {
+    "variants": [
+      {
+        "text": "Senior Backend Engineer | Distributed Systems @ Acme",
+        "rationale": "Leads with seniority and core specialty, matching the most recent role in the supplied profile.",
+        "keywords": ["backend", "distributed systems", "senior engineer"]
+      },
+      {
+        "text": "Building resilient APIs and data platforms | Ex-Acme",
+        "rationale": "Impact-oriented phrasing that mirrors terms recruiters commonly search for.",
+        "keywords": ["APIs", "data platforms", "reliability"]
+      },
+      {
+        "text": "Backend Engineer turning complex systems into simple APIs",
+        "rationale": "A benefit-led framing that reads well to a non-technical hiring manager.",
+        "keywords": ["backend engineer", "systems design", "APIs"]
+      }
+    ]
+  },
+  "tokens_out": 96
+}

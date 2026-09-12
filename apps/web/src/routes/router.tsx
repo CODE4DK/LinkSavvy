@@ -18,6 +18,7 @@ import { SettingsPage } from "@/pages/SettingsPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { OnboardingPage } from "@/pages/onboarding/OnboardingPage";
 import { ProfileConnectCallbackPage } from "@/pages/ProfileConnectCallbackPage";
+import { PlaygroundPage } from "@/pages/dev/PlaygroundPage";
 
 export const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
@@ -42,6 +43,7 @@ export const router = createBrowserRouter([
           { path: "/growth", element: <GrowthHubPage /> },
           { path: "/workspace", element: <WorkspaceHubPage /> },
           { path: "/settings", element: <SettingsPage /> },
+          { path: "/dev/playground", element: <PlaygroundPage /> },
           { path: "*", element: <NotFoundPage /> },
         ],
       },

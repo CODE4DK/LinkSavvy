@@ -3,9 +3,14 @@ from __future__ import annotations
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.ai.prompts.loader import get_registry
 from app.errors import ApiError, api_error_handler
-from app.routers import auth, me, profile
+from app.routers import auth, internal, me, profile
 from app.settings import settings
+
+# Fails application startup loudly if any .prompt.md file is malformed,
+# rather than failing the first request that happens to use it.
+get_registry()
 
 app = FastAPI(title="LinkSavvy API", version="0.1.0")
 
@@ -22,6 +27,7 @@ app.add_exception_handler(ApiError, api_error_handler)
 app.include_router(auth.router)
 app.include_router(me.router)
 app.include_router(profile.router)
+app.include_router(internal.router)
 
 
 @app.get("/health")

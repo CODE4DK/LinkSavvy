@@ -10,7 +10,7 @@ from app.errors import ApiError, ErrorCode
 from app.models.user import User
 from app.security.jwt import AccessTokenError, decode_access_token
 
-__all__ = ["get_db", "get_current_user", "client_ip"]
+__all__ = ["get_db", "get_current_user", "get_current_admin", "client_ip"]
 
 
 def _extract_bearer_token(request: Request) -> str:
@@ -31,6 +31,12 @@ async def get_current_user(request: Request, db: AsyncSession = Depends(get_db))
     user = await db.get(User, user_id)
     if user is None or user.status != "active" or user.deleted_at is not None:
         raise ApiError(ErrorCode.FORBIDDEN, "Account is not active")
+    return user
+
+
+async def get_current_admin(user: User = Depends(get_current_user)) -> User:
+    if user.role != "admin":
+        raise ApiError(ErrorCode.FORBIDDEN, "Admin access required")
     return user
 
 

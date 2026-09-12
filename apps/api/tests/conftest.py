@@ -19,7 +19,7 @@ os.environ.setdefault("ENCRYPTION_KEY", Fernet.generate_key().decode())
 os.environ.setdefault("SMTP_HOST", "localhost")
 os.environ.setdefault("SMTP_PORT", "1025")
 
-from collections.abc import AsyncIterator  # noqa: E402
+from collections.abc import AsyncIterator, Iterator  # noqa: E402
 
 import pytest  # noqa: E402
 import pytest_asyncio  # noqa: E402
@@ -31,10 +31,12 @@ from sqlalchemy.ext.asyncio import (  # noqa: E402
 )
 from sqlalchemy.pool import StaticPool  # noqa: E402
 
+from app.billing.plan_limits_seed import DEFAULT_PLAN_LIMITS  # noqa: E402
 from app.db import get_db  # noqa: E402
 from app.main import app  # noqa: E402
 from app.models.base import Base  # noqa: E402
 from app.models.feature_flag import FeatureFlag  # noqa: E402
+from app.models.plan_limit import PlanLimit  # noqa: E402
 from app.services.feature_flags import ALL_DEFAULT_FLAG_KEYS  # noqa: E402
 
 
@@ -52,7 +54,13 @@ async def db_session() -> AsyncIterator[AsyncSession]:
 
     async with session_maker() as seed_session:
         for key in ALL_DEFAULT_FLAG_KEYS:
-            seed_session.add(FeatureFlag(key=key, enabled_globally=False, rollout_percent=0))
+            # Every default flag ships dark except dev.playground, which
+            # migration 0004 seeds enabled in production since it's
+            # admin-gated regardless -- mirrored here for the same reason.
+            enabled = key == "dev.playground"
+            seed_session.add(FeatureFlag(key=key, enabled_globally=enabled, rollout_percent=0))
+        for row in DEFAULT_PLAN_LIMITS:
+            seed_session.add(PlanLimit(**row))
         await seed_session.commit()
 
     async def override_get_db() -> AsyncIterator[AsyncSession]:
@@ -89,6 +97,22 @@ async def registered_user(client: AsyncClient, sent_emails: list[dict[str, str]]
     token = next(e["token"] for e in sent_emails if e["kind"] == "verify")
     await client.post("/api/v1/auth/verify-email", json={"token": token})
     return {"email": email, "password": password}
+
+
+@pytest.fixture(autouse=True)
+def _fake_ai_providers(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
+    """Every test gets `FakeProvider` in place of a real OpenAI/Gemini call
+    (see app/ai/providers/fake_provider.py and .../registry.py) — this is
+    what guarantees the whole suite runs with zero network calls, without
+    every test needing to remember to patch it itself."""
+    from app.ai.providers import registry
+    from app.ai.providers.fake_provider import FakeProvider
+
+    registry._build_provider.cache_clear()
+    monkeypatch.setitem(registry._PROVIDER_CLASSES, "openai", FakeProvider)
+    monkeypatch.setitem(registry._PROVIDER_CLASSES, "gemini", FakeProvider)
+    yield
+    registry._build_provider.cache_clear()
 
 
 @pytest.fixture

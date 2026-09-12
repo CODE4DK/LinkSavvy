@@ -1,0 +1,60 @@
+# The ONLY file in this codebase allowed to name a vendor model. Every
+# prompt and every caller refers to a ModelTier (fast/standard/advanced);
+# `app.ai.providers.registry.resolve_provider(tier, plan)` reads this file
+# to decide which provider and model actually serve a request. Free users
+# get the cheaper model at a tier, pro users the stronger one.
+tiers:
+  fast:
+    free:
+      provider: openai
+      model: gpt-4o-mini
+    pro:
+      provider: openai
+      model: gpt-4o-mini
+  standard:
+    free:
+      provider: openai
+      model: gpt-4o-mini
+    pro:
+      provider: openai
+      model: gpt-4o
+  advanced:
+    free:
+      provider: gemini
+      model: gemini-1.5-flash
+    pro:
+      provider: openai
+      model: gpt-4o
+
+# Per-tier request timeout (seconds), used by the gateway's retry loop
+# (see app/ai/gateway.py). A slower/pricier tier gets more time.
+timeouts_seconds:
+  fast: 8
+  standard: 20
+  advanced: 45
+
+# Used by the gateway when the primary provider's circuit breaker is open
+# or its retries are exhausted (see app/ai/gateway.py). The fallback is
+# always resolved at the STANDARD tier on the secondary provider, since a
+# down provider can't be trusted to serve any tier reliably.
+secondary_provider: gemini
+secondary_fallback_model: gemini-1.5-flash
+
+# Cost per million tokens, in integer minor currency units (USD cents),
+# keyed by model — same rule as everything else in this file: nowhere
+# else in the codebase names a model, so this is the only place a cost
+# rate can live too. Illustrative rates, not vendor-verified pricing.
+currency: USD
+costs_per_million_tokens_minor:
+  gpt-4o-mini:
+    input: 1500
+    output: 6000
+  gpt-4o:
+    input: 250000
+    output: 1000000
+  gemini-1.5-flash:
+    input: 750
+    output: 3000
+  fake-model:
+    input: 0
+    output: 0
