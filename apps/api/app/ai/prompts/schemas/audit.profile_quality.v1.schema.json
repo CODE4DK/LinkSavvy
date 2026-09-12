@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "headline": {
+      "type": "object",
+      "properties": {
+        "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "issues": { "type": "array", "items": { "type": "string" } },
+        "strengths": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["score", "issues", "strengths"],
+      "additionalProperties": false
+    },
+    "about": {
+      "type": "object",
+      "properties": {
+        "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "issues": { "type": "array", "items": { "type": "string" } },
+        "strengths": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["score", "issues", "strengths"],
+      "additionalProperties": false
+    },
+    "experience": {
+      "type": "object",
+      "properties": {
+        "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "issues": { "type": "array", "items": { "type": "string" } },
+        "strengths": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["score", "issues", "strengths"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["headline", "about", "experience"],
+  "additionalProperties": false
+}

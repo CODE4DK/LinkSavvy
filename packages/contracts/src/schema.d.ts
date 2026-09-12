@@ -495,6 +495,142 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/jobs/{job_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Job Status */
+        get: operations["get_job_status_api_v1_jobs__job_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/audits": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Start Audit */
+        post: operations["start_audit_api_v1_audits_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/audits/latest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Latest */
+        get: operations["get_latest_api_v1_audits_latest_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/audits/{audit_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Audit */
+        get: operations["get_audit_api_v1_audits__audit_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/scores/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Score History Endpoint */
+        get: operations["get_score_history_endpoint_api_v1_scores_history_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/recommendations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Recommendations */
+        get: operations["get_recommendations_api_v1_recommendations_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/recommendations/{recommendation_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Recommendation */
+        patch: operations["update_recommendation_api_v1_recommendations__recommendation_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/dashboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Dashboard */
+        get: operations["get_dashboard_api_v1_dashboard_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -516,6 +652,85 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AuditCategoryResultResponse */
+        AuditCategoryResultResponse: {
+            /** Category */
+            category: string;
+            /** Score */
+            score: number | null;
+            /** Status */
+            status: string;
+            /** Inputs Available */
+            inputs_available: {
+                [key: string]: unknown;
+            };
+            /** Detail */
+            detail: {
+                [key: string]: unknown;
+            };
+            /** Findings */
+            findings: components["schemas"]["AuditFindingResponse"][];
+        };
+        /** AuditDetailResponse */
+        AuditDetailResponse: {
+            /** Id */
+            id: string;
+            /** Status */
+            status: string;
+            /** Scoring Version */
+            scoring_version: string;
+            /** Overall Score */
+            overall_score: number | null;
+            /** Trigger */
+            trigger: string;
+            /** Started At */
+            started_at: string | null;
+            /** Completed At */
+            completed_at: string | null;
+            /** Duration Ms */
+            duration_ms: number | null;
+            /** Error */
+            error: string | null;
+            /** Categories */
+            categories: components["schemas"]["AuditCategoryResultResponse"][];
+        };
+        /** AuditFindingResponse */
+        AuditFindingResponse: {
+            /** Id */
+            id: string;
+            /** Category */
+            category: string;
+            /** Code */
+            code: string;
+            /** Severity */
+            severity: string;
+            /** Title */
+            title: string;
+            /** Evidence */
+            evidence: {
+                [key: string]: unknown;
+            };
+            /** Deterministic */
+            deterministic: boolean;
+        };
+        /** AuditRunRequest */
+        AuditRunRequest: {
+            /** Target Role */
+            target_role?: string | null;
+            /** Content History */
+            content_history?: string[] | null;
+        };
+        /** AuditRunResponse */
+        AuditRunResponse: {
+            /** Job Id */
+            job_id: string;
+            /**
+             * Audit Status
+             * @default queued
+             * @constant
+             */
+            audit_status: "queued";
+        };
         /** Body_create_upload_import_api_v1_profile_imports_upload_post */
         Body_create_upload_import_api_v1_profile_imports_upload_post: {
             /** File */
@@ -543,6 +758,67 @@ export interface components {
         /** CommitImportRequest */
         CommitImportRequest: {
             payload: components["schemas"]["ProfileSnapshot"];
+        };
+        /** DashboardHealthScore */
+        DashboardHealthScore: {
+            /** Audit Id */
+            audit_id: string;
+            /** Overall */
+            overall: number | null;
+            /** Scoring Version */
+            scoring_version: string;
+            /** Status */
+            status: string;
+            /** Completed At */
+            completed_at: string | null;
+            /** Categories */
+            categories: components["schemas"]["AuditCategoryResultResponse"][];
+        };
+        /** DashboardResponse */
+        DashboardResponse: {
+            user: components["schemas"]["DashboardUser"];
+            /** Is First Time */
+            is_first_time: boolean;
+            health_score: components["schemas"]["DashboardHealthScore"] | null;
+            score_history: components["schemas"]["DashboardScoreHistory"];
+            /** Top Recommendations */
+            top_recommendations: components["schemas"]["RecommendationResponse"][];
+            run_audit: components["schemas"]["DashboardRunAuditState"];
+            /** Hubs */
+            hubs: {
+                [key: string]: boolean;
+            };
+        };
+        /** DashboardRunAuditState */
+        DashboardRunAuditState: {
+            /** Can Run */
+            can_run: boolean;
+            /** Reason */
+            reason: ("no_active_snapshot" | "audit_in_progress" | "cooldown_active" | "quota_exceeded") | null;
+            /** Retry After Seconds */
+            retry_after_seconds: number | null;
+            /** In Flight Job Id */
+            in_flight_job_id: string | null;
+            /** Quota Used */
+            quota_used: number;
+            /** Quota Limit */
+            quota_limit: number;
+        };
+        /** DashboardScoreHistory */
+        DashboardScoreHistory: {
+            /** Range */
+            range: string;
+            /** Points */
+            points: components["schemas"]["ScoreHistoryPoint"][];
+            /** Delta */
+            delta: number | null;
+        };
+        /** DashboardUser */
+        DashboardUser: {
+            /** Full Name */
+            full_name: string;
+            /** Plan */
+            plan: string;
         };
         /**
          * DatePart
@@ -678,6 +954,36 @@ export interface components {
             parse_warnings: string[];
             /** Error */
             error?: string | null;
+        };
+        /** JobStatusResponse */
+        JobStatusResponse: {
+            /** Id */
+            id: string;
+            /** Type */
+            type: string;
+            /** Status */
+            status: string;
+            /** Attempts */
+            attempts: number;
+            /** Max Attempts */
+            max_attempts: number;
+            /** Progress Percent */
+            progress_percent: number;
+            /** Error */
+            error: string | null;
+            /** Result */
+            result: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Started At */
+            started_at: string | null;
+            /** Finished At */
+            finished_at: string | null;
         };
         /** Language */
         Language: {
@@ -870,6 +1176,48 @@ export interface components {
             start?: components["schemas"]["DatePart"] | null;
             end?: components["schemas"]["DatePart"] | null;
         };
+        /** RecommendationListResponse */
+        RecommendationListResponse: {
+            /** Items */
+            items: components["schemas"]["RecommendationResponse"][];
+            /** Next Cursor */
+            next_cursor: string | null;
+        };
+        /** RecommendationResponse */
+        RecommendationResponse: {
+            /** Id */
+            id: string;
+            /** Audit Id */
+            audit_id: string;
+            /** Category */
+            category: string;
+            /** Priority */
+            priority: number;
+            /** Title */
+            title: string;
+            /** Why */
+            why: string;
+            /** Action Label */
+            action_label: string;
+            /** Action Route */
+            action_route: string;
+            /** Action Tool Id */
+            action_tool_id: string | null;
+            /** Estimated Impact Points */
+            estimated_impact_points: number;
+            /** Status */
+            status: string;
+            /** Completed At */
+            completed_at: string | null;
+        };
+        /** RecommendationUpdateRequest */
+        RecommendationUpdateRequest: {
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "open" | "in_progress" | "done" | "dismissed";
+        };
         /** RefreshResponse */
         RefreshResponse: {
             /** Access Token */
@@ -908,6 +1256,35 @@ export interface components {
             token: string;
             /** New Password */
             new_password: string;
+        };
+        /** ScoreHistoryPoint */
+        ScoreHistoryPoint: {
+            /** Audit Id */
+            audit_id: string;
+            /**
+             * Recorded At
+             * Format: date-time
+             */
+            recorded_at: string;
+            /** Overall */
+            overall: number;
+            /** Profile */
+            profile: number | null;
+            /** Content */
+            content: number | null;
+            /** Engagement */
+            engagement: number | null;
+            /** Career */
+            career: number | null;
+            /** Visibility */
+            visibility: number | null;
+        };
+        /** ScoreHistoryResponse */
+        ScoreHistoryResponse: {
+            /** Range */
+            range: string;
+            /** Points */
+            points: components["schemas"]["ScoreHistoryPoint"][];
         };
         /** SessionOut */
         SessionOut: {
@@ -1959,6 +2336,240 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_job_status_api_v1_jobs__job_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobStatusResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    start_audit_api_v1_audits_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AuditRunRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditRunResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_latest_api_v1_audits_latest_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditDetailResponse"];
+                };
+            };
+        };
+    };
+    get_audit_api_v1_audits__audit_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                audit_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditDetailResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_score_history_endpoint_api_v1_scores_history_get: {
+        parameters: {
+            query?: {
+                range?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScoreHistoryResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_recommendations_api_v1_recommendations_get: {
+        parameters: {
+            query?: {
+                status?: string | null;
+                cursor?: number | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecommendationListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_recommendation_api_v1_recommendations__recommendation_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                recommendation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RecommendationUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecommendationResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_dashboard_api_v1_dashboard_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DashboardResponse"];
                 };
             };
         };

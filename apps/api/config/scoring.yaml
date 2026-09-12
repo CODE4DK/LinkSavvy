@@ -1,0 +1,123 @@
+# The Audit Engine's scoring rules. See docs/scoring.md for the
+# plain-language explanation of every component below -- a user must be
+# able to read that doc and understand exactly why they scored what they
+# scored. Bump scoring_version whenever a weight or mapping changes, so
+# score_history rows stay honestly comparable only within one version.
+scoring_version: "2026.1"
+
+# Overall = weighted mean of available category scores (app/audit/scoring.py's
+# weighted_average). A category with status='skipped' or 'failed'
+# contributes no score and its weight is dropped from the denominator
+# (renormalized), never silently treated as zero.
+category_weights:
+  profile: 30
+  content: 15
+  engagement: 20
+  career: 15
+  visibility: 20
+
+categories:
+  profile:
+    components:
+      - code: completeness
+        weight: 25
+        description: >-
+          How complete the profile is, reusing Phase 2's completeness score
+          (headline, About, experience, skills, certifications/projects all
+          present and substantial).
+      - code: headline_quality
+        weight: 20
+        description: >-
+          Whether the headline is specific, mentions a value proposition, and
+          carries role-relevant keywords, judged by AI against a rubric.
+      - code: about_quality
+        weight: 20
+        description: >-
+          Whether the About section has a hook, real substance, a clear
+          structure, and a call to action, judged by AI against a rubric.
+      - code: experience_quality
+        weight: 20
+        description: >-
+          Whether experience bullets read as achievements (with numbers)
+          rather than plain duty statements, judged by AI against a rubric.
+      - code: skills_coverage
+        weight: 15
+        description: >-
+          How many of the target role's commonly-expected skills appear in
+          the user's skills list.
+
+  content:
+    components:
+      - code: posting_readiness
+        weight: 60
+        description: >-
+          Whether the user has supplied enough recent post history to judge
+          posting consistency and quality. Skipped (not scored against you)
+          until you paste or upload some posts.
+      - code: content_opportunities
+        weight: 40
+        description: >-
+          How many concrete content angles the user's own experience and
+          skills suggest, whether or not they've posted before.
+
+  engagement:
+    components:
+      - code: network_signals
+        weight: 30
+        description: >-
+          Connections, followers, and recommendations received, when the
+          connected LinkedIn API or a manual entry makes them visible.
+      - code: contactability
+        weight: 30
+        description: >-
+          Whether the profile invites contact: a custom URL claimed, and an
+          About section that closes with a way to reach the person.
+      - code: engagement_opportunities
+        weight: 40
+        description: >-
+          Concrete, manual engagement ideas suggested by the user's industry
+          and role -- never automation.
+
+  career:
+    components:
+      - code: resume_presence
+        weight: 30
+        description: >-
+          Whether a resume has been uploaded for cross-referencing. Skipped
+          until one is.
+      - code: role_alignment
+        weight: 50
+        description: >-
+          Overlap between the user's listed skills and the target role's
+          must-have skills (AI generates the expected list once per audit;
+          the overlap itself is computed deterministically).
+      - code: readiness_gaps
+        weight: 20
+        description: >-
+          Specific, named skills the target role typically expects that are
+          missing from the user's own skills list.
+
+  visibility:
+    components:
+      - code: keyword_density
+        weight: 30
+        description: >-
+          How many of the target role's vocabulary words appear across the
+          headline and About section.
+      - code: custom_url
+        weight: 15
+        description: "Whether a custom, memorable LinkedIn URL is claimed."
+      - code: profile_metadata
+        weight: 20
+        description: "Whether industry and location are set -- both are searchable fields."
+      - code: skill_alignment
+        weight: 20
+        description: >-
+          Overlap between the user's listed skills and the target role's
+          expected skill vocabulary.
+      - code: brand_consistency
+        weight: 15
+        description: >-
+          Whether the headline and About section both carry at least some of
+          the target role's expected vocabulary, as a proxy for telling a
+          consistent professional story.

@@ -1,4 +1,16 @@
 {
+  "audit.engagement_opportunities.v1": {
+    "body_sha256": "95f20b2606ae26896d9110c33e235f9e00ba1aad9a9b483d2fbf71a76271d687",
+    "version": 1
+  },
+  "audit.profile_quality.v1": {
+    "body_sha256": "9643666164d3246d29f34d97b130cadcce0bc17d6378c07e4883a41f17469f13",
+    "version": 1
+  },
+  "audit.role_keywords.v1": {
+    "body_sha256": "d6b0ef138ed50a704ad6da0f6cd3094705df071045ff0e3e831e563b2db2d4af",
+    "version": 1
+  },
   "meta.classify_intent.v1": {
     "body_sha256": "064db24061bf02c656a90769bf3639b6212b27bafc8700ad38174fd3983bc58b",
     "version": 1

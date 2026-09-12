@@ -2,10 +2,12 @@
 
 from app.models.ai_cache import AICache
 from app.models.ai_invocation import AIInvocation
+from app.models.audit import Audit, AuditCategoryResult, AuditFinding
 from app.models.audit_log import AuditLog
 from app.models.base import Base
 from app.models.email_verification import EmailVerification
 from app.models.feature_flag import FeatureFlag, UserFeatureFlag
+from app.models.job import Job
 from app.models.linkedin_connection import LinkedInConnection
 from app.models.login_attempt import LoginAttempt
 from app.models.oauth_identity import OAuthIdentity
@@ -14,17 +16,23 @@ from app.models.password_reset import PasswordReset
 from app.models.plan_limit import PlanLimit
 from app.models.profile_import import ProfileImportBlob, ProfileImportRow
 from app.models.profile_snapshot import ProfileSnapshotRow
+from app.models.recommendation import Recommendation
 from app.models.refresh_token import RefreshToken
+from app.models.score_history import ScoreHistory
 from app.models.usage_counter import UsageCounter
 from app.models.user import User
 
 __all__ = [
     "AICache",
     "AIInvocation",
+    "Audit",
+    "AuditCategoryResult",
+    "AuditFinding",
     "AuditLog",
     "Base",
     "EmailVerification",
     "FeatureFlag",
+    "Job",
     "LinkedInConnection",
     "LoginAttempt",
     "OAuthIdentity",
@@ -34,7 +42,9 @@ __all__ = [
     "ProfileImportBlob",
     "ProfileImportRow",
     "ProfileSnapshotRow",
+    "Recommendation",
     "RefreshToken",
+    "ScoreHistory",
     "UsageCounter",
     "User",
     "UserFeatureFlag",

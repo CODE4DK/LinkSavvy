@@ -41,7 +41,11 @@ from app.services.feature_flags import ALL_DEFAULT_FLAG_KEYS  # noqa: E402
 
 
 @pytest_asyncio.fixture
-async def db_session() -> AsyncIterator[AsyncSession]:
+async def db_sessionmaker() -> AsyncIterator[async_sessionmaker[AsyncSession]]:
+    """The raw session factory behind `db_session`, exposed separately for
+    tests (like the job worker's) that need to hand a `session_factory`
+    callable to code that opens its own sessions rather than being handed
+    one."""
     engine = create_async_engine(
         "sqlite+aiosqlite:///:memory:",
         connect_args={"check_same_thread": False},
@@ -63,17 +67,26 @@ async def db_session() -> AsyncIterator[AsyncSession]:
             seed_session.add(PlanLimit(**row))
         await seed_session.commit()
 
+    try:
+        yield session_maker
+    finally:
+        await engine.dispose()
+
+
+@pytest_asyncio.fixture
+async def db_session(
+    db_sessionmaker: async_sessionmaker[AsyncSession],
+) -> AsyncIterator[AsyncSession]:
     async def override_get_db() -> AsyncIterator[AsyncSession]:
-        async with session_maker() as session:
+        async with db_sessionmaker() as session:
             yield session
 
     app.dependency_overrides[get_db] = override_get_db
     try:
-        async with session_maker() as session:
+        async with db_sessionmaker() as session:
             yield session
     finally:
         app.dependency_overrides.pop(get_db, None)
-        await engine.dispose()
 
 
 @pytest_asyncio.fixture

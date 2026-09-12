@@ -1,0 +1,20 @@
+{
+  "response": {
+    "headline": {
+      "score": 45,
+      "issues": ["Doesn't state a clear value proposition", "No specialty keywords"],
+      "strengths": ["States a job title"]
+    },
+    "about": {
+      "score": 30,
+      "issues": ["No hook", "Too short to show real substance", "No call to action"],
+      "strengths": []
+    },
+    "experience": {
+      "score": 55,
+      "issues": ["Bullets describe duties, not achievements", "No quantified outcomes"],
+      "strengths": ["Reasonable number of bullets per role"]
+    }
+  },
+  "tokens_out": 180
+}

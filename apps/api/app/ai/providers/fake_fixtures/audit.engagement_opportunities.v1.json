@@ -1,0 +1,19 @@
+{
+  "response": {
+    "opportunities": [
+      {
+        "title": "Comment on posts from engineering leaders in your field",
+        "rationale": "Thoughtful comments on visible posts put your name in front of people who might hire or refer you."
+      },
+      {
+        "title": "Join and participate in a backend engineering LinkedIn group",
+        "rationale": "Active participation in relevant groups surfaces your profile to people with shared interests."
+      },
+      {
+        "title": "Share a short write-up of a technical problem you solved recently",
+        "rationale": "Concrete, specific technical content performs better than generic career advice and demonstrates expertise."
+      }
+    ]
+  },
+  "tokens_out": 90
+}

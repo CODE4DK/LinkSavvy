@@ -1,4 +1,4 @@
-.PHONY: bootstrap dev down test lint migrate seed contracts
+.PHONY: bootstrap dev down test lint migrate seed contracts worker
 
 API_DIR := apps/api
 WEB_DIR := apps/web
@@ -32,3 +32,9 @@ seed:
 contracts:
 	cd $(API_DIR) && uv run python scripts/export_openapi.py
 	cd $(WEB_DIR) && npm run generate:contracts
+
+# Runs the background job worker loop (audits, and anything else enqueued
+# to the `jobs` table). Separate from `make dev` since not every local
+# session needs it running.
+worker:
+	cd $(API_DIR) && uv run python -m app.jobs.worker

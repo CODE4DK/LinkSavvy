@@ -169,6 +169,40 @@ async def check_and_reserve(
     return Reservation(user_id=user.id, metric=metric, period_start=period_start, amount=amount)
 
 
+@dataclass(frozen=True, slots=True)
+class QuotaStatus:
+    metric: str
+    used: int
+    limit: int
+    window: str
+    resets_at: datetime
+
+
+async def peek(db: AsyncSession, *, user: User, metric: str) -> QuotaStatus:
+    """Read-only: how much of `metric` this user has used this period,
+    without reserving anything -- for a dashboard or status display that
+    needs to show remaining quota without counting as a use of it."""
+    plan_limit = await _get_plan_limit(db, plan=user.plan, metric=metric)
+    now = datetime.now(UTC)
+    period_start, period_end = _current_period(plan_limit.window, now=now)
+    current = (
+        await db.execute(
+            select(UsageCounter).where(
+                UsageCounter.user_id == user.id,
+                UsageCounter.period_start == period_start,
+                UsageCounter.metric == metric,
+            )
+        )
+    ).scalar_one_or_none()
+    return QuotaStatus(
+        metric=metric,
+        used=current.used if current is not None else 0,
+        limit=plan_limit.limit_value,
+        window=plan_limit.window,
+        resets_at=period_end,
+    )
+
+
 async def release(db: AsyncSession, reservation: Reservation) -> None:
     """Gives back a reservation for work that ended up not counting.
     Never releases more than was reserved — `used` is trusted not to need

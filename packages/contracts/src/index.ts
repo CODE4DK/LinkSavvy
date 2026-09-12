@@ -49,6 +49,25 @@ export type PlaygroundPromptSummary = Schemas["PlaygroundPromptSummary"];
 export type PlaygroundRunRequest = Schemas["PlaygroundRunRequest"];
 export type PlaygroundRunResponse = Schemas["PlaygroundRunResponse"];
 
+export type JobStatusResponse = Schemas["JobStatusResponse"];
+
+export type AuditRunRequest = Schemas["AuditRunRequest"];
+export type AuditRunResponse = Schemas["AuditRunResponse"];
+export type AuditFindingResponse = Schemas["AuditFindingResponse"];
+export type AuditCategoryResultResponse = Schemas["AuditCategoryResultResponse"];
+export type AuditDetailResponse = Schemas["AuditDetailResponse"];
+export type ScoreHistoryPoint = Schemas["ScoreHistoryPoint"];
+export type ScoreHistoryResponse = Schemas["ScoreHistoryResponse"];
+export type RecommendationResponse = Schemas["RecommendationResponse"];
+export type RecommendationListResponse = Schemas["RecommendationListResponse"];
+export type RecommendationUpdateRequest = Schemas["RecommendationUpdateRequest"];
+
+export type DashboardUser = Schemas["DashboardUser"];
+export type DashboardHealthScore = Schemas["DashboardHealthScore"];
+export type DashboardRunAuditState = Schemas["DashboardRunAuditState"];
+export type DashboardScoreHistory = Schemas["DashboardScoreHistory"];
+export type DashboardResponse = Schemas["DashboardResponse"];
+
 /** The `{"error": {code, message, details}}` envelope every API error uses. */
 export interface ApiErrorEnvelope {
   error: {
