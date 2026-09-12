@@ -7,6 +7,7 @@ from datetime import UTC, datetime, timedelta
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
 
+from app.db import SessionFactory
 from app.jobs.queue import enqueue
 from app.jobs.registry import register_handler
 from app.jobs.worker import lease_next_job, reclaim_expired_leases, run_once
@@ -94,7 +95,9 @@ async def test_run_once_marks_success_and_stores_result(
     db_session: AsyncSession, db_sessionmaker: async_sessionmaker[AsyncSession]
 ) -> None:
     @register_handler("test.worker.success")
-    async def handler(job: Job, db: AsyncSession) -> dict[str, int]:
+    async def handler(
+        job: Job, db: AsyncSession, session_factory: SessionFactory
+    ) -> dict[str, int]:
         return {"answer": 42}
 
     user = await _create_user(db_session)
@@ -114,7 +117,7 @@ async def test_run_once_retries_on_failure_with_backoff(
     db_session: AsyncSession, db_sessionmaker: async_sessionmaker[AsyncSession]
 ) -> None:
     @register_handler("test.worker.fails_then_would_retry")
-    async def handler(job: Job, db: AsyncSession) -> None:
+    async def handler(job: Job, db: AsyncSession, session_factory: SessionFactory) -> None:
         raise RuntimeError("boom")
 
     user = await _create_user(db_session)
@@ -142,7 +145,7 @@ async def test_run_once_dead_letters_after_max_attempts(
     db_session: AsyncSession, db_sessionmaker: async_sessionmaker[AsyncSession]
 ) -> None:
     @register_handler("test.worker.always_fails")
-    async def handler(job: Job, db: AsyncSession) -> None:
+    async def handler(job: Job, db: AsyncSession, session_factory: SessionFactory) -> None:
         raise RuntimeError("permanent failure")
 
     user = await _create_user(db_session)

@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.ai.prompts.loader import get_registry
+from app.audit import job_handler  # noqa: F401 -- registers the "audit" job handler
 from app.errors import ApiError, api_error_handler
 from app.routers import auth, internal, jobs, me, profile
 from app.settings import settings

@@ -14,7 +14,6 @@ import logging
 import random
 import socket
 import uuid
-from collections.abc import Callable
 from datetime import UTC, datetime, timedelta
 from typing import Any, cast
 
@@ -23,11 +22,9 @@ from sqlalchemy.engine import CursorResult
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.ai.redact import redact_text
-from app.db import AsyncSessionLocal
+from app.db import AsyncSessionLocal, SessionFactory
 from app.jobs.registry import UnknownJobType, get_handler
 from app.models.job import Job
-
-SessionFactory = Callable[[], AsyncSession]
 
 logger = logging.getLogger("app.jobs.worker")
 
@@ -209,7 +206,7 @@ async def run_once(
         result: dict[str, Any] | None = None
         error_message = ""
         try:
-            result = await handler(job, db)
+            result = await handler(job, db, session_factory)
             succeeded = True
         except (
             Exception
@@ -262,4 +259,9 @@ async def run_worker(
 
 
 if __name__ == "__main__":
+    # Importing a handler module is what runs its @register_handler
+    # decorator -- the worker process needs every job type it might lease
+    # registered before it starts polling, which nothing else guarantees.
+    from app.audit import job_handler  # noqa: F401
+
     asyncio.run(run_worker())

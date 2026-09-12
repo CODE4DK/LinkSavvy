@@ -4,6 +4,7 @@ import uuid
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
+from app.db import SessionFactory
 from app.jobs.queue import enqueue
 from app.jobs.registry import register_handler
 from app.jobs.worker import run_worker
@@ -25,7 +26,7 @@ async def test_run_worker_processes_all_queued_jobs_then_idles(
     calls: list[str] = []
 
     @register_handler("test.loop.marker")
-    async def handler(job: Job, db: AsyncSession) -> None:
+    async def handler(job: Job, db: AsyncSession, session_factory: SessionFactory) -> None:
         calls.append(str(job.id))
 
     user = await _create_user(db_session)

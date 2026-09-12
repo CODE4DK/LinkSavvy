@@ -5,6 +5,7 @@ import uuid
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.db import SessionFactory
 from app.jobs.queue import enqueue
 from app.jobs.registry import (
     UnknownJobType,
@@ -43,13 +44,13 @@ def test_get_handler_raises_for_unregistered_type() -> None:
 
 def test_register_handler_rejects_duplicate_registration() -> None:
     @register_handler("test.duplicate.unique.marker")
-    async def handler_one(job: Job, db: AsyncSession) -> None:
+    async def handler_one(job: Job, db: AsyncSession, session_factory: SessionFactory) -> None:
         return None
 
     with pytest.raises(ValueError, match="already registered"):
 
         @register_handler("test.duplicate.unique.marker")
-        async def handler_two(job: Job, db: AsyncSession) -> None:
+        async def handler_two(job: Job, db: AsyncSession, session_factory: SessionFactory) -> None:
             return None
 
 

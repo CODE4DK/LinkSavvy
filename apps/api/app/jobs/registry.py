@@ -9,9 +9,15 @@ from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.db import SessionFactory
 from app.models.job import Job
 
-JobHandler = Callable[[Job, AsyncSession], Awaitable[dict[str, Any] | None]]
+# `session_factory` is the same one `run_once` was given -- a handler that
+# needs to fan work out across concurrent coroutines (the audit
+# orchestrator running its five categories, say) can open one session per
+# coroutine from it rather than sharing the single `db` session, which
+# isn't safe to use from more than one coroutine at a time.
+JobHandler = Callable[[Job, AsyncSession, SessionFactory], Awaitable[dict[str, Any] | None]]
 ProgressCalculator = Callable[[Job, AsyncSession], Awaitable[int]]
 
 _HANDLERS: dict[str, JobHandler] = {}
