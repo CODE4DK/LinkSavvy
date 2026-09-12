@@ -1,0 +1,47 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.7
+    hooks:
+      - id: ruff
+        name: ruff (api)
+        args: [--fix]
+        files: ^apps/api/
+
+  - repo: https://github.com/psf/black
+    rev: 26.5.1
+    hooks:
+      - id: black
+        name: black (api)
+        files: ^apps/api/
+
+  - repo: local
+    hooks:
+      - id: mypy-api
+        name: mypy (api)
+        entry: bash -c 'cd apps/api && uv run mypy app scripts tests alembic/env.py'
+        language: system
+        files: ^apps/api/.*\.py$
+        pass_filenames: false
+
+      - id: eslint-web
+        name: eslint (web)
+        entry: bash -c 'cd apps/web && npm run lint'
+        language: system
+        files: ^apps/web/.*\.(ts|tsx)$
+        pass_filenames: false
+
+      - id: prettier-web
+        name: prettier (web)
+        entry: bash -c 'cd apps/web && npx prettier --check .'
+        language: system
+        files: ^apps/web/.*\.(ts|tsx|css|json)$
+        pass_filenames: false
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: [--maxkb=1024]

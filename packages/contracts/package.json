@@ -1,0 +1,9 @@
+{
+  "name": "@linksavvy/contracts",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "TypeScript types generated from the LinkSavvy API's OpenAPI schema. Do not hand-edit generated files.",
+  "main": "src/index.ts",
+  "types": "src/index.ts"
+}
