@@ -28,6 +28,31 @@ class ProfileSource(StrEnum):
     MERGED = "merged"
 
 
+class ImportSource(StrEnum):
+    """The subset of ProfileSource that goes through the parse-then-review
+    pipeline in `profile_imports` (LinkedIn sync and the manual form commit
+    directly — see app/profiles/service.py)."""
+
+    PASTE = "paste"
+    UPLOAD_PDF = "upload_pdf"
+    UPLOAD_DOCX = "upload_docx"
+
+
+class ImportStatus(StrEnum):
+    PENDING = "pending"
+    PARSING = "parsing"
+    NEEDS_REVIEW = "needs_review"
+    COMMITTED = "committed"
+    FAILED = "failed"
+
+
+class LinkedInSyncStatus(StrEnum):
+    NEVER_SYNCED = "never_synced"
+    SYNCING = "syncing"
+    OK = "ok"
+    ERROR = "error"
+
+
 class SnapshotBaseModel(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
