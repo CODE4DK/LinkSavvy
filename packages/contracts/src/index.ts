@@ -101,11 +101,14 @@ export type ContentPlanResponse = Schemas["ContentPlanResponse"];
 export type RescheduleRequest = Schemas["RescheduleRequest"];
 export type ReminderRequest = Schemas["ReminderRequest"];
 export type PerformanceNumbers = Schemas["PerformanceNumbers"];
-export type MarkContentPlanPostedRequest = Schemas["MarkContentPlanPostedRequest"];
+export type MarkContentPlanPostedRequest =
+  Schemas["MarkContentPlanPostedRequest"];
 export type Cadence = Schemas["Cadence"];
 export type RecurringSlotsRequest = Schemas["RecurringSlotsRequest"];
 export type BulkScheduleRequest = Schemas["BulkScheduleRequest"];
 export type ConsistencyWeek = Schemas["ConsistencyWeek"];
+export type PostTypePerformance = Schemas["PostTypePerformance"];
+export type PerformanceSummaryResponse = Schemas["PerformanceSummaryResponse"];
 
 /** The `{"error": {code, message, details}}` envelope every API error uses. */
 export interface ApiErrorEnvelope {

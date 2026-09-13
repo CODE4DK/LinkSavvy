@@ -10,7 +10,7 @@ from datetime import date
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.content import calendar_service
+from app.content import calendar_service, performance_service
 from app.deps import get_current_user, get_db
 from app.models.content_plan import ContentPlan
 from app.models.user import User
@@ -21,6 +21,9 @@ from app.schemas.content_plans import (
     ContentPlanResponse,
     ContentPlanUpdate,
     MarkContentPlanPostedRequest,
+    PerformanceNumbers,
+    PerformanceSummaryResponse,
+    PostTypePerformance,
     RecurringSlotsRequest,
     ReminderRequest,
     RescheduleRequest,
@@ -80,6 +83,24 @@ async def consistency_endpoint(
     return [
         ConsistencyWeek(week_start=week_start, posted_count=count) for week_start, count in weeks
     ]
+
+
+@router.get("/performance-summary", response_model=PerformanceSummaryResponse)
+async def performance_summary_endpoint(
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> PerformanceSummaryResponse:
+    sufficient, total, by_content_type = await performance_service.performance_summary(
+        db, user=user
+    )
+    return PerformanceSummaryResponse(
+        sufficient_data=sufficient,
+        total_data_points=total,
+        by_content_type=[
+            PostTypePerformance(content_type=ct, sample_size=n, median_engagement=median)
+            for ct, n, median in by_content_type
+        ],
+    )
 
 
 @router.get("/{plan_id}", response_model=ContentPlanResponse)
@@ -144,6 +165,19 @@ async def mark_posted_endpoint(
     db: AsyncSession = Depends(get_db),
 ) -> ContentPlanResponse:
     plan = await calendar_service.mark_posted(db, user=user, plan_id=plan_id, payload=payload)
+    return _to_response(plan)
+
+
+@router.post("/{plan_id}/performance", response_model=ContentPlanResponse)
+async def record_performance_endpoint(
+    plan_id: uuid.UUID,
+    payload: PerformanceNumbers,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> ContentPlanResponse:
+    plan = await performance_service.record_performance(
+        db, user=user, plan_id=plan_id, numbers=payload
+    )
     return _to_response(plan)
 
 

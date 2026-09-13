@@ -922,6 +922,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/content-plans/performance-summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Performance Summary Endpoint */
+        get: operations["performance_summary_endpoint_api_v1_content_plans_performance_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/content-plans/{plan_id}": {
         parameters: {
             query?: never;
@@ -986,6 +1003,23 @@ export interface paths {
         put?: never;
         /** Mark Posted Endpoint */
         post: operations["mark_posted_endpoint_api_v1_content_plans__plan_id__mark_posted_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/content-plans/{plan_id}/performance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Record Performance Endpoint */
+        post: operations["record_performance_endpoint_api_v1_content_plans__plan_id__performance_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1732,6 +1766,15 @@ export interface components {
             /** Profile Views */
             profile_views?: number | null;
         };
+        /** PerformanceSummaryResponse */
+        PerformanceSummaryResponse: {
+            /** Sufficient Data */
+            sufficient_data: boolean;
+            /** Total Data Points */
+            total_data_points: number;
+            /** By Content Type */
+            by_content_type: components["schemas"]["PostTypePerformance"][];
+        };
         /** PlaygroundPromptSummary */
         PlaygroundPromptSummary: {
             /** Id */
@@ -1792,6 +1835,15 @@ export interface components {
             fallback_used: boolean;
             /** Correlation Id */
             correlation_id: string;
+        };
+        /** PostTypePerformance */
+        PostTypePerformance: {
+            /** Content Type */
+            content_type: string;
+            /** Sample Size */
+            sample_size: number;
+            /** Median Engagement */
+            median_engagement: number;
         };
         /**
          * ProfileSnapshot
@@ -4033,6 +4085,26 @@ export interface operations {
             };
         };
     };
+    performance_summary_endpoint_api_v1_content_plans_performance_summary_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PerformanceSummaryResponse"];
+                };
+            };
+        };
+    };
     get_plan_endpoint_api_v1_content_plans__plan_id__get: {
         parameters: {
             query?: never;
@@ -4210,6 +4282,41 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["MarkContentPlanPostedRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContentPlanResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    record_performance_endpoint_api_v1_content_plans__plan_id__performance_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PerformanceNumbers"];
             };
         };
         responses: {

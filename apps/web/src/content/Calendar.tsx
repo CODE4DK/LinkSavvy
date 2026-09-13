@@ -16,6 +16,7 @@ import type {
   ContentPlanResponse,
   ContentPlanStatus,
   ConsistencyWeek,
+  PerformanceSummaryResponse,
 } from "@linksavvy/contracts";
 import { apiFetch, ApiError } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
@@ -80,6 +81,37 @@ function ConsistencyStrip({ weeks }: { weeks: ConsistencyWeek[] | null }) {
   );
 }
 
+function WhatWorkedPanel({ summary }: { summary: PerformanceSummaryResponse | null }) {
+  if (!summary) return <Skeleton className="h-16 w-full" />;
+  if (!summary.sufficient_data) {
+    return (
+      <p className="text-sm text-fg-muted">
+        Not enough data yet ({summary.total_data_points} of 5 posts with engagement numbers) --
+        record performance on a few more posts to see what worked.
+      </p>
+    );
+  }
+  const max = Math.max(1, ...summary.by_content_type.map((row) => row.median_engagement));
+  return (
+    <div className="flex flex-col gap-2">
+      {summary.by_content_type.map((row) => (
+        <div key={row.content_type} className="flex items-center gap-2">
+          <span className="w-24 shrink-0 text-sm capitalize text-fg">{row.content_type}</span>
+          <div className="h-3 flex-1 rounded bg-bg-subtle">
+            <div
+              className="h-3 rounded bg-primary/70"
+              style={{ width: `${(row.median_engagement / max) * 100}%` }}
+            />
+          </div>
+          <span className="w-32 shrink-0 text-right text-xs text-fg-muted">
+            {row.median_engagement} median ({row.sample_size} posts)
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function Calendar() {
   const location = useLocation();
   const { push: pushToast } = useToast();
@@ -88,6 +120,9 @@ export function Calendar() {
   const [anchor, setAnchor] = useState(new Date());
   const [plans, setPlans] = useState<ContentPlanResponse[] | null>(null);
   const [consistency, setConsistency] = useState<ConsistencyWeek[] | null>(null);
+  const [performanceSummary, setPerformanceSummary] = useState<PerformanceSummaryResponse | null>(
+    null,
+  );
   const [loadError, setLoadError] = useState<string | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<ContentPlanResponse | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
@@ -122,6 +157,16 @@ export function Calendar() {
       .then(setConsistency)
       .catch(() => {});
   }, []);
+
+  const loadPerformanceSummary = useCallback(() => {
+    apiFetch<PerformanceSummaryResponse>("/api/v1/content-plans/performance-summary")
+      .then(setPerformanceSummary)
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    loadPerformanceSummary();
+  }, [loadPerformanceSummary]);
 
   useEffect(() => {
     const draftBody = (location.state as { draftBody?: string } | null)?.draftBody;
@@ -247,6 +292,16 @@ export function Calendar() {
           </CardDescription>
         </CardHeader>
         <ConsistencyStrip weeks={consistency} />
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>What worked</CardTitle>
+          <CardDescription>
+            Median engagement (reactions + comments + reposts) by post type.
+          </CardDescription>
+        </CardHeader>
+        <WhatWorkedPanel summary={performanceSummary} />
       </Card>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -380,6 +435,7 @@ export function Calendar() {
         onChanged={() => {
           setSelectedPlan(null);
           loadPlans();
+          loadPerformanceSummary();
         }}
         onMove={(planId, date) => reschedule(planId, date)}
       />
@@ -466,12 +522,20 @@ function PlanDetailModal({
   const [postedOpen, setPostedOpen] = useState(false);
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [impressions, setImpressions] = useState("");
+  const [perf, setPerf] = useState({
+    impressions: "",
+    reactions: "",
+    comments: "",
+    reposts: "",
+    profile_views: "",
+  });
 
   useEffect(() => {
     setReminderAt("");
     setPostedOpen(false);
     setLinkedinUrl("");
     setImpressions("");
+    setPerf({ impressions: "", reactions: "", comments: "", reposts: "", profile_views: "" });
   }, [plan?.id]);
 
   if (!plan) return null;
@@ -497,6 +561,26 @@ function PlanDetailModal({
       onChanged();
     } catch {
       pushToast({ title: "Couldn't set reminder", variant: "danger" });
+    }
+  }
+
+  async function savePerformance() {
+    if (!plan) return;
+    const numbers = Object.fromEntries(
+      Object.entries(perf)
+        .filter(([, v]) => v.trim() !== "")
+        .map(([k, v]) => [k, Number(v)]),
+    );
+    if (Object.keys(numbers).length === 0) return;
+    try {
+      await apiFetch(`/api/v1/content-plans/${plan.id}/performance`, {
+        method: "POST",
+        body: numbers,
+      });
+      pushToast({ title: "Performance recorded", variant: "success" });
+      onChanged();
+    } catch {
+      pushToast({ title: "Couldn't record performance", variant: "danger" });
     }
   }
 
@@ -594,6 +678,25 @@ function PlanDetailModal({
             <Button onClick={confirmPosted}>Confirm</Button>
           </div>
         )}
+
+        <div>
+          <p className="mb-1 text-xs font-medium uppercase text-fg-muted">Record performance</p>
+          <div className="grid grid-cols-2 gap-2">
+            {(Object.keys(perf) as (keyof typeof perf)[]).map((field) => (
+              <input
+                key={field}
+                value={perf[field]}
+                onChange={(e) => setPerf({ ...perf, [field]: e.target.value })}
+                placeholder={field.replace("_", " ")}
+                inputMode="numeric"
+                className="h-9 w-full rounded-md border border-border bg-bg px-3 text-sm text-fg"
+              />
+            ))}
+          </div>
+          <Button size="sm" variant="secondary" className="mt-2" onClick={savePerformance}>
+            Save numbers
+          </Button>
+        </div>
       </div>
     </Modal>
   );

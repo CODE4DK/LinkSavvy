@@ -114,3 +114,19 @@ class ConsistencyWeek(BaseModel):
 
     week_start: date
     posted_count: int
+
+
+class PostTypePerformance(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    content_type: str
+    sample_size: int
+    median_engagement: float
+
+
+class PerformanceSummaryResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    sufficient_data: bool
+    total_data_points: int
+    by_content_type: list[PostTypePerformance]

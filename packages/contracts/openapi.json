@@ -2373,6 +2373,27 @@
         }
       }
     },
+    "/api/v1/content-plans/performance-summary": {
+      "get": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Performance Summary Endpoint",
+        "operationId": "performance_summary_endpoint_api_v1_content_plans_performance_summary_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PerformanceSummaryResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/content-plans/{plan_id}": {
       "get": {
         "tags": [
@@ -2632,6 +2653,59 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/MarkContentPlanPostedRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentPlanResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/content-plans/{plan_id}/performance": {
+      "post": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Record Performance Endpoint",
+        "operationId": "record_performance_endpoint_api_v1_content_plans__plan_id__performance_post",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PerformanceNumbers"
               }
             }
           }
@@ -4997,6 +5071,33 @@
         "type": "object",
         "title": "PerformanceNumbers"
       },
+      "PerformanceSummaryResponse": {
+        "properties": {
+          "sufficient_data": {
+            "type": "boolean",
+            "title": "Sufficient Data"
+          },
+          "total_data_points": {
+            "type": "integer",
+            "title": "Total Data Points"
+          },
+          "by_content_type": {
+            "items": {
+              "$ref": "#/components/schemas/PostTypePerformance"
+            },
+            "type": "array",
+            "title": "By Content Type"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "sufficient_data",
+          "total_data_points",
+          "by_content_type"
+        ],
+        "title": "PerformanceSummaryResponse"
+      },
       "PlaygroundPromptSummary": {
         "properties": {
           "id": {
@@ -5175,6 +5276,30 @@
           "correlation_id"
         ],
         "title": "PlaygroundRunResponse"
+      },
+      "PostTypePerformance": {
+        "properties": {
+          "content_type": {
+            "type": "string",
+            "title": "Content Type"
+          },
+          "sample_size": {
+            "type": "integer",
+            "title": "Sample Size"
+          },
+          "median_engagement": {
+            "type": "number",
+            "title": "Median Engagement"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "content_type",
+          "sample_size",
+          "median_engagement"
+        ],
+        "title": "PostTypePerformance"
       },
       "ProfileSnapshot": {
         "properties": {
