@@ -143,11 +143,15 @@ async def delete_conversation(
 async def list_messages(db: AsyncSession, *, conversation_id: uuid.UUID) -> list[Message]:
     """The flat, all-branches history for a conversation, oldest first --
     the raw material `get_thread` walks to find one linear path, and what
-    a branch-switcher UI needs to know which messages are siblings."""
+    a branch-switcher UI needs to know which messages are siblings.
+    Ordered by `id` (a UUIDv7, monotonically time-ordered), not
+    `created_at`: SQLite's `CURRENT_TIMESTAMP` server default only has
+    second precision, so two messages appended within the same second --
+    an assistant reply immediately followed by the next user message,
+    say -- would otherwise tie and could come back in either order (the
+    same class of bug ADR 0009 fixed for asset cursor pagination)."""
     result = await db.execute(
-        select(Message)
-        .where(Message.conversation_id == conversation_id)
-        .order_by(Message.created_at.asc())
+        select(Message).where(Message.conversation_id == conversation_id).order_by(Message.id.asc())
     )
     return list(result.scalars().all())
 
@@ -178,7 +182,9 @@ async def get_thread(
             message.parent_message_id for message in all_messages if message.parent_message_id
         }
         leaves = [message for message in all_messages if message.id not in parents]
-        leaf = max(leaves, key=lambda m: m.created_at) if leaves else all_messages[-1]
+        # `id`, not `created_at`, for the same tie-breaking reason as
+        # `list_messages`'s own ordering above.
+        leaf = max(leaves, key=lambda m: m.id) if leaves else all_messages[-1]
 
     path: list[Message] = []
     current: Message | None = leaf
