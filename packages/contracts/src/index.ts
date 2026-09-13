@@ -213,3 +213,15 @@ export type ScoreDeltaResponse = Schemas["ScoreDeltaResponse"];
 export type BeforeAfterToolRunResponse = Schemas["BeforeAfterToolRunResponse"];
 export type BeforeAfterProfileEditResponse = Schemas["BeforeAfterProfileEditResponse"];
 export type BeforeAfterResponse = Schemas["BeforeAfterResponse"];
+
+// -- Workspace Hub ----------------------------------------------------
+
+export type WorkspaceAssetResponse = Schemas["WorkspaceAssetResponse"];
+export type AssetListResponse = Schemas["AssetListResponse"];
+export type AssetPatchRequest = Schemas["AssetPatchRequest"];
+export type AssetVersionResponse = Schemas["AssetVersionResponse"];
+export type BulkActionRequest = Schemas["BulkActionRequest"];
+export type BulkActionResponse = Schemas["BulkActionResponse"];
+export type AssetFolderResponse = Schemas["AssetFolderResponse"];
+export type AssetFolderCreateRequest = Schemas["AssetFolderCreateRequest"];
+export type AssetFolderUpdateRequest = Schemas["AssetFolderUpdateRequest"];
