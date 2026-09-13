@@ -54,7 +54,7 @@ _AUTOMATION_PATTERNS = [
         re.IGNORECASE | re.DOTALL,
     ),
     re.compile(
-        r"\bautomatically\s+(like|comment|connect|message|post|follow|apply|send|reply)\b",
+        r"\bautomatically\s+(like|comment|connect|message|post|follow|apply|send|repl)\w*\b",
         re.IGNORECASE,
     ),
     re.compile(
@@ -70,7 +70,10 @@ _AUTOMATION_PATTERNS = [
 _SCRAPING_PATTERNS = [
     re.compile(r"\bscrape\w*\b.{0,60}\blinkedin\b", re.IGNORECASE | re.DOTALL),
     re.compile(r"\blinkedin\b.{0,60}\bscrape\w*\b", re.IGNORECASE | re.DOTALL),
-    re.compile(r"\b(crawl|harvest)\w*\s+(profiles|contacts|emails|connections)\b", re.IGNORECASE),
+    re.compile(
+        r"\b(crawl|harvest)\w*\b.{0,25}\b(profiles?|contacts?|emails?|connections?)\b",
+        re.IGNORECASE | re.DOTALL,
+    ),
     re.compile(
         r"\b(extract|download|pull|export)\s+(all|every)\s+.{0,30}"
         r"(profile|connection|contact|lead)s?\b",
