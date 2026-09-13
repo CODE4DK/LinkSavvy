@@ -1,0 +1,14 @@
+{
+  "response": {
+    "columns": ["tier", "hashtag", "note"],
+    "rows": [
+      {"tier": "broad", "hashtag": "#softwareengineering", "note": "Large, generic reach across the engineering audience."},
+      {"tier": "broad", "hashtag": "#leadership", "note": "Broad appeal since the post touches on managing a team."},
+      {"tier": "niche", "hashtag": "#codereview", "note": "Directly matches the post's actual subject."},
+      {"tier": "niche", "hashtag": "#distributedsystems", "note": "Matches the specific technical domain mentioned."},
+      {"tier": "community", "hashtag": "#backendengineers", "note": "A named community of practicing backend engineers."}
+    ],
+    "stuffing_warning": "Use 3-5 well-chosen hashtags. Piling on more than that hurts reach and makes the post look spammy rather than helping it get found."
+  },
+  "tokens_out": 160
+}

@@ -1,0 +1,31 @@
+{
+  "response": {
+    "variants": [
+      {
+        "hook": "Most engineers think code review is about catching bugs. It isn't.",
+        "body": "Most engineers think code review is about catching bugs. It isn't.\n\nWhen I led backend at Acme Corp, our best reviews caught almost no bugs -- they caught knowledge gaps. A junior engineer's PR taught three seniors something about our own system.\n\nThat's the real value: a shared understanding of the codebase, built one review at a time.",
+        "cta": "What's the best thing a code review has taught you?",
+        "hashtags": ["#codereview", "#engineeringculture", "#softwareengineering"],
+        "estimated_read_time_seconds": 25,
+        "hook_rationale": "Opens with a common assumption, then contradicts it -- creates curiosity."
+      },
+      {
+        "hook": "I used to dread code review. Now I look forward to it.",
+        "body": "I used to dread code review. Now I look forward to it.\n\nThe shift happened when I stopped treating it as a gate and started treating it as a conversation. At Acme Corp, that meant leaving questions instead of directives: \"what happens if this input is empty?\" instead of \"handle the empty case.\"\n\nSame outcome, completely different feeling on both sides.",
+        "cta": "Try asking one question in your next review instead of giving one directive.",
+        "hashtags": ["#leadership", "#codereview"],
+        "estimated_read_time_seconds": 22,
+        "hook_rationale": "A personal before/after creates a relatable arc readers want resolved."
+      },
+      {
+        "hook": "Three years leading backend teams taught me this about feedback:",
+        "body": "Three years leading backend teams taught me this about feedback: the delivery matters more than the content.\n\nThe exact same suggestion, phrased as a question versus a command, gets adopted at wildly different rates. I saw this firsthand managing distributed systems reviews at Acme Corp.\n\nIt's not about being soft. It's about staying curious.",
+        "cta": "",
+        "hashtags": ["#feedback", "#management", "#softwareengineering"],
+        "estimated_read_time_seconds": 20,
+        "hook_rationale": "Numbered credibility (\"three years\") signals experience before the payoff."
+      }
+    ]
+  },
+  "tokens_out": 480
+}

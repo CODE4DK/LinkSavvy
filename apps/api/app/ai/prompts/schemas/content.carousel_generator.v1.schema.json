@@ -1,0 +1,96 @@
+{
+  "$defs": {
+    "_Closing": {
+      "additionalProperties": false,
+      "properties": {
+        "cta": {
+          "title": "Cta",
+          "type": "string"
+        }
+      },
+      "required": [
+        "cta"
+      ],
+      "title": "_Closing",
+      "type": "object"
+    },
+    "_Cover": {
+      "additionalProperties": false,
+      "properties": {
+        "headline": {
+          "title": "Headline",
+          "type": "string"
+        },
+        "subhead": {
+          "title": "Subhead",
+          "type": "string"
+        }
+      },
+      "required": [
+        "headline",
+        "subhead"
+      ],
+      "title": "_Cover",
+      "type": "object"
+    },
+    "_Slide": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "title": "Index",
+          "type": "integer"
+        },
+        "headline": {
+          "title": "Headline",
+          "type": "string"
+        },
+        "body": {
+          "title": "Body",
+          "type": "string"
+        },
+        "visual_note": {
+          "title": "Visual Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "index",
+        "headline",
+        "body",
+        "visual_note"
+      ],
+      "title": "_Slide",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "cover": {
+      "$ref": "#/$defs/_Cover"
+    },
+    "slides": {
+      "items": {
+        "$ref": "#/$defs/_Slide"
+      },
+      "maxItems": 12,
+      "minItems": 5,
+      "title": "Slides",
+      "type": "array"
+    },
+    "closing": {
+      "$ref": "#/$defs/_Closing"
+    },
+    "caption": {
+      "title": "Caption",
+      "type": "string"
+    }
+  },
+  "required": [
+    "cover",
+    "slides",
+    "closing",
+    "caption"
+  ],
+  "title": "_Output",
+  "type": "object"
+}

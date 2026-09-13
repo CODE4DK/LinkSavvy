@@ -1,0 +1,13 @@
+{
+  "response": {
+    "variants": [
+      {"text": "React with 👍 if this resonates.", "demand_level": "low", "rationale": "The lowest-friction possible ask -- good for reach."},
+      {"text": "Save this for your next code review.", "demand_level": "low", "rationale": "A passive action that still signals value."},
+      {"text": "What's your take -- agree or disagree?", "demand_level": "medium", "rationale": "Invites a real comment without much effort."},
+      {"text": "Tag someone who needs to see this.", "demand_level": "medium", "rationale": "Asks the reader to spend a little social capital."},
+      {"text": "Tell me in the comments: what's one review habit you'd change?", "demand_level": "medium", "rationale": "A specific prompt gets more substantive comments than a generic one."},
+      {"text": "If you're rethinking how your team reviews code, DM me -- happy to compare notes.", "demand_level": "high", "rationale": "A direct, personal ask that filters for genuinely interested readers."}
+    ]
+  },
+  "tokens_out": 180
+}

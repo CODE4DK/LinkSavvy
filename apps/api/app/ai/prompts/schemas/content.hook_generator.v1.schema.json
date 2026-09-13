@@ -1,0 +1,53 @@
+{
+  "$defs": {
+    "_Variant": {
+      "additionalProperties": false,
+      "properties": {
+        "pattern": {
+          "enum": [
+            "question",
+            "contrarian",
+            "number",
+            "story-open",
+            "confession",
+            "observation"
+          ],
+          "title": "Pattern",
+          "type": "string"
+        },
+        "hook": {
+          "title": "Hook",
+          "type": "string"
+        },
+        "fold_preview": {
+          "title": "Fold Preview",
+          "type": "string"
+        }
+      },
+      "required": [
+        "pattern",
+        "hook",
+        "fold_preview"
+      ],
+      "title": "_Variant",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "variants": {
+      "items": {
+        "$ref": "#/$defs/_Variant"
+      },
+      "maxItems": 10,
+      "minItems": 10,
+      "title": "Variants",
+      "type": "array"
+    }
+  },
+  "required": [
+    "variants"
+  ],
+  "title": "_Output",
+  "type": "object"
+}

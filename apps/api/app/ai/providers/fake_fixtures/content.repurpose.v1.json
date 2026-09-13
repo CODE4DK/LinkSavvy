@@ -1,0 +1,12 @@
+{
+  "response": {
+    "sections": [
+      {
+        "heading": "Post",
+        "body": "Code review isn't about catching bugs. It's about building shared understanding.\n\nAt Acme Corp, our best reviews rarely found bugs -- they closed knowledge gaps between engineers.",
+        "bullets": []
+      }
+    ]
+  },
+  "tokens_out": 140
+}

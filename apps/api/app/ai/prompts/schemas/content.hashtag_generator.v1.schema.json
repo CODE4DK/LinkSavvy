@@ -1,0 +1,63 @@
+{
+  "$defs": {
+    "_Row": {
+      "additionalProperties": false,
+      "properties": {
+        "tier": {
+          "enum": [
+            "broad",
+            "niche",
+            "community"
+          ],
+          "title": "Tier",
+          "type": "string"
+        },
+        "hashtag": {
+          "title": "Hashtag",
+          "type": "string"
+        },
+        "note": {
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tier",
+        "hashtag",
+        "note"
+      ],
+      "title": "_Row",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "columns": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Columns",
+      "type": "array"
+    },
+    "rows": {
+      "items": {
+        "$ref": "#/$defs/_Row"
+      },
+      "maxItems": 8,
+      "minItems": 3,
+      "title": "Rows",
+      "type": "array"
+    },
+    "stuffing_warning": {
+      "title": "Stuffing Warning",
+      "type": "string"
+    }
+  },
+  "required": [
+    "columns",
+    "rows",
+    "stuffing_warning"
+  ],
+  "title": "_Output",
+  "type": "object"
+}

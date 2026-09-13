@@ -241,8 +241,41 @@ function CalendarView({ output }: { output: unknown }) {
   );
 }
 
+/** A carousel-shaped output (`{ cover, slides, closing, caption }`, e.g.
+ * `content.carousel_generator`) is also a sequential thread of content --
+ * shown the same way, cover and closing bookending the slides -- so a
+ * slide-deck tool needs no renderer of its own. A dedicated carousel
+ * builder (its own UI surface) is where that structure gets real,
+ * re-editable treatment; this is only the generic tool-runner preview. */
+function messagesFromCarousel(output: JsonRecord): JsonRecord[] {
+  const cover = isRecord(output.cover) ? output.cover : null;
+  const closing = isRecord(output.closing) ? output.closing : null;
+  const slides = asArray(output.slides).map((slide, index) => ({
+    role: "slide",
+    author: typeof slide.headline === "string" ? slide.headline : `Slide ${index + 1}`,
+    text: stringify(slide.body),
+  }));
+  return [
+    ...(cover
+      ? [
+          {
+            role: "cover",
+            author: "Cover",
+            text: `${stringify(cover.headline)}\n${stringify(cover.subhead)}`,
+          },
+        ]
+      : []),
+    ...slides,
+    ...(closing ? [{ role: "closing", author: "Closing", text: stringify(closing.cta) }] : []),
+  ];
+}
+
 function ThreadView({ output }: { output: unknown }) {
-  const messages = isRecord(output) ? asArray(output.messages) : [];
+  if (!isRecord(output)) return <EmptyOutput />;
+  let messages = asArray(output.messages);
+  if (messages.length === 0 && Array.isArray(output.slides)) {
+    messages = messagesFromCarousel(output);
+  }
   if (messages.length === 0) return <EmptyOutput />;
   return (
     <div className="flex flex-col gap-3">

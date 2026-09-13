@@ -1,0 +1,21 @@
+{
+  "response": {
+    "sections": [
+      {
+        "heading": "Rewritten post",
+        "body": "Code review isn't about catching bugs. It's about building shared understanding.\n\nAt Acme Corp, our best reviews rarely found bugs -- they closed knowledge gaps. A junior engineer's PR once taught three senior engineers something new about our own system.\n\nThat's the real payoff.",
+        "bullets": []
+      },
+      {
+        "heading": "What changed",
+        "body": "",
+        "bullets": [
+          {"text": "Cut the throat-clearing opening sentence -- started directly on the claim instead.", "flagged": false, "flag_reason": null},
+          {"text": "Tightened the middle paragraph from three sentences to two.", "flagged": false, "flag_reason": null},
+          {"text": "The closing line would land harder with a specific number (e.g. how many PRs this happened on) -- flagging since that detail isn't in the original.", "flagged": true, "flag_reason": "No specific count was given in the source post."}
+        ]
+      }
+    ]
+  },
+  "tokens_out": 260
+}

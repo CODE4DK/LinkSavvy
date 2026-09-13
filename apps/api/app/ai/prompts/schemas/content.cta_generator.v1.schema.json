@@ -1,0 +1,50 @@
+{
+  "$defs": {
+    "_Variant": {
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "demand_level": {
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ],
+          "title": "Demand Level",
+          "type": "string"
+        },
+        "rationale": {
+          "title": "Rationale",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "demand_level",
+        "rationale"
+      ],
+      "title": "_Variant",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "variants": {
+      "items": {
+        "$ref": "#/$defs/_Variant"
+      },
+      "maxItems": 6,
+      "minItems": 6,
+      "title": "Variants",
+      "type": "array"
+    }
+  },
+  "required": [
+    "variants"
+  ],
+  "title": "_Output",
+  "type": "object"
+}

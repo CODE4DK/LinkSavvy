@@ -1,0 +1,20 @@
+{
+  "response": {
+    "cover": {
+      "headline": "5 lessons from leading backend teams",
+      "subhead": "What actually moved the needle at Acme Corp"
+    },
+    "slides": [
+      {"index": 1, "headline": "Review culture beats review process", "body": "The best teams I've led cared more about how feedback was given than what tool enforced it.", "visual_note": "A simple two-column icon comparison: process vs. culture."},
+      {"index": 2, "headline": "Ownership beats heroics", "body": "Clear ownership prevented more outages than any amount of on-call heroics ever did.", "visual_note": "An icon of a shield or a name tag next to a service diagram."},
+      {"index": 3, "headline": "Mentoring flows both ways", "body": "Junior engineers taught senior ones more often than the org chart would suggest.", "visual_note": "Two arrows pointing toward each other between two figures."},
+      {"index": 4, "headline": "Distributed systems reward patience", "body": "The fastest fix is rarely the right one when the system spans multiple services.", "visual_note": "A slow-motion clock icon next to a system diagram."},
+      {"index": 5, "headline": "Small, frequent feedback beats big reviews", "body": "Teams that reviewed in small batches shipped with fewer surprises.", "visual_note": "A bar chart comparing batch sizes."}
+    ],
+    "closing": {
+      "cta": "Which of these matches your own experience? Tell me below."
+    },
+    "caption": "Five things I actually learned leading backend teams at Acme Corp -- not the theory, the practice."
+  },
+  "tokens_out": 420
+}

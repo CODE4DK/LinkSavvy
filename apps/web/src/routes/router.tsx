@@ -41,6 +41,7 @@ export const router = createBrowserRouter([
           { path: "/profile/:toolId", element: <ProfileHubPage /> },
           { path: "/content", element: <ContentHubPage /> },
           { path: "/content/voice", element: <VoiceProfilePage /> },
+          { path: "/content/:toolId", element: <ContentHubPage /> },
           { path: "/engagement", element: <EngagementHubPage /> },
           { path: "/career", element: <CareerHubPage /> },
           { path: "/growth", element: <GrowthHubPage /> },
