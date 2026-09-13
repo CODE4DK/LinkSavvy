@@ -183,7 +183,7 @@ function DetailDrawer({
           <div className="rounded-md border border-border p-3">
             <p className="text-xs font-medium text-fg-muted">Produced by</p>
             <p className="text-sm text-fg">{run.tool_id}</p>
-            <Link to={`/${run.tool_id.split(".")[0]}/${run.tool_id}`}>
+            <Link to={`/${run.tool_id.split(".")[0]}/${run.tool_id}?run_id=${run.id}`}>
               <Button size="sm" variant="secondary" className="mt-2">
                 Open in tool
               </Button>

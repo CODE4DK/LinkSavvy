@@ -11,6 +11,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import type {
   AssetResponse,
   QuotaInfo,
@@ -133,6 +134,9 @@ export function ToolRunner({
 }: ToolRunnerProps) {
   const { user } = useAuth();
   const { push: pushToast } = useToast();
+  const [searchParams] = useSearchParams();
+  const reproduceRunId = searchParams.get("run_id");
+  const [reproducedInput, setReproducedInput] = useState<Record<string, unknown> | null>(null);
 
   const [load, setLoad] = useState<LoadState>({ status: "loading" });
   const [values, setValues] = useState<Record<string, unknown>>({});
@@ -195,16 +199,42 @@ export function ToolRunner({
     };
   }, [toolId]);
 
+  // `?run_id=` on the URL (the Workspace Hub's "open in tool" link on a
+  // saved asset) means reproduce that exact run's inputs -- fetched
+  // once and folded into the seeding effect below ahead of every other
+  // prefill source, since "open in tool" promises the *same* inputs,
+  // not just a reasonable starting point.
+  useEffect(() => {
+    if (!reproduceRunId) {
+      setReproducedInput(null);
+      return;
+    }
+    let cancelled = false;
+    apiFetch<ToolRunSummary>(`/api/v1/tools/runs/${reproduceRunId}`)
+      .then((run) => {
+        if (!cancelled) setReproducedInput(run.input);
+      })
+      .catch(() => {
+        if (!cancelled) setReproducedInput(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [reproduceRunId]);
+
   // Seeds the form once the definition (and, if the tool needs it, the
-  // profile snapshot) are ready. Precedence: an explicit prefill wins,
-  // then a remembered last-used value, then a profile-backed default,
-  // then the field's own schema default.
+  // profile snapshot) are ready. Precedence: a reproduced run's own
+  // inputs win outright, then an explicit prefill, then a remembered
+  // last-used value, then a profile-backed default, then the field's
+  // own schema default.
   useEffect(() => {
     if (!schema) return;
     const remembered = loadLastUsed(toolId) ?? {};
     const seeded: Record<string, unknown> = {};
     for (const field of fieldsForSchema(schema)) {
-      if (initialValues && field.key in initialValues) {
+      if (reproducedInput && field.key in reproducedInput) {
+        seeded[field.key] = reproducedInput[field.key];
+      } else if (initialValues && field.key in initialValues) {
         seeded[field.key] = initialValues[field.key];
       } else if (field.key in remembered) {
         seeded[field.key] = remembered[field.key];
@@ -213,7 +243,7 @@ export function ToolRunner({
       }
     }
     setValues(seeded);
-  }, [schema, snapshot, toolId, initialValues]);
+  }, [schema, snapshot, toolId, initialValues, reproducedInput]);
 
   function resetResultState() {
     setRating(null);
