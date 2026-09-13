@@ -227,7 +227,6 @@ export type AssetFolderUpdateRequest = Schemas["AssetFolderUpdateRequest"];
 
 export type ConversationCreate = Schemas["ConversationCreate"];
 export type ConversationSummary = Schemas["ConversationSummary"];
-export type ProposedToolResponse = Schemas["ProposedToolResponse"];
 export type AssistantMessageResponse = Schemas["AssistantMessageResponse"];
 export type ConversationDetailResponse = Schemas["ConversationDetailResponse"];
 export type SendMessageRequest = Schemas["SendMessageRequest"];

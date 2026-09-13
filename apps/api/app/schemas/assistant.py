@@ -32,14 +32,6 @@ class ConversationSummary(BaseModel):
     updated_at: datetime
 
 
-class ProposedToolResponse(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    tool_id: str
-    reasoning: str
-    prefilled_input: dict[str, Any]
-
-
 class AssistantMessageResponse(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
