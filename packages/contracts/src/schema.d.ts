@@ -818,6 +818,75 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/carousels": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Carousel Endpoint */
+        post: operations["create_carousel_endpoint_api_v1_carousels_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/carousels/{asset_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Carousel Endpoint */
+        get: operations["get_carousel_endpoint_api_v1_carousels__asset_id__get"];
+        /** Update Carousel Endpoint */
+        put: operations["update_carousel_endpoint_api_v1_carousels__asset_id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/carousels/{asset_id}/export/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Export Carousel Pdf Endpoint */
+        post: operations["export_carousel_pdf_endpoint_api_v1_carousels__asset_id__export_pdf_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/carousels/{asset_id}/export/png": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Export Carousel Png Endpoint */
+        post: operations["export_carousel_png_endpoint_api_v1_carousels__asset_id__export_png_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -958,6 +1027,66 @@ export interface components {
         Body_submit_uploaded_samples_api_v1_content_voice_samples_upload_post: {
             /** File */
             file: string;
+        };
+        /** CarouselClosing */
+        CarouselClosing: {
+            /**
+             * Cta
+             * @default
+             */
+            cta: string;
+        };
+        /** CarouselCover */
+        CarouselCover: {
+            /** Headline */
+            headline: string;
+            /**
+             * Subhead
+             * @default
+             */
+            subhead: string;
+        };
+        /**
+         * CarouselData
+         * @description The carousel's re-editable structure -- stored as `Asset.body`
+         *     (JSON) so the slide-by-slide editor can load it back exactly.
+         */
+        CarouselData: {
+            /**
+             * Template
+             * @default clean
+             * @enum {string}
+             */
+            template: "clean" | "bold" | "minimal";
+            cover: components["schemas"]["CarouselCover"];
+            /** Slides */
+            slides: components["schemas"]["CarouselSlide"][];
+            closing?: components["schemas"]["CarouselClosing"];
+            /**
+             * Caption
+             * @default
+             */
+            caption: string;
+        };
+        /** CarouselResponse */
+        CarouselResponse: {
+            /** Id */
+            id: string;
+            /** Title */
+            title: string;
+            data: components["schemas"]["CarouselData"];
+        };
+        /** CarouselSlide */
+        CarouselSlide: {
+            /** Headline */
+            headline: string;
+            /** Body */
+            body: string;
+            /**
+             * Visual Note
+             * @default
+             */
+            visual_note: string;
         };
         /** Certification */
         Certification: {
@@ -1542,6 +1671,12 @@ export interface components {
             body: string;
             /** Folder Id */
             folder_id?: string | null;
+        };
+        /** SaveCarouselRequest */
+        SaveCarouselRequest: {
+            /** Title */
+            title: string;
+            data: components["schemas"]["CarouselData"];
         };
         /** ScoreHistoryPoint */
         ScoreHistoryPoint: {
@@ -3323,6 +3458,167 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AssetResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_carousel_endpoint_api_v1_carousels_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveCarouselRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CarouselResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_carousel_endpoint_api_v1_carousels__asset_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                asset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CarouselResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_carousel_endpoint_api_v1_carousels__asset_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                asset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveCarouselRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CarouselResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    export_carousel_pdf_endpoint_api_v1_carousels__asset_id__export_pdf_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                asset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    export_carousel_png_endpoint_api_v1_carousels__asset_id__export_png_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                asset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */

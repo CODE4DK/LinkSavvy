@@ -115,6 +115,9 @@ function ToolDetail({ toolId }: { toolId: string }) {
         key={toolId}
         toolId={toolId}
         onSendToComposer={(text) => navigate("/content/composer", { state: { prefill: text } })}
+        onSendToCarouselBuilder={(output) =>
+          navigate("/content/carousel/new", { state: { fromToolOutput: output } })
+        }
       />
     </div>
   );

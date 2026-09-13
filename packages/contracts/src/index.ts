@@ -87,6 +87,13 @@ export type VoiceDescriptorResponse = Schemas["VoiceDescriptorResponse"];
 export type CreateAssetRequest = Schemas["CreateAssetRequest"];
 export type MarkPostedRequest = Schemas["MarkPostedRequest"];
 
+export type CarouselCover = Schemas["CarouselCover"];
+export type CarouselSlide = Schemas["CarouselSlide"];
+export type CarouselClosing = Schemas["CarouselClosing"];
+export type CarouselData = Schemas["CarouselData"];
+export type SaveCarouselRequest = Schemas["SaveCarouselRequest"];
+export type CarouselResponse = Schemas["CarouselResponse"];
+
 /** The `{"error": {code, message, details}}` envelope every API error uses. */
 export interface ApiErrorEnvelope {
   error: {

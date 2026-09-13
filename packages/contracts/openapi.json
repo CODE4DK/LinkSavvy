@@ -2035,6 +2035,223 @@
         }
       }
     },
+    "/api/v1/carousels": {
+      "post": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Create Carousel Endpoint",
+        "operationId": "create_carousel_endpoint_api_v1_carousels_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveCarouselRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CarouselResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/carousels/{asset_id}": {
+      "get": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Get Carousel Endpoint",
+        "operationId": "get_carousel_endpoint_api_v1_carousels__asset_id__get",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Asset Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CarouselResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Update Carousel Endpoint",
+        "operationId": "update_carousel_endpoint_api_v1_carousels__asset_id__put",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Asset Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveCarouselRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CarouselResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/carousels/{asset_id}/export/pdf": {
+      "post": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Export Carousel Pdf Endpoint",
+        "operationId": "export_carousel_pdf_endpoint_api_v1_carousels__asset_id__export_pdf_post",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Asset Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/carousels/{asset_id}/export/png": {
+      "post": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Export Carousel Png Endpoint",
+        "operationId": "export_carousel_png_endpoint_api_v1_carousels__asset_id__export_png_post",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Asset Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "summary": "Health",
@@ -2424,6 +2641,126 @@
           "file"
         ],
         "title": "Body_submit_uploaded_samples_api_v1_content_voice_samples_upload_post"
+      },
+      "CarouselClosing": {
+        "properties": {
+          "cta": {
+            "type": "string",
+            "title": "Cta",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "CarouselClosing"
+      },
+      "CarouselCover": {
+        "properties": {
+          "headline": {
+            "type": "string",
+            "title": "Headline"
+          },
+          "subhead": {
+            "type": "string",
+            "title": "Subhead",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "headline"
+        ],
+        "title": "CarouselCover"
+      },
+      "CarouselData": {
+        "properties": {
+          "template": {
+            "type": "string",
+            "enum": [
+              "clean",
+              "bold",
+              "minimal"
+            ],
+            "title": "Template",
+            "default": "clean"
+          },
+          "cover": {
+            "$ref": "#/components/schemas/CarouselCover"
+          },
+          "slides": {
+            "items": {
+              "$ref": "#/components/schemas/CarouselSlide"
+            },
+            "type": "array",
+            "maxItems": 12,
+            "minItems": 1,
+            "title": "Slides"
+          },
+          "closing": {
+            "$ref": "#/components/schemas/CarouselClosing"
+          },
+          "caption": {
+            "type": "string",
+            "title": "Caption",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "cover",
+          "slides"
+        ],
+        "title": "CarouselData",
+        "description": "The carousel's re-editable structure -- stored as `Asset.body`\n(JSON) so the slide-by-slide editor can load it back exactly."
+      },
+      "CarouselResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "data": {
+            "$ref": "#/components/schemas/CarouselData"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "data"
+        ],
+        "title": "CarouselResponse"
+      },
+      "CarouselSlide": {
+        "properties": {
+          "headline": {
+            "type": "string",
+            "title": "Headline"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "visual_note": {
+            "type": "string",
+            "title": "Visual Note",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "headline",
+          "body"
+        ],
+        "title": "CarouselSlide"
       },
       "Certification": {
         "properties": {
@@ -4401,6 +4738,24 @@
           "body"
         ],
         "title": "SaveAssetRequest"
+      },
+      "SaveCarouselRequest": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "data": {
+            "$ref": "#/components/schemas/CarouselData"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title",
+          "data"
+        ],
+        "title": "SaveCarouselRequest"
       },
       "ScoreHistoryPoint": {
         "properties": {

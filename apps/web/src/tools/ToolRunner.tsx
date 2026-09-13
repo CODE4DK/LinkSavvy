@@ -89,6 +89,13 @@ export interface ToolRunnerProps {
    * (the same text Save to Workspace would save) to the caller rather
    * than patching a `ProfileSnapshot` field. */
   onSendToComposer?: (text: string) => void;
+  /** When provided, and the current tool's `save_as` is `carousel`, a
+   * result gets an "Open in Carousel Builder" action handing the raw
+   * parsed output (already shaped like `CarouselData` minus `template`)
+   * to the caller, rather than the generic Save to Workspace's plain
+   * text -- the builder needs the real structure, not a flattened
+   * string. */
+  onSendToCarouselBuilder?: (output: unknown) => void;
 }
 
 export function ToolRunner({
@@ -96,6 +103,7 @@ export function ToolRunner({
   initialValues,
   onApplyToProfile,
   onSendToComposer,
+  onSendToCarouselBuilder,
 }: ToolRunnerProps) {
   const { user } = useAuth();
   const { push: pushToast } = useToast();
@@ -597,6 +605,16 @@ export function ToolRunner({
                     }
                   >
                     Send to Composer
+                  </Button>
+                )}
+
+                {onSendToCarouselBuilder && tool.save_as === "carousel" && (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => onSendToCarouselBuilder(output)}
+                  >
+                    Open in Carousel Builder
                   </Button>
                 )}
 

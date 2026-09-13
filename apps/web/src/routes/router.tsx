@@ -12,6 +12,7 @@ import { ProfileHubPage } from "@/pages/hubs/ProfileHubPage";
 import { ContentHubPage } from "@/pages/hubs/ContentHubPage";
 import { VoiceProfilePage } from "@/content/VoiceProfilePage";
 import { Composer } from "@/content/Composer";
+import { CarouselBuilder } from "@/content/CarouselBuilder";
 import { EngagementHubPage } from "@/pages/hubs/EngagementHubPage";
 import { CareerHubPage } from "@/pages/hubs/CareerHubPage";
 import { GrowthHubPage } from "@/pages/hubs/GrowthHubPage";
@@ -43,6 +44,7 @@ export const router = createBrowserRouter([
           { path: "/content", element: <ContentHubPage /> },
           { path: "/content/voice", element: <VoiceProfilePage /> },
           { path: "/content/composer", element: <Composer /> },
+          { path: "/content/carousel/:carouselId", element: <CarouselBuilder /> },
           { path: "/content/:toolId", element: <ContentHubPage /> },
           { path: "/engagement", element: <EngagementHubPage /> },
           { path: "/career", element: <CareerHubPage /> },
