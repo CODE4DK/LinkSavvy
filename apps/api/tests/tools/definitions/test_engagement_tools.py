@@ -141,6 +141,18 @@ def test_connection_request_note_over_limit_is_rejected_by_schema() -> None:
     raise AssertionError("expected an over-length connection note to fail validation")
 
 
+def test_direct_message_subject_over_limit_is_rejected_by_schema() -> None:
+    tool = get_tool("engagement.direct_message")
+    output_variant_model = tool.output_schema.model_fields["variants"].annotation
+    assert output_variant_model is not None
+    variant_model = output_variant_model.__args__[0]
+    try:
+        variant_model(subject="x" * (INMAIL_SUBJECT_MAX_CHARS + 1), message="hello")
+    except ValidationError:
+        return
+    raise AssertionError("expected an over-length InMail subject to fail validation")
+
+
 async def test_follow_up_golden(db_session: AsyncSession, rich_profile_user: User) -> None:
     run, _, _ = await service.run_tool(
         db_session,
