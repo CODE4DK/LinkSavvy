@@ -1,0 +1,27 @@
+{
+  "response": {
+    "variants": [
+      {
+        "stance": "agree_and_extend",
+        "comment": "Strong point about ownership boundaries at Acme Corp -- in my own backend team, we found the same gap showed up first in incident response, not code review.",
+        "adds": "Extends the post's point with a concrete failure mode from another part of the system."
+      },
+      {
+        "stance": "respectful_pushback",
+        "comment": "I'd push back slightly: unclear ownership is often a symptom, not the root cause -- the teams I've led usually traced it back to a missing single decision-maker.",
+        "adds": "Offers a competing root cause for the reader to weigh against the post's claim."
+      },
+      {
+        "stance": "ask_a_question",
+        "comment": "How did you decide which team should own the shared queue once you found the gap?",
+        "adds": "Asks a concrete follow-up that invites the author to share their actual decision process."
+      },
+      {
+        "stance": "add_data",
+        "comment": "We ran a similar audit at Acme Corp last quarter and found 6 of 14 services had no named owner -- matches what you're describing here.",
+        "adds": "Grounds the post's claim with a specific number from a comparable audit."
+      }
+    ]
+  },
+  "tokens_out": 220
+}

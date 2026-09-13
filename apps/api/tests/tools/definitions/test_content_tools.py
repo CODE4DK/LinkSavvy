@@ -16,7 +16,7 @@ from .test_profile_tools import assert_never_fabricates, output_of
 
 
 async def test_post_generator_golden(db_session: AsyncSession, rich_profile_user: User) -> None:
-    run, quota = await service.run_tool(
+    run, quota, _ = await service.run_tool(
         db_session,
         user=rich_profile_user,
         tool_id="content.post_generator",
@@ -36,7 +36,7 @@ async def test_post_generator_golden(db_session: AsyncSession, rich_profile_user
 
 
 async def test_hook_generator_golden(db_session: AsyncSession, rich_profile_user: User) -> None:
-    run, _ = await service.run_tool(
+    run, _, _ = await service.run_tool(
         db_session,
         user=rich_profile_user,
         tool_id="content.hook_generator",
@@ -55,7 +55,7 @@ async def test_hook_generator_golden(db_session: AsyncSession, rich_profile_user
 
 
 async def test_cta_generator_golden(db_session: AsyncSession, rich_profile_user: User) -> None:
-    run, _ = await service.run_tool(
+    run, _, _ = await service.run_tool(
         db_session,
         user=rich_profile_user,
         tool_id="content.cta_generator",
@@ -73,7 +73,7 @@ async def test_cta_generator_golden(db_session: AsyncSession, rich_profile_user:
 async def test_cta_generator_works_without_a_profile(
     db_session: AsyncSession, profile_user: User
 ) -> None:
-    run, _ = await service.run_tool(
+    run, _, _ = await service.run_tool(
         db_session,
         user=profile_user,
         tool_id="content.cta_generator",
@@ -84,7 +84,7 @@ async def test_cta_generator_works_without_a_profile(
 
 
 async def test_hashtag_generator_golden(db_session: AsyncSession, rich_profile_user: User) -> None:
-    run, _ = await service.run_tool(
+    run, _, _ = await service.run_tool(
         db_session,
         user=rich_profile_user,
         tool_id="content.hashtag_generator",
@@ -102,7 +102,7 @@ async def test_hashtag_generator_golden(db_session: AsyncSession, rich_profile_u
 
 
 async def test_post_rewriter_golden(db_session: AsyncSession, rich_profile_user: User) -> None:
-    run, _ = await service.run_tool(
+    run, _, _ = await service.run_tool(
         db_session,
         user=rich_profile_user,
         tool_id="content.post_rewriter",
@@ -123,7 +123,7 @@ async def test_post_rewriter_golden(db_session: AsyncSession, rich_profile_user:
 
 
 async def test_ideas_generator_golden(db_session: AsyncSession, rich_profile_user: User) -> None:
-    run, _ = await service.run_tool(
+    run, _, _ = await service.run_tool(
         db_session,
         user=rich_profile_user,
         tool_id="content.ideas_generator",
@@ -140,7 +140,7 @@ async def test_ideas_generator_golden(db_session: AsyncSession, rich_profile_use
 
 
 async def test_carousel_generator_golden(db_session: AsyncSession, rich_profile_user: User) -> None:
-    run, _ = await service.run_tool(
+    run, _, _ = await service.run_tool(
         db_session,
         user=rich_profile_user,
         tool_id="content.carousel_generator",
@@ -160,7 +160,7 @@ async def test_carousel_generator_golden(db_session: AsyncSession, rich_profile_
 
 
 async def test_repurpose_golden(db_session: AsyncSession, rich_profile_user: User) -> None:
-    run, _ = await service.run_tool(
+    run, _, _ = await service.run_tool(
         db_session,
         user=rich_profile_user,
         tool_id="content.repurpose",
@@ -180,7 +180,7 @@ async def test_repurpose_golden(db_session: AsyncSession, rich_profile_user: Use
 async def test_repurpose_works_without_a_profile(
     db_session: AsyncSession, profile_user: User
 ) -> None:
-    run, _ = await service.run_tool(
+    run, _, _ = await service.run_tool(
         db_session,
         user=profile_user,
         tool_id="content.repurpose",

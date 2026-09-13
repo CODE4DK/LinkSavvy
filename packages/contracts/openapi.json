@@ -2824,6 +2824,630 @@
         }
       }
     },
+    "/api/v1/career/resumes/parse/paste": {
+      "post": {
+        "tags": [
+          "career"
+        ],
+        "summary": "Parse Resume Paste Endpoint",
+        "operationId": "parse_resume_paste_endpoint_api_v1_career_resumes_parse_paste_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object",
+                "title": "Payload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResumeParseResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/career/resumes/parse/upload": {
+      "post": {
+        "tags": [
+          "career"
+        ],
+        "summary": "Parse Resume Upload Endpoint",
+        "operationId": "parse_resume_upload_endpoint_api_v1_career_resumes_parse_upload_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_parse_resume_upload_endpoint_api_v1_career_resumes_parse_upload_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResumeParseResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/career/resumes/from-profile": {
+      "post": {
+        "tags": [
+          "career"
+        ],
+        "summary": "Parse Resume From Profile Endpoint",
+        "operationId": "parse_resume_from_profile_endpoint_api_v1_career_resumes_from_profile_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResumeParseResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/career/resumes": {
+      "get": {
+        "tags": [
+          "career"
+        ],
+        "summary": "List Resumes Endpoint",
+        "operationId": "list_resumes_endpoint_api_v1_career_resumes_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ResumeResponse"
+                  },
+                  "type": "array",
+                  "title": "Response List Resumes Endpoint Api V1 Career Resumes Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "career"
+        ],
+        "summary": "Commit Resume Endpoint",
+        "operationId": "commit_resume_endpoint_api_v1_career_resumes_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommitResumeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResumeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/career/resumes/{resume_id}": {
+      "get": {
+        "tags": [
+          "career"
+        ],
+        "summary": "Get Resume Endpoint",
+        "operationId": "get_resume_endpoint_api_v1_career_resumes__resume_id__get",
+        "parameters": [
+          {
+            "name": "resume_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Resume Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResumeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "career"
+        ],
+        "summary": "Delete Resume Endpoint",
+        "operationId": "delete_resume_endpoint_api_v1_career_resumes__resume_id__delete",
+        "parameters": [
+          {
+            "name": "resume_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Resume Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/career/resumes/{resume_id}/activate": {
+      "post": {
+        "tags": [
+          "career"
+        ],
+        "summary": "Activate Resume Endpoint",
+        "operationId": "activate_resume_endpoint_api_v1_career_resumes__resume_id__activate_post",
+        "parameters": [
+          {
+            "name": "resume_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Resume Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResumeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/career/resumes/{resume_id}/export/pdf": {
+      "post": {
+        "tags": [
+          "career"
+        ],
+        "summary": "Export Resume Pdf Endpoint",
+        "operationId": "export_resume_pdf_endpoint_api_v1_career_resumes__resume_id__export_pdf_post",
+        "parameters": [
+          {
+            "name": "resume_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Resume Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/career/resumes/{resume_id}/export/docx": {
+      "post": {
+        "tags": [
+          "career"
+        ],
+        "summary": "Export Resume Docx Endpoint",
+        "operationId": "export_resume_docx_endpoint_api_v1_career_resumes__resume_id__export_docx_post",
+        "parameters": [
+          {
+            "name": "resume_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Resume Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/career/job-descriptions": {
+      "get": {
+        "tags": [
+          "career"
+        ],
+        "summary": "List Job Descriptions Endpoint",
+        "operationId": "list_job_descriptions_endpoint_api_v1_career_job_descriptions_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/JobDescriptionResponse"
+                  },
+                  "type": "array",
+                  "title": "Response List Job Descriptions Endpoint Api V1 Career Job Descriptions Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "career"
+        ],
+        "summary": "Create Job Description Endpoint",
+        "operationId": "create_job_description_endpoint_api_v1_career_job_descriptions_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JobDescriptionParseRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobDescriptionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/career/job-descriptions/{job_description_id}": {
+      "get": {
+        "tags": [
+          "career"
+        ],
+        "summary": "Get Job Description Endpoint",
+        "operationId": "get_job_description_endpoint_api_v1_career_job_descriptions__job_description_id__get",
+        "parameters": [
+          {
+            "name": "job_description_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Job Description Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobDescriptionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "career"
+        ],
+        "summary": "Delete Job Description Endpoint",
+        "operationId": "delete_job_description_endpoint_api_v1_career_job_descriptions__job_description_id__delete",
+        "parameters": [
+          {
+            "name": "job_description_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Job Description Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/career/matches": {
+      "post": {
+        "tags": [
+          "career"
+        ],
+        "summary": "Create Match Endpoint",
+        "operationId": "create_match_endpoint_api_v1_career_matches_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateResumeMatchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResumeMatchResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "career"
+        ],
+        "summary": "List Matches Endpoint",
+        "operationId": "list_matches_endpoint_api_v1_career_matches_get",
+        "parameters": [
+          {
+            "name": "resume_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Resume Id"
+            }
+          },
+          {
+            "name": "job_description_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Job Description Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ResumeMatchResponse"
+                  },
+                  "title": "Response List Matches Endpoint Api V1 Career Matches Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "summary": "Health",
@@ -3200,6 +3824,20 @@
         ],
         "title": "Body_create_upload_import_api_v1_profile_imports_upload_post"
       },
+      "Body_parse_resume_upload_endpoint_api_v1_career_resumes_parse_upload_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_parse_resume_upload_endpoint_api_v1_career_resumes_parse_upload_post"
+      },
       "Body_submit_uploaded_samples_api_v1_content_voice_samples_upload_post": {
         "properties": {
           "file": {
@@ -3491,6 +4129,40 @@
           "payload"
         ],
         "title": "CommitImportRequest"
+      },
+      "CommitResumeRequest": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "document": {
+            "$ref": "#/components/schemas/ResumeDocument"
+          },
+          "original_file_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Original File Ref"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title",
+          "source",
+          "document"
+        ],
+        "title": "CommitResumeRequest"
       },
       "ConsistencyWeek": {
         "properties": {
@@ -3860,6 +4532,25 @@
           "body"
         ],
         "title": "CreateAssetRequest"
+      },
+      "CreateResumeMatchRequest": {
+        "properties": {
+          "resume_id": {
+            "type": "string",
+            "title": "Resume Id"
+          },
+          "job_description_id": {
+            "type": "string",
+            "title": "Job Description Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "resume_id",
+          "job_description_id"
+        ],
+        "title": "CreateResumeMatchRequest"
       },
       "DashboardHealthScore": {
         "properties": {
@@ -4643,6 +5334,95 @@
           "status"
         ],
         "title": "ImportResponse"
+      },
+      "JobDescriptionParseRequest": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "company": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Company"
+          },
+          "raw_text": {
+            "type": "string",
+            "title": "Raw Text"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title",
+          "raw_text"
+        ],
+        "title": "JobDescriptionParseRequest"
+      },
+      "JobDescriptionResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "company": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Company"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "raw_text": {
+            "type": "string",
+            "title": "Raw Text"
+          },
+          "parsed": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Parsed"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "company",
+          "source",
+          "raw_text",
+          "parsed",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "JobDescriptionResponse"
       },
       "JobStatusResponse": {
         "properties": {
@@ -5520,6 +6300,18 @@
         "type": "object",
         "title": "Project"
       },
+      "ProvenanceSource": {
+        "type": "string",
+        "enum": [
+          "deterministic_parse",
+          "ai_resolved",
+          "user_edited",
+          "built",
+          "imported_from_profile"
+        ],
+        "title": "ProvenanceSource",
+        "description": "Where one field of a parsed ResumeDocument came from -- distinct\nfrom `ResumeSource` (which describes the whole document): a single\nupload can still have most fields parsed deterministically and a\nhandful resolved by the one-shot AI pass for ambiguous segments."
+      },
       "QuotaInfo": {
         "properties": {
           "metric": {
@@ -5892,6 +6684,781 @@
           "new_password"
         ],
         "title": "ResetPasswordRequest"
+      },
+      "ResumeAward": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "issuer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Issuer"
+          },
+          "date": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DatePart"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ResumeAward"
+      },
+      "ResumeCertification": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "issuer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Issuer"
+          },
+          "issued": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DatePart"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "credential_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Credential Id"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ResumeCertification"
+      },
+      "ResumeContact": {
+        "properties": {
+          "full_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Full Name"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location"
+          },
+          "linkedin_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Linkedin Url"
+          },
+          "website_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Website Url"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ResumeContact"
+      },
+      "ResumeCustomSection": {
+        "properties": {
+          "heading": {
+            "type": "string",
+            "title": "Heading"
+          },
+          "bullets": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Bullets"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "heading"
+        ],
+        "title": "ResumeCustomSection"
+      },
+      "ResumeDocument": {
+        "properties": {
+          "version": {
+            "type": "integer",
+            "title": "Version",
+            "default": 1
+          },
+          "source": {
+            "$ref": "#/components/schemas/ResumeSource"
+          },
+          "contact": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ResumeContact"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          },
+          "experiences": {
+            "items": {
+              "$ref": "#/components/schemas/ResumeExperience"
+            },
+            "type": "array",
+            "title": "Experiences"
+          },
+          "education": {
+            "items": {
+              "$ref": "#/components/schemas/ResumeEducation"
+            },
+            "type": "array",
+            "title": "Education"
+          },
+          "skills": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ResumeSkills"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "certifications": {
+            "items": {
+              "$ref": "#/components/schemas/ResumeCertification"
+            },
+            "type": "array",
+            "title": "Certifications"
+          },
+          "projects": {
+            "items": {
+              "$ref": "#/components/schemas/ResumeProject"
+            },
+            "type": "array",
+            "title": "Projects"
+          },
+          "awards": {
+            "items": {
+              "$ref": "#/components/schemas/ResumeAward"
+            },
+            "type": "array",
+            "title": "Awards"
+          },
+          "publications": {
+            "items": {
+              "$ref": "#/components/schemas/ResumePublication"
+            },
+            "type": "array",
+            "title": "Publications"
+          },
+          "custom_sections": {
+            "items": {
+              "$ref": "#/components/schemas/ResumeCustomSection"
+            },
+            "type": "array",
+            "title": "Custom Sections"
+          },
+          "field_provenance": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ResumeFieldProvenance"
+            },
+            "type": "object",
+            "title": "Field Provenance"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source"
+        ],
+        "title": "ResumeDocument",
+        "description": "The one canonical shape every resume input path must converge on."
+      },
+      "ResumeEducation": {
+        "properties": {
+          "school": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "School"
+          },
+          "degree": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Degree"
+          },
+          "field": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Field"
+          },
+          "start": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DatePart"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "end": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DatePart"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ResumeEducation"
+      },
+      "ResumeExperience": {
+        "properties": {
+          "company": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Company"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location"
+          },
+          "start": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DatePart"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "end": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DatePart"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "is_current": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Current"
+          },
+          "bullets": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Bullets"
+          },
+          "technologies": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Technologies"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ResumeExperience"
+      },
+      "ResumeFieldProvenance": {
+        "properties": {
+          "source": {
+            "$ref": "#/components/schemas/ProvenanceSource"
+          },
+          "confidence": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source",
+          "confidence"
+        ],
+        "title": "ResumeFieldProvenance"
+      },
+      "ResumeMatchResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "resume_id": {
+            "type": "string",
+            "title": "Resume Id"
+          },
+          "job_description_id": {
+            "type": "string",
+            "title": "Job Description Id"
+          },
+          "overall_match": {
+            "type": "integer",
+            "title": "Overall Match"
+          },
+          "component_scores": {
+            "items": {},
+            "type": "array",
+            "title": "Component Scores"
+          },
+          "matched": {
+            "items": {},
+            "type": "array",
+            "title": "Matched"
+          },
+          "missing": {
+            "items": {},
+            "type": "array",
+            "title": "Missing"
+          },
+          "transferable": {
+            "items": {},
+            "type": "array",
+            "title": "Transferable"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "resume_id",
+          "job_description_id",
+          "overall_match",
+          "component_scores",
+          "matched",
+          "missing",
+          "transferable",
+          "created_at"
+        ],
+        "title": "ResumeMatchResponse"
+      },
+      "ResumeParseResponse": {
+        "properties": {
+          "draft": {
+            "$ref": "#/components/schemas/ResumeDocument"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "draft",
+          "warnings"
+        ],
+        "title": "ResumeParseResponse",
+        "description": "Returned by the paste/upload parse endpoints -- always a draft\nfor the user to review and correct, never yet committed."
+      },
+      "ResumeProject": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "technologies": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Technologies"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ResumeProject"
+      },
+      "ResumePublication": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "publisher": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publisher"
+          },
+          "date": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DatePart"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ResumePublication"
+      },
+      "ResumeResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "parsed": {
+            "$ref": "#/components/schemas/ResumeDocument"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          },
+          "ats_score": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ats Score"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "source",
+          "parsed",
+          "version",
+          "is_active",
+          "ats_score",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ResumeResponse"
+      },
+      "ResumeSkills": {
+        "properties": {
+          "technical": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Technical"
+          },
+          "tools": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tools"
+          },
+          "soft": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Soft"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ResumeSkills"
+      },
+      "ResumeSource": {
+        "type": "string",
+        "enum": [
+          "upload",
+          "built",
+          "imported_from_profile"
+        ],
+        "title": "ResumeSource"
       },
       "SaveAssetRequest": {
         "properties": {
@@ -6310,6 +7877,17 @@
           },
           "quota": {
             "$ref": "#/components/schemas/QuotaInfo"
+          },
+          "warning": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Warning"
           }
         },
         "additionalProperties": false,
@@ -6490,6 +8068,10 @@
           "supports_streaming": {
             "type": "boolean",
             "title": "Supports Streaming"
+          },
+          "counts_as_outreach": {
+            "type": "boolean",
+            "title": "Counts As Outreach"
           }
         },
         "additionalProperties": false,
@@ -6508,7 +8090,8 @@
           "result_renderer",
           "save_as",
           "free_daily_cap",
-          "supports_streaming"
+          "supports_streaming",
+          "counts_as_outreach"
         ],
         "title": "ToolSummary",
         "description": "One row of `GET /api/v1/tools` -- everything the web app needs to\nrender a tool card and, on selection, a fully working form and\nresult view with no tool-specific frontend code."

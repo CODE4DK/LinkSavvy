@@ -1,0 +1,46 @@
+{
+  "$defs": {
+    "_Variant": {
+      "additionalProperties": false,
+      "properties": {
+        "warmth": {
+          "enum": [
+            "warm",
+            "neutral",
+            "brief"
+          ],
+          "title": "Warmth",
+          "type": "string"
+        },
+        "reply": {
+          "maxLength": 1250,
+          "title": "Reply",
+          "type": "string"
+        }
+      },
+      "required": [
+        "warmth",
+        "reply"
+      ],
+      "title": "_Variant",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "variants": {
+      "items": {
+        "$ref": "#/$defs/_Variant"
+      },
+      "maxItems": 3,
+      "minItems": 3,
+      "title": "Variants",
+      "type": "array"
+    }
+  },
+  "required": [
+    "variants"
+  ],
+  "title": "_Output",
+  "type": "object"
+}

@@ -21,6 +21,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.ai import gateway
 from app.ai.prompts.loader import get_prompt
 from app.billing.quota import QuotaStatus, check_and_reserve, peek, release
+from app.engagement.guardrails import soft_cap_warning
 from app.errors import ApiError, ErrorCode
 from app.models.ai_invocation import AIInvocation
 from app.models.asset import Asset
@@ -30,7 +31,7 @@ from app.services.feature_flags import resolve_flags_for_user
 from app.tools.context import ContextKey, ContextUnavailable, assemble
 from app.tools.definition import ToolDefinition
 from app.tools.errors import ToolNotFound
-from app.tools.registry import get_tool
+from app.tools.registry import get_tool, outreach_tool_ids
 
 # Prefix for a tool that exists only to prove the framework works
 # end-to-end (see app/tools/definitions/dev/echo.py) -- hidden from
@@ -181,6 +182,37 @@ def _input_template_vars(input_data: dict[str, Any]) -> dict[str, str]:
     }
 
 
+async def _outreach_runs_today(db: AsyncSession, *, user: User) -> int:
+    """Counts today's runs across every tool flagged
+    `counts_as_outreach=True` -- the soft cap is on outreach volume
+    overall, not on any one tool (Engagement Recommendations, for
+    instance, is advice about outreach, not outreach itself, and must
+    never count toward it)."""
+    tool_ids = outreach_tool_ids()
+    if not tool_ids:
+        return 0
+    since = datetime.now(UTC).replace(hour=0, minute=0, second=0, microsecond=0)
+    return (
+        await db.execute(
+            select(func.count())
+            .select_from(ToolRun)
+            .where(
+                ToolRun.user_id == user.id,
+                ToolRun.tool_id.in_(tool_ids),
+                ToolRun.created_at >= since,
+            )
+        )
+    ).scalar_one()
+
+
+async def _outreach_warning(
+    db: AsyncSession, *, user: User, definition: ToolDefinition
+) -> str | None:
+    if not definition.counts_as_outreach:
+        return None
+    return soft_cap_warning(await _outreach_runs_today(db, user=user))
+
+
 async def _run_and_persist(
     db: AsyncSession,
     *,
@@ -189,7 +221,7 @@ async def _run_and_persist(
     input_data: dict[str, Any],
     nudge: str | None,
     parent_run_id: uuid.UUID | None,
-) -> tuple[ToolRun, QuotaStatus]:
+) -> tuple[ToolRun, QuotaStatus, str | None]:
     reservation = await check_and_reserve(db, user=user, metric=definition.quota_metric)
 
     try:
@@ -239,13 +271,16 @@ async def _run_and_persist(
         raise
 
     assert result.parsed is not None  # every tool prompt declares a JSON output_schema
+    output = result.parsed
+    if definition.postprocess is not None:
+        output = definition.postprocess(output, input_data)
     run = ToolRun(
         user_id=user.id,
         tool_id=definition.id,
         prompt_id=definition.prompt_id,
         prompt_version=template.version,
         input=input_data,
-        output=result.parsed,
+        output=output,
         context_keys=[key.value for key in included],
         ai_invocation_id=result.invocation_id,
         status="succeeded",
@@ -257,7 +292,8 @@ async def _run_and_persist(
     await db.refresh(run)
 
     quota = await peek(db, user=user, metric=definition.quota_metric)
-    return run, quota
+    warning = await _outreach_warning(db, user=user, definition=definition)
+    return run, quota, warning
 
 
 async def prepare_tool_run(
@@ -277,7 +313,7 @@ async def prepare_tool_run(
 
 async def run_tool(
     db: AsyncSession, *, user: User, tool_id: str, raw_input: dict[str, Any]
-) -> tuple[ToolRun, QuotaStatus]:
+) -> tuple[ToolRun, QuotaStatus, str | None]:
     definition, input_data = await prepare_tool_run(
         db, user=user, tool_id=tool_id, raw_input=raw_input
     )
@@ -365,6 +401,8 @@ async def _stream_and_persist(
         parsed = json.loads("".join(text_parts))
     except json.JSONDecodeError:
         parsed = None
+    if parsed is not None and definition.postprocess is not None:
+        parsed = definition.postprocess(parsed, input_data)
 
     invocation_id: uuid.UUID | None = None
     if correlation_id is not None:
@@ -393,11 +431,13 @@ async def _stream_and_persist(
     await db.refresh(run)
 
     quota = await peek(db, user=user, metric=definition.quota_metric)
+    warning = await _outreach_warning(db, user=user, definition=definition)
     yield {
         "type": "tool_run",
         "run_id": str(run.id),
         "context_used": [key.value for key in included],
         "quota": {"metric": quota.metric, "used": quota.used, "limit": quota.limit},
+        "warning": warning,
     }
 
 
@@ -418,7 +458,7 @@ async def get_run_for_user(
 
 async def regenerate_run(
     db: AsyncSession, *, user: User, run_id: uuid.UUID, nudge: str | None
-) -> tuple[ToolRun, QuotaStatus]:
+) -> tuple[ToolRun, QuotaStatus, str | None]:
     parent = await get_run_for_user(db, run_id=run_id, user_id=user.id)
     if parent is None:
         raise ApiError(ErrorCode.NOT_FOUND, "no such tool run")

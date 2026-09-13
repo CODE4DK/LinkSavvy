@@ -1,0 +1,25 @@
+{
+  "response": {
+    "experiences": [
+      {
+        "segment_id": "experience-0",
+        "company": null,
+        "title": "Freelance Consultant",
+        "location": null,
+        "start": null,
+        "end": null,
+        "is_current": null,
+        "bullets": ["Helped several startups design their backend architecture."],
+        "technologies": []
+      }
+    ],
+    "custom_sections": [
+      {
+        "segment_id": "custom-0",
+        "heading": "Volunteer Work",
+        "bullets": ["Mentored junior engineers through a local coding bootcamp."]
+      }
+    ]
+  },
+  "tokens_out": 120
+}

@@ -1,0 +1,19 @@
+{
+  "response": {
+    "variants": [
+      {
+        "warmth": "warm",
+        "reply": "Really appreciate you sharing that, especially the point about onboarding -- it's exactly the kind of feedback that makes this worth writing about."
+      },
+      {
+        "warmth": "neutral",
+        "reply": "Good point on onboarding. We tackled that by pairing every new hire with a rotating buddy for the first month."
+      },
+      {
+        "warmth": "brief",
+        "reply": "Fair point -- onboarding is the piece we're still iterating on."
+      }
+    ]
+  },
+  "tokens_out": 90
+}

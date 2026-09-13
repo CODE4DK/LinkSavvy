@@ -118,3 +118,13 @@ def get_tool(tool_id: str) -> ToolDefinition:
 
 def all_tools() -> list[ToolDefinition]:
     return get_registry().all()
+
+
+def outreach_tool_ids() -> list[str]:
+    """Every tool id flagged `counts_as_outreach=True` -- the daily soft
+    cap (app/engagement/guardrails.py) is on outreach volume across all
+    of them, not on any one tool. Routed through this module's own
+    `get_registry()` (rather than called directly from app/tools/
+    service.py) so tests can swap the registry the same way they
+    already do for `get_tool`."""
+    return [definition.id for definition in get_registry().all() if definition.counts_as_outreach]

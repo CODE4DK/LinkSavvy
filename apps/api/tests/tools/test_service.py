@@ -55,6 +55,7 @@ DEFINITION = ToolDefinition(
     quota_metric="tool_runs",
     min_plan=Plan.{min_plan},
     free_daily_cap={free_daily_cap!r},
+    counts_as_outreach={counts_as_outreach!r},
 )
 """
 
@@ -72,6 +73,7 @@ def _build_registry(
     min_plan: str = "FREE",
     free_daily_cap: int | None = None,
     save_as: str = "AssetType.ANALYSIS",
+    counts_as_outreach: bool = False,
 ) -> ToolRegistry:
     (tmp_path / "fixture_tool.py").write_text(
         _DEFINITION_SOURCE.format(
@@ -80,6 +82,7 @@ def _build_registry(
             min_plan=min_plan,
             free_daily_cap=free_daily_cap,
             save_as=save_as,
+            counts_as_outreach=counts_as_outreach,
         )
     )
 
@@ -153,7 +156,7 @@ async def test_run_tool_persists_a_succeeded_run(
     _patch_gateway_success(monkeypatch)
     user = await _get_user(db_session, registered_user["email"])
 
-    run, quota = await service.run_tool(
+    run, quota, _ = await service.run_tool(
         db_session,
         user=user,
         tool_id="fixture.tool",
@@ -244,6 +247,54 @@ async def test_run_tool_enforces_free_daily_cap(
     assert exc_info.value.code == ErrorCode.RATE_LIMITED
 
 
+async def test_run_tool_warns_past_the_outreach_soft_cap(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    client: AsyncClient,
+    db_session: AsyncSession,
+    registered_user: dict[str, str],
+) -> None:
+    from app.engagement.guardrails import OUTREACH_DAILY_SOFT_CAP
+
+    _build_registry(tmp_path, monkeypatch, counts_as_outreach=True)
+    _patch_gateway_success(monkeypatch)
+    user = await _get_user(db_session, registered_user["email"])
+    user.plan = "pro"  # the free plan's own tool_runs quota (15/day) would
+    # otherwise block before the soft cap is even reached
+    await db_session.commit()
+
+    warning = None
+    for _ in range(OUTREACH_DAILY_SOFT_CAP + 1):
+        _, _, warning = await service.run_tool(
+            db_session, user=user, tool_id="fixture.tool", raw_input={"user_supplied_text": "hi"}
+        )
+    assert warning is not None
+    assert "quality" in warning.lower()
+
+
+async def test_run_tool_does_not_warn_for_a_non_outreach_tool(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    client: AsyncClient,
+    db_session: AsyncSession,
+    registered_user: dict[str, str],
+) -> None:
+    from app.engagement.guardrails import OUTREACH_DAILY_SOFT_CAP
+
+    _build_registry(tmp_path, monkeypatch, counts_as_outreach=False)
+    _patch_gateway_success(monkeypatch)
+    user = await _get_user(db_session, registered_user["email"])
+    user.plan = "pro"
+    await db_session.commit()
+
+    warning = None
+    for _ in range(OUTREACH_DAILY_SOFT_CAP + 1):
+        _, _, warning = await service.run_tool(
+            db_session, user=user, tool_id="fixture.tool", raw_input={"user_supplied_text": "hi"}
+        )
+    assert warning is None
+
+
 async def test_run_tool_records_a_failed_run_and_reraises_on_gateway_error(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -279,7 +330,7 @@ async def test_regenerate_run_creates_a_child_run_with_the_nudge(
     _patch_gateway_success(monkeypatch)
     user = await _get_user(db_session, registered_user["email"])
 
-    parent, _ = await service.run_tool(
+    parent, _, _ = await service.run_tool(
         db_session, user=user, tool_id="fixture.tool", raw_input={"user_supplied_text": "hi"}
     )
 
@@ -307,7 +358,7 @@ async def test_regenerate_run_creates_a_child_run_with_the_nudge(
 
     monkeypatch.setattr(gateway, "run", _fake_run)
 
-    child, _ = await service.regenerate_run(
+    child, _, _ = await service.regenerate_run(
         db_session, user=user, run_id=parent.id, nudge="make it shorter"
     )
 
@@ -346,7 +397,7 @@ async def test_rate_run_stores_rating_and_feedback(
     _build_registry(tmp_path, monkeypatch)
     _patch_gateway_success(monkeypatch)
     user = await _get_user(db_session, registered_user["email"])
-    run, _ = await service.run_tool(
+    run, _, _ = await service.run_tool(
         db_session, user=user, tool_id="fixture.tool", raw_input={"user_supplied_text": "hi"}
     )
 
@@ -367,7 +418,7 @@ async def test_save_run_as_asset_creates_an_asset(
     _build_registry(tmp_path, monkeypatch)
     _patch_gateway_success(monkeypatch)
     user = await _get_user(db_session, registered_user["email"])
-    run, _ = await service.run_tool(
+    run, _, _ = await service.run_tool(
         db_session, user=user, tool_id="fixture.tool", raw_input={"user_supplied_text": "hi"}
     )
 
@@ -389,7 +440,7 @@ async def test_save_run_as_asset_rejects_a_tool_with_no_save_as(
     _build_registry(tmp_path, monkeypatch, save_as="None")
     _patch_gateway_success(monkeypatch)
     user = await _get_user(db_session, registered_user["email"])
-    run, _ = await service.run_tool(
+    run, _, _ = await service.run_tool(
         db_session, user=user, tool_id="fixture.tool", raw_input={"user_supplied_text": "hi"}
     )
 

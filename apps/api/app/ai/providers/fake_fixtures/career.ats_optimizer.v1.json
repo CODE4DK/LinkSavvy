@@ -1,0 +1,11 @@
+{
+  "response": {
+    "keyword_suggestions": [
+      {
+        "keyword": "Kubernetes",
+        "suggested_placement": "Add to the Acme Corp bullet about the payments platform, since it already mentions container orchestration."
+      }
+    ]
+  },
+  "tokens_out": 60
+}

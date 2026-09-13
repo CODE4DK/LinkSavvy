@@ -1,0 +1,116 @@
+{
+  "$defs": {
+    "_DimensionScore": {
+      "additionalProperties": false,
+      "properties": {
+        "dimension": {
+          "enum": [
+            "impact",
+            "clarity",
+            "quantification",
+            "relevance",
+            "formatting",
+            "length"
+          ],
+          "title": "Dimension",
+          "type": "string"
+        },
+        "score": {
+          "maximum": 10,
+          "minimum": 0,
+          "title": "Score",
+          "type": "integer"
+        },
+        "note": {
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "dimension",
+        "score",
+        "note"
+      ],
+      "title": "_DimensionScore",
+      "type": "object"
+    },
+    "_Finding": {
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "info",
+            "warning",
+            "critical"
+          ],
+          "title": "Severity",
+          "type": "string"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "recommendation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Recommendation"
+        }
+      },
+      "required": [
+        "title",
+        "severity",
+        "description"
+      ],
+      "title": "_Finding",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "summary": {
+      "title": "Summary",
+      "type": "string"
+    },
+    "score": {
+      "maximum": 100,
+      "minimum": 0,
+      "title": "Score",
+      "type": "integer"
+    },
+    "dimension_scores": {
+      "items": {
+        "$ref": "#/$defs/_DimensionScore"
+      },
+      "maxItems": 6,
+      "minItems": 6,
+      "title": "Dimension Scores",
+      "type": "array"
+    },
+    "findings": {
+      "items": {
+        "$ref": "#/$defs/_Finding"
+      },
+      "title": "Findings",
+      "type": "array"
+    }
+  },
+  "required": [
+    "summary",
+    "score",
+    "dimension_scores",
+    "findings"
+  ],
+  "title": "_Output",
+  "type": "object"
+}

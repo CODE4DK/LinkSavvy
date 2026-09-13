@@ -1,0 +1,28 @@
+{
+  "response": {
+    "columns": ["action", "reason", "cadence"],
+    "rows": [
+      {
+        "action": "Comment thoughtfully on posts about backend reliability and on-call ownership.",
+        "reason": "Matches your real experience leading backend teams at Acme Corp -- you have credible, specific things to say here.",
+        "cadence": "a few times a week"
+      },
+      {
+        "action": "Reply in depth to comments left on your own posts about team ownership.",
+        "reason": "Deepens conversations you've already started with people who showed real interest, rather than chasing new audiences.",
+        "cadence": "weekly"
+      },
+      {
+        "action": "Join discussions in the engineering-leadership community you're already active in.",
+        "reason": "Builds visibility among peers who already engage with your writing, compounding reach you've earned rather than bought.",
+        "cadence": "weekly"
+      },
+      {
+        "action": "Write one thought-leadership comment a week on a post from someone more senior in your field.",
+        "reason": "Grows your visibility to people outside your existing network without requiring a new post every time.",
+        "cadence": "weekly"
+      }
+    ]
+  },
+  "tokens_out": 220
+}

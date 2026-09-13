@@ -1,0 +1,53 @@
+{
+  "$defs": {
+    "_Variant": {
+      "additionalProperties": false,
+      "properties": {
+        "stance": {
+          "enum": [
+            "agree_and_extend",
+            "respectful_pushback",
+            "ask_a_question",
+            "share_experience",
+            "add_data"
+          ],
+          "title": "Stance",
+          "type": "string"
+        },
+        "comment": {
+          "maxLength": 1250,
+          "title": "Comment",
+          "type": "string"
+        },
+        "adds": {
+          "title": "What this adds to the conversation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stance",
+        "comment",
+        "adds"
+      ],
+      "title": "_Variant",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "variants": {
+      "items": {
+        "$ref": "#/$defs/_Variant"
+      },
+      "maxItems": 4,
+      "minItems": 4,
+      "title": "Variants",
+      "type": "array"
+    }
+  },
+  "required": [
+    "variants"
+  ],
+  "title": "_Output",
+  "type": "object"
+}

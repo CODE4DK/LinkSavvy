@@ -1,0 +1,44 @@
+{
+  "$defs": {
+    "_Message": {
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "enum": [
+            "interviewer",
+            "candidate"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "role",
+        "text"
+      ],
+      "title": "_Message",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "messages": {
+      "items": {
+        "$ref": "#/$defs/_Message"
+      },
+      "maxItems": 11,
+      "minItems": 6,
+      "title": "Messages",
+      "type": "array"
+    }
+  },
+  "required": [
+    "messages"
+  ],
+  "title": "_Output",
+  "type": "object"
+}

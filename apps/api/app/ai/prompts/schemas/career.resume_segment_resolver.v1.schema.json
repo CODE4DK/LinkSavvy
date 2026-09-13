@@ -1,0 +1,181 @@
+{
+  "$defs": {
+    "DatePart": {
+      "additionalProperties": false,
+      "description": "A partial date as LinkedIn and resumes actually give it to us.",
+      "properties": {
+        "year": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Year"
+        },
+        "month": {
+          "anyOf": [
+            {
+              "maximum": 12,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Month"
+        }
+      },
+      "title": "DatePart",
+      "type": "object"
+    },
+    "_ResolvedCustomSection": {
+      "additionalProperties": false,
+      "properties": {
+        "segment_id": {
+          "title": "Segment Id",
+          "type": "string"
+        },
+        "heading": {
+          "title": "Heading",
+          "type": "string"
+        },
+        "bullets": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Bullets",
+          "type": "array"
+        }
+      },
+      "required": [
+        "segment_id",
+        "heading"
+      ],
+      "title": "_ResolvedCustomSection",
+      "type": "object"
+    },
+    "_ResolvedExperience": {
+      "additionalProperties": false,
+      "properties": {
+        "segment_id": {
+          "title": "Segment Id",
+          "type": "string"
+        },
+        "company": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Company"
+        },
+        "title": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Title"
+        },
+        "location": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Location"
+        },
+        "start": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DatePart"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "end": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DatePart"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "is_current": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Is Current"
+        },
+        "bullets": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Bullets",
+          "type": "array"
+        },
+        "technologies": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Technologies",
+          "type": "array"
+        }
+      },
+      "required": [
+        "segment_id"
+      ],
+      "title": "_ResolvedExperience",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "experiences": {
+      "items": {
+        "$ref": "#/$defs/_ResolvedExperience"
+      },
+      "title": "Experiences",
+      "type": "array"
+    },
+    "custom_sections": {
+      "items": {
+        "$ref": "#/$defs/_ResolvedCustomSection"
+      },
+      "title": "Custom Sections",
+      "type": "array"
+    }
+  },
+  "title": "ResolveOutput",
+  "type": "object"
+}

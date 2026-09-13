@@ -1,0 +1,19 @@
+{
+  "response": {
+    "variants": [
+      {
+        "message": "Hi Jordan, following up on the note you left about ownership gaps at Acme Corp -- did the on-call rotation change end up sticking? Curious how it played out.",
+        "exit_line": "No pressure to reply if the timing's off -- just wanted to close the loop."
+      },
+      {
+        "message": "Circling back on the ownership question you raised at Acme Corp. If it's useful, happy to share how we structured on-call rotation to enforce it.",
+        "exit_line": "Totally fine either way -- feel free to reach out whenever it's relevant again."
+      },
+      {
+        "message": "Wanted to check back in on the ownership rotation idea we discussed -- any update, or has priority shifted elsewhere?",
+        "exit_line": "If this isn't a priority anymore, no need to reply -- I'll assume it's settled."
+      }
+    ]
+  },
+  "tokens_out": 130
+}

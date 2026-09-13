@@ -1,0 +1,23 @@
+{
+  "response": {
+    "summary": "A solid backend engineering resume with strong ownership language at Acme Corp, but the summary undersells the scope of the on-call redesign described later.",
+    "score": 74,
+    "dimension_scores": [
+      {"dimension": "impact", "score": 7, "note": "Shows outcomes like reduced incident response time, not just duties."},
+      {"dimension": "clarity", "score": 8, "note": "Easy to follow chronologically."},
+      {"dimension": "quantification", "score": 6, "note": "Some bullets are quantified, others are not."},
+      {"dimension": "relevance", "score": 7, "note": "Consistent with a senior backend engineering target role."},
+      {"dimension": "formatting", "score": 8, "note": "Clean single-column structure with clear headings."},
+      {"dimension": "length", "score": 7, "note": "Appropriate for the experience level shown."}
+    ],
+    "findings": [
+      {
+        "title": "Summary undersells the on-call redesign",
+        "severity": "info",
+        "description": "The summary mentions leading teams but doesn't reference the on-call ownership redesign at Acme Corp, which is one of the strongest results shown.",
+        "recommendation": "Pull that result up into the summary line."
+      }
+    ]
+  },
+  "tokens_out": 260
+}

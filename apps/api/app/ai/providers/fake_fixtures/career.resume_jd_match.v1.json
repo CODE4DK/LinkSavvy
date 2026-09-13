@@ -1,0 +1,23 @@
+{
+  "response": {
+    "overall_match": 81,
+    "component_scores": [
+      {"component": "hard_requirements", "weight": 0.35, "score": 80, "contribution": 28.0},
+      {"component": "preferred_requirements", "weight": 0.15, "score": 60, "contribution": 9.0},
+      {"component": "keyword_coverage", "weight": 0.2, "score": 70, "contribution": 14.0},
+      {"component": "seniority_fit", "weight": 0.15, "score": 100, "contribution": 15.0},
+      {"component": "domain_fit", "weight": 0.15, "score": 100, "contribution": 15.0}
+    ],
+    "matched": [
+      {"requirement": "5+ years of backend engineering experience", "evidence": "Senior Backend Engineer, Acme Corp, Jan 2020 - Present plus prior backend role"},
+      {"requirement": "Experience leading incident response", "evidence": "Reduced incident response time by half and redesigned the on-call rotation"}
+    ],
+    "missing": [
+      {"requirement": "Experience with Terraform", "learnable": true}
+    ],
+    "transferable": [
+      {"requirement": "Experience with event-driven architectures", "resume_experience": "Built the payments reconciliation pipeline, which is queue-driven"}
+    ]
+  },
+  "tokens_out": 220
+}

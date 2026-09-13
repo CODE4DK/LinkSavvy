@@ -11,6 +11,7 @@ from app.models.content_sample import ContentSample
 from app.models.email_verification import EmailVerification
 from app.models.feature_flag import FeatureFlag, UserFeatureFlag
 from app.models.job import Job
+from app.models.job_description import JobDescription
 from app.models.linkedin_connection import LinkedInConnection
 from app.models.login_attempt import LoginAttempt
 from app.models.oauth_identity import OAuthIdentity
@@ -21,6 +22,8 @@ from app.models.profile_import import ProfileImportBlob, ProfileImportRow
 from app.models.profile_snapshot import ProfileSnapshotRow
 from app.models.recommendation import Recommendation
 from app.models.refresh_token import RefreshToken
+from app.models.resume import Resume
+from app.models.resume_match import ResumeMatch
 from app.models.score_history import ScoreHistory
 from app.models.tool_run import ToolRun
 from app.models.usage_counter import UsageCounter
@@ -42,6 +45,7 @@ __all__ = [
     "EmailVerification",
     "FeatureFlag",
     "Job",
+    "JobDescription",
     "LinkedInConnection",
     "LoginAttempt",
     "OAuthIdentity",
@@ -53,6 +57,8 @@ __all__ = [
     "ProfileSnapshotRow",
     "Recommendation",
     "RefreshToken",
+    "Resume",
+    "ResumeMatch",
     "ScoreHistory",
     "ToolRun",
     "UsageCounter",

@@ -1,0 +1,11 @@
+{
+  "response": {
+    "variants": [
+      {
+        "comment": "This tracks with what I saw leading backend teams at Acme Corp: unclear ownership rarely shows up in code review, it shows up three weeks later in an incident channel when nobody knows who to page. The fix that actually stuck for us wasn't a wiki page, it was naming one accountable engineer per service in the on-call rotation itself, so ownership was enforced by the paging system rather than documentation nobody reads under pressure.",
+        "what_this_adds": "Adds a concrete mechanism (ownership enforced via the paging system) beyond the post's general observation about unclear ownership."
+      }
+    ]
+  },
+  "tokens_out": 180
+}

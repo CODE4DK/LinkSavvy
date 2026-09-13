@@ -1,0 +1,28 @@
+{
+  "response": {
+    "sections": [
+      {
+        "heading": "Phase 1: Build foundational skills (months 1-4)",
+        "body": "Strengthen the technical breadth needed for an Engineering Manager role.",
+        "bullets": [
+          {"text": "Skill: budgeting and headcount planning basics", "flagged": false, "flag_reason": null},
+          {"text": "Evidence: lead a cross-team project end to end at Acme Corp", "flagged": false, "flag_reason": null},
+          {"text": "Learn from: shadow your own manager during planning cycles", "flagged": false, "flag_reason": null},
+          {"text": "LinkedIn action: use the Career Roadmap tool's own output to track progress monthly", "flagged": false, "flag_reason": null}
+        ]
+      },
+      {
+        "heading": "Phase 2: Build visibility (months 5-8)",
+        "body": "Make your leadership work visible outside your immediate team.",
+        "bullets": [
+          {"text": "Skill: written communication for broader audiences", "flagged": false, "flag_reason": null},
+          {"text": "Evidence: publish a retrospective on the on-call redesign", "flagged": false, "flag_reason": null},
+          {"text": "Learn from: engineering managers in your existing network", "flagged": false, "flag_reason": null},
+          {"text": "LinkedIn action: use Thought Leadership Comment to engage on engineering-management posts", "flagged": false, "flag_reason": null},
+          {"text": "Evidence: a specific team-growth metric", "flagged": true, "flag_reason": "Needs a real number from you -- team size or retention change -- to avoid guessing."}
+        ]
+      }
+    ]
+  },
+  "tokens_out": 260
+}

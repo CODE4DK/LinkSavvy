@@ -33,6 +33,7 @@ def to_tool_summary(definition: ToolDefinition) -> ToolSummary:
         save_as=definition.save_as.value if definition.save_as else None,
         free_daily_cap=definition.free_daily_cap,
         supports_streaming=definition.supports_streaming,
+        counts_as_outreach=definition.counts_as_outreach,
     )
 
 
@@ -40,13 +41,16 @@ def to_quota_info(quota: QuotaStatus) -> QuotaInfo:
     return QuotaInfo(metric=quota.metric, used=quota.used, limit=quota.limit)
 
 
-def to_tool_run_response(run: ToolRun, *, quota: QuotaStatus) -> ToolRunResponse:
+def to_tool_run_response(
+    run: ToolRun, *, quota: QuotaStatus, warning: str | None = None
+) -> ToolRunResponse:
     assert run.output is not None  # a "failed" run never reaches this presenter
     return ToolRunResponse(
         run_id=str(run.id),
         output=run.output,
         context_used=list(run.context_keys),
         quota=to_quota_info(quota),
+        warning=warning,
     )
 
 

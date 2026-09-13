@@ -146,6 +146,8 @@ export function ToolRunner({
   const [output, setOutput] = useState<unknown>(null);
   const [contextUsed, setContextUsed] = useState<string[]>([]);
   const [quota, setQuota] = useState<QuotaInfo | null>(null);
+  const [warning, setWarning] = useState<string | null>(null);
+  const [reviewConfirmed, setReviewConfirmed] = useState(false);
 
   const [rating, setRating] = useState<"up" | "down" | null>(null);
   const [feedbackText, setFeedbackText] = useState("");
@@ -222,6 +224,7 @@ export function ToolRunner({
     setEditedText("");
     setSaveTitle("");
     setSavedAsset(null);
+    setReviewConfirmed(false);
   }
 
   function applyRunResult(
@@ -229,11 +232,13 @@ export function ToolRunner({
     newOutput: unknown,
     newContextUsed: string[],
     newQuota: QuotaInfo,
+    newWarning?: string | null,
   ) {
     setRunId(newRunId);
     setOutput(newOutput);
     setContextUsed(newContextUsed);
     setQuota(newQuota);
+    setWarning(newWarning ?? null);
     resetResultState();
     setHistory(null); // stale until the rail is reopened
   }
@@ -243,7 +248,13 @@ export function ToolRunner({
       method: "POST",
       body: { input },
     });
-    applyRunResult(response.run_id, response.output, response.context_used, response.quota);
+    applyRunResult(
+      response.run_id,
+      response.output,
+      response.context_used,
+      response.quota,
+      response.warning,
+    );
   }
 
   async function performStreamingRun(input: Record<string, unknown>) {
@@ -267,7 +278,7 @@ export function ToolRunner({
           } catch {
             parsed = null;
           }
-          applyRunResult(frame.run_id, parsed, frame.context_used, frame.quota);
+          applyRunResult(frame.run_id, parsed, frame.context_used, frame.quota, frame.warning);
         }
       },
       { signal: controller.signal },
@@ -324,7 +335,13 @@ export function ToolRunner({
         method: "POST",
         body: { nudge: nudge.trim() || null },
       });
-      applyRunResult(response.run_id, response.output, response.context_used, response.quota);
+      applyRunResult(
+        response.run_id,
+        response.output,
+        response.context_used,
+        response.quota,
+        response.warning,
+      );
     } catch (err) {
       setRunError(err instanceof ApiError ? err.message : "Regeneration failed.");
     } finally {
@@ -374,6 +391,7 @@ export function ToolRunner({
 
   async function handleCopy() {
     if (!tool) return;
+    if (tool.counts_as_outreach && !reviewConfirmed) return;
     const text = editing ? editedText : extractSaveableText(tool.result_renderer, output);
     try {
       await navigator.clipboard.writeText(text);
@@ -405,6 +423,7 @@ export function ToolRunner({
     setOutput(run.output);
     setContextUsed(run.context_used);
     setQuota(null);
+    setWarning(null);
     resetResultState();
     setRating((run.rating as "up" | "down" | null) ?? null);
     setFeedbackText(run.feedback_text ?? "");
@@ -526,10 +545,33 @@ export function ToolRunner({
               />
             )}
 
+            {warning && (
+              <p className="mt-3 rounded-md border border-warning/40 bg-warning/10 px-3 py-2 text-sm text-warning">
+                {warning}
+              </p>
+            )}
+
+            {output !== null && tool.counts_as_outreach && (
+              <label className="mt-3 flex items-start gap-2 text-sm text-fg-muted">
+                <input
+                  type="checkbox"
+                  checked={reviewConfirmed}
+                  onChange={(e) => setReviewConfirmed(e.target.checked)}
+                  className="mt-0.5"
+                />
+                I&apos;ve reviewed this message and will personalise it further.
+              </label>
+            )}
+
             {output !== null && (
               <div className="mt-4 flex flex-col gap-3 border-t border-border pt-4">
                 <div className="flex flex-wrap items-center gap-2">
-                  <Button variant="secondary" size="sm" onClick={handleCopy}>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={handleCopy}
+                    disabled={tool.counts_as_outreach && !reviewConfirmed}
+                  >
                     Copy
                   </Button>
                   <Button
