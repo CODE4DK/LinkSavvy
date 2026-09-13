@@ -40,7 +40,7 @@ class ProposedToolResponse(BaseModel):
     prefilled_input: dict[str, Any]
 
 
-class MessageResponse(BaseModel):
+class AssistantMessageResponse(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     id: str
@@ -56,7 +56,7 @@ class ConversationDetailResponse(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     conversation: ConversationSummary
-    messages: list[MessageResponse]
+    messages: list[AssistantMessageResponse]
 
 
 class SendMessageRequest(BaseModel):
@@ -68,7 +68,7 @@ class SendMessageRequest(BaseModel):
 class SendMessageResponse(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    message: MessageResponse
+    message: AssistantMessageResponse
     quota: QuotaInfo
     quota_warning: str | None = None
 

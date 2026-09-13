@@ -1,6 +1,6 @@
 """ORM -> response-schema conversion for the Assistant router, plus the
 same shaping for a streamed SSE frame's `message` field (`.model_dump
-(mode="json")` on the same `MessageResponse` covers both -- one
+(mode="json")` on the same `AssistantMessageResponse` covers both -- one
 conversion path, not two)."""
 
 from __future__ import annotations
@@ -8,7 +8,7 @@ from __future__ import annotations
 from app.billing.quota import QuotaStatus
 from app.models.conversation import Conversation
 from app.models.message import Message
-from app.schemas.assistant import ConversationSummary, MessageResponse
+from app.schemas.assistant import AssistantMessageResponse, ConversationSummary
 from app.schemas.tools import QuotaInfo
 
 
@@ -26,8 +26,8 @@ def to_conversation_summary(conversation: Conversation) -> ConversationSummary:
     )
 
 
-def to_message_response(message: Message) -> MessageResponse:
-    return MessageResponse(
+def to_message_response(message: Message) -> AssistantMessageResponse:
+    return AssistantMessageResponse(
         id=str(message.id),
         role=message.role,
         content=message.content,

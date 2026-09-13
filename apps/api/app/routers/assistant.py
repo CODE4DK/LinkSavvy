@@ -26,6 +26,7 @@ from app.models.asset import Asset
 from app.models.user import User
 from app.schemas.assistant import (
     ArchiveConversationRequest,
+    AssistantMessageResponse,
     ConfirmToolRunRequest,
     ContextItemResponse,
     ContextSettingsResponse,
@@ -34,7 +35,6 @@ from app.schemas.assistant import (
     ConversationDetailResponse,
     ConversationSummary,
     EditMessageRequest,
-    MessageResponse,
     RateMessageRequest,
     RenameConversationRequest,
     SaveConversationRequest,
@@ -302,7 +302,8 @@ async def edit_message_endpoint(
 
 
 @router.post(
-    "/conversations/{conversation_id}/messages/{message_id}/rate", response_model=MessageResponse
+    "/conversations/{conversation_id}/messages/{message_id}/rate",
+    response_model=AssistantMessageResponse,
 )
 async def rate_message_endpoint(
     conversation_id: uuid.UUID,
@@ -310,7 +311,7 @@ async def rate_message_endpoint(
     payload: RateMessageRequest,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> MessageResponse:
+) -> AssistantMessageResponse:
     message = await orchestrator.rate_message(
         db,
         user=user,
@@ -321,13 +322,15 @@ async def rate_message_endpoint(
     return to_message_response(message)
 
 
-@router.post("/conversations/{conversation_id}/confirm-tool", response_model=MessageResponse)
+@router.post(
+    "/conversations/{conversation_id}/confirm-tool", response_model=AssistantMessageResponse
+)
 async def confirm_tool_endpoint(
     conversation_id: uuid.UUID,
     payload: ConfirmToolRunRequest,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> MessageResponse:
+) -> AssistantMessageResponse:
     conversation = await conversations_service.get_owned_conversation(
         db, user_id=user.id, conversation_id=conversation_id
     )

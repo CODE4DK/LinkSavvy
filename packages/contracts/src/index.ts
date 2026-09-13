@@ -204,9 +204,6 @@ export type WeeklyPlanResponse = Schemas["WeeklyPlanResponse"];
 export type WeeklyPlanItemUpdate = Schemas["WeeklyPlanItemUpdate"];
 export type GrowthGoalCreate = Schemas["GrowthGoalCreate"];
 export type GrowthGoalResponse = Schemas["GrowthGoalResponse"];
-export type CoachMessageCreate = Schemas["CoachMessageCreate"];
-export type CoachMessageResponse = Schemas["CoachMessageResponse"];
-export type CoachSessionResponse = Schemas["CoachSessionResponse"];
 export type GrowthScoreHistoryPoint = Schemas["ScoreHistoryPointResponse"];
 export type GrowthScoreHistoryResponse = Schemas["GrowthScoreHistoryResponse"];
 export type ScoreDeltaResponse = Schemas["ScoreDeltaResponse"];
@@ -225,3 +222,37 @@ export type BulkActionResponse = Schemas["BulkActionResponse"];
 export type AssetFolderResponse = Schemas["AssetFolderResponse"];
 export type AssetFolderCreateRequest = Schemas["AssetFolderCreateRequest"];
 export type AssetFolderUpdateRequest = Schemas["AssetFolderUpdateRequest"];
+
+// -- AI Assistant -------------------------------------------------------
+
+export type ConversationCreate = Schemas["ConversationCreate"];
+export type ConversationSummary = Schemas["ConversationSummary"];
+export type ProposedToolResponse = Schemas["ProposedToolResponse"];
+export type AssistantMessageResponse = Schemas["AssistantMessageResponse"];
+export type ConversationDetailResponse = Schemas["ConversationDetailResponse"];
+export type SendMessageRequest = Schemas["SendMessageRequest"];
+export type SendMessageResponse = Schemas["SendMessageResponse"];
+export type EditMessageRequest = Schemas["EditMessageRequest"];
+export type RenameConversationRequest = Schemas["RenameConversationRequest"];
+export type ArchiveConversationRequest = Schemas["ArchiveConversationRequest"];
+export type ConfirmToolRunRequest = Schemas["ConfirmToolRunRequest"];
+export type RateMessageRequest = Schemas["RateMessageRequest"];
+export type ContextItemResponse = Schemas["ContextItemResponse"];
+export type ContextSettingsResponse = Schemas["ContextSettingsResponse"];
+export type ContextTogglesRequest = Schemas["ContextTogglesRequest"];
+export type SaveConversationRequest = Schemas["SaveConversationRequest"];
+export type SuggestedPromptsResponse = Schemas["SuggestedPromptsResponse"];
+
+/** SSE frame shapes for `POST /api/v1/assistant/conversations/{id}/messages?stream=true`
+ * -- mirrors ToolRunStreamFrame's own hand-maintained union, since SSE
+ * frames aren't part of the OpenAPI schema (see tools.ts's own comment). */
+export type AssistantStreamFrame =
+  | { type: "start" }
+  | { type: "delta"; text: string }
+  | {
+      type: "message";
+      message: AssistantMessageResponse;
+      quota: QuotaInfo;
+      quota_warning: string | null;
+    }
+  | { type: "error"; code: string; message: string };

@@ -25,7 +25,7 @@ from app.growth.weekly_plan import get_current_plan, set_item_completed
 from app.models.growth_goal import GrowthGoal
 from app.models.user import User
 from app.models.weekly_plan import WeeklyPlan
-from app.schemas.assistant import ConversationSummary, MessageResponse, SendMessageRequest
+from app.schemas.assistant import AssistantMessageResponse, ConversationSummary, SendMessageRequest
 from app.schemas.growth import (
     BeforeAfterProfileEditResponse,
     BeforeAfterResponse,
@@ -181,12 +181,12 @@ async def get_coach_conversation_endpoint(
     return to_conversation_summary(conversation)
 
 
-@router.post("/coach/messages", response_model=MessageResponse)
+@router.post("/coach/messages", response_model=AssistantMessageResponse)
 async def send_coach_message_endpoint(
     payload: SendMessageRequest,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> MessageResponse:
+) -> AssistantMessageResponse:
     """A convenience alias for sending into the coach conversation
     without the frontend first fetching its id -- routes through the same
     `orchestrator.handle_message` every conversation uses (mode="coach"
