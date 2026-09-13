@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "components": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "positioning_clarity",
+              "message_consistency",
+              "distinctiveness",
+              "proof",
+              "content_profile_alignment"
+            ]
+          },
+          "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+          "evidence": { "type": "string" }
+        },
+        "required": ["code", "score", "evidence"],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 5
+    }
+  },
+  "required": ["components"],
+  "additionalProperties": false
+}
