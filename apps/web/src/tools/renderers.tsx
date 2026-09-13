@@ -21,6 +21,7 @@
 
 import type { ToolSummary } from "@linksavvy/contracts";
 import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
 
 type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
 type JsonRecord = Record<string, JsonValue>;
@@ -54,7 +55,7 @@ function primaryTextField(record: JsonRecord): { key: string | null; text: strin
   return { key: bestKey, text: bestValue };
 }
 
-function VariantsView({ output }: { output: unknown }) {
+function VariantsView({ output, onPick }: { output: unknown; onPick?: (text: string) => void }) {
   const variants = isRecord(output) ? asArray(output.variants) : [];
   if (variants.length === 0) return <EmptyOutput />;
   return (
@@ -76,6 +77,11 @@ function VariantsView({ output }: { output: unknown }) {
                   </div>
                 ))}
               </dl>
+            )}
+            {onPick && (
+              <Button variant="secondary" size="sm" className="mt-3" onClick={() => onPick(text)}>
+                Apply to profile
+              </Button>
             )}
           </div>
         );
@@ -261,10 +267,9 @@ function EmptyOutput() {
 }
 
 const RENDERERS: Record<
-  ToolSummary["result_renderer"],
+  Exclude<ToolSummary["result_renderer"], "variants">,
   (props: { output: unknown }) => JSX.Element
 > = {
-  variants: VariantsView,
   document: DocumentView,
   analysis: AnalysisView,
   table: TableView,
@@ -275,10 +280,18 @@ const RENDERERS: Record<
 export function ResultView({
   renderer,
   output,
+  onPickVariant,
 }: {
   renderer: ToolSummary["result_renderer"];
   output: unknown;
+  /** Only meaningful for the `variants` renderer: when provided, each
+   * variant card gets an "Apply to profile" button that calls back with
+   * that one variant's primary text -- the Profile Hub page's way of
+   * letting the user pick which of several variants to accept, since
+   * only it (not the framework) knows what "accept" should do. */
+  onPickVariant?: (text: string) => void;
 }) {
+  if (renderer === "variants") return <VariantsView output={output} onPick={onPickVariant} />;
   const View = RENDERERS[renderer] ?? DocumentView;
   return <View output={output} />;
 }

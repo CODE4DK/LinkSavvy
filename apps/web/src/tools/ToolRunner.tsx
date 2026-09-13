@@ -76,9 +76,17 @@ export interface ToolRunnerProps {
    * recommendation's suggested starting point. Applied once on load,
    * ahead of profile defaults and remembered last-used values. */
   initialValues?: Record<string, unknown>;
+  /** When provided, and the current tool's `save_as` is one this
+   * callback wants (a hub page's own choice -- the framework doesn't
+   * know or care which asset types that is), a result gets an "Apply to
+   * profile" action alongside Copy/Edit/Regenerate/Rate/Save: one button
+   * for a single-block result, or a per-variant button when the result
+   * renderer is `variants`, since only the user can pick which variant
+   * to accept. */
+  onApplyToProfile?: (params: { assetType: string; text: string }) => void;
 }
 
-export function ToolRunner({ toolId, initialValues }: ToolRunnerProps) {
+export function ToolRunner({ toolId, initialValues, onApplyToProfile }: ToolRunnerProps) {
   const { user } = useAuth();
   const { push: pushToast } = useToast();
 
@@ -454,7 +462,15 @@ export function ToolRunner({ toolId, initialValues }: ToolRunnerProps) {
             )}
 
             {output !== null && !editing && (
-              <ResultView renderer={tool.result_renderer} output={output} />
+              <ResultView
+                renderer={tool.result_renderer}
+                output={output}
+                onPickVariant={
+                  onApplyToProfile && tool.save_as
+                    ? (text) => onApplyToProfile({ assetType: tool.save_as as string, text })
+                    : undefined
+                }
+              />
             )}
 
             {editing && (
@@ -541,6 +557,23 @@ export function ToolRunner({ toolId, initialValues }: ToolRunnerProps) {
                     </Button>
                     {savedAsset && <Badge variant="success">Saved</Badge>}
                   </div>
+                )}
+
+                {onApplyToProfile && tool.save_as && tool.result_renderer !== "variants" && (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() =>
+                      onApplyToProfile({
+                        assetType: tool.save_as as string,
+                        text: editing
+                          ? editedText
+                          : extractSaveableText(tool.result_renderer, output),
+                      })
+                    }
+                  >
+                    Apply to profile
+                  </Button>
                 )}
 
                 {contextUsed.length > 0 && (
