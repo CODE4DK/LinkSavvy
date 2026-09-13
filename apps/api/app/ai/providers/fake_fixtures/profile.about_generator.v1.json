@@ -1,0 +1,22 @@
+{
+  "response": {
+    "variants": [
+      {
+        "hook": "I build backend systems that stay up when everything else is falling over.",
+        "body": "I'm a Senior Backend Engineer at Acme Corp, where I lead work on distributed systems that serve millions of requests a day. Over the past several years I've redesigned caching layers to cut latency by 40%, led the migration of a monolith to microservices for a 12-engineer team, and mentored three engineers to promotion. I care about systems that are simple to reason about even as they scale.",
+        "cta": "If you're tackling a hard distributed-systems problem, I'd love to hear about it -- feel free to reach out."
+      },
+      {
+        "hook": "Distributed systems, at scale, without the 3am pages.",
+        "body": "At Acme Corp I've spent my time as Senior Backend Engineer turning fragile infrastructure into something a team can trust: a redesigned caching layer (40% latency reduction), a monolith-to-microservices migration for 12 engineers, and hands-on mentoring for three engineers who've since been promoted. I'm drawn to problems where reliability and simplicity have to coexist.",
+        "cta": "Always happy to talk shop about backend architecture -- reach out any time."
+      },
+      {
+        "hook": "I turn complex backend problems into systems a team can actually maintain.",
+        "body": "As Senior Backend Engineer at Acme Corp, I focus on distributed systems that hold up under real load. Recent work includes cutting API latency by 40% through a caching redesign, leading a monolith-to-microservices migration for a 12-person engineering team, and mentoring three engineers to their next promotion. I'm motivated by making hard infrastructure feel simple.",
+        "cta": "Reach out if you'd like to talk about backend systems or mentoring engineers."
+      }
+    ]
+  },
+  "tokens_out": 320
+}

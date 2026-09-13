@@ -11,6 +11,7 @@ startup, never a request.
 from __future__ import annotations
 
 import importlib.util
+import sys
 from pathlib import Path
 
 from app.ai.prompts.loader import get_prompt
@@ -32,6 +33,13 @@ def _load_definition_module(path: Path, *, definitions_dir: Path) -> ToolDefinit
     if spec is None or spec.loader is None:
         raise ToolDefinitionError(f"{path}: could not load module spec")
     module = importlib.util.module_from_spec(spec)
+    # Registered before exec so a definition file can declare nested
+    # output models (`list[SomeSubModel]`) -- under `from __future__
+    # import annotations`, Pydantic resolves those forward references by
+    # looking the module up in `sys.modules` by name, which fails silently
+    # (well, loudly: "X is not fully defined") for a module that only
+    # exists as a bare object never registered there.
+    sys.modules[module_name] = module
     spec.loader.exec_module(module)
 
     definition = getattr(module, "DEFINITION", None)

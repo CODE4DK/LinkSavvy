@@ -1,0 +1,65 @@
+{
+  "$defs": {
+    "_Row": {
+      "additionalProperties": false,
+      "properties": {
+        "keyword": {
+          "title": "Keyword",
+          "type": "string"
+        },
+        "priority": {
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Priority",
+          "type": "string"
+        },
+        "coverage": {
+          "enum": [
+            "present",
+            "missing"
+          ],
+          "title": "Coverage",
+          "type": "string"
+        },
+        "placement": {
+          "title": "Placement",
+          "type": "string"
+        }
+      },
+      "required": [
+        "keyword",
+        "priority",
+        "coverage",
+        "placement"
+      ],
+      "title": "_Row",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "columns": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Columns",
+      "type": "array"
+    },
+    "rows": {
+      "items": {
+        "$ref": "#/$defs/_Row"
+      },
+      "title": "Rows",
+      "type": "array"
+    }
+  },
+  "required": [
+    "columns",
+    "rows"
+  ],
+  "title": "_Output",
+  "type": "object"
+}

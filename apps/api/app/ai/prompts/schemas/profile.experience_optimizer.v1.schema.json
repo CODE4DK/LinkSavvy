@@ -1,0 +1,81 @@
+{
+  "$defs": {
+    "_Bullet": {
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "flagged": {
+          "title": "Flagged",
+          "type": "boolean"
+        },
+        "flag_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Flag Reason"
+        }
+      },
+      "required": [
+        "text",
+        "flagged"
+      ],
+      "title": "_Bullet",
+      "type": "object"
+    },
+    "_Section": {
+      "additionalProperties": false,
+      "properties": {
+        "heading": {
+          "title": "Heading",
+          "type": "string"
+        },
+        "body": {
+          "title": "Body",
+          "type": "string"
+        },
+        "bullets": {
+          "items": {
+            "$ref": "#/$defs/_Bullet"
+          },
+          "maxItems": 6,
+          "minItems": 3,
+          "title": "Bullets",
+          "type": "array"
+        }
+      },
+      "required": [
+        "heading",
+        "body",
+        "bullets"
+      ],
+      "title": "_Section",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "sections": {
+      "items": {
+        "$ref": "#/$defs/_Section"
+      },
+      "maxItems": 1,
+      "minItems": 1,
+      "title": "Sections",
+      "type": "array"
+    }
+  },
+  "required": [
+    "sections"
+  ],
+  "title": "_Output",
+  "type": "object"
+}

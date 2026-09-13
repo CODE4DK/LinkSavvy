@@ -1,0 +1,32 @@
+{
+  "response": {
+    "summary": "Jamie's profile reads as a credible, senior backend engineer with a clear specialty in distributed systems, but the About section and skills list could work harder to reinforce that positioning.",
+    "findings": [
+      {
+        "title": "Headline is strong and specific",
+        "severity": "info",
+        "description": "The headline names both seniority and specialty (distributed systems at scale), which reads well to both recruiters and technical peers.",
+        "recommendation": "Keep this framing consistent across the About section and experience bullets."
+      },
+      {
+        "title": "About section doesn't mention Acme Corp by name",
+        "severity": "warning",
+        "description": "The About section talks about building backend systems generally but never references the current role at Acme Corp described in the experience section.",
+        "recommendation": "Add one sentence naming Acme Corp and the specific systems work described in the experience bullets."
+      },
+      {
+        "title": "Only one role listed",
+        "severity": "warning",
+        "description": "The experience section lists a single role (Senior Backend Engineer at Acme Corp) with no earlier history.",
+        "recommendation": "Add prior roles if any exist, even briefly, to show career progression."
+      },
+      {
+        "title": "Skills list is well-supported by experience",
+        "severity": "info",
+        "description": "Python, Distributed Systems, API Design, Kubernetes, and SQL are all backed up by the Acme Corp bullets about caching, migrations, and mentoring.",
+        "recommendation": "No change needed here -- this is a strength to preserve."
+      }
+    ]
+  },
+  "tokens_out": 210
+}

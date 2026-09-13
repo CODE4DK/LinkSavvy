@@ -1,0 +1,66 @@
+{
+  "$defs": {
+    "_Row": {
+      "additionalProperties": false,
+      "properties": {
+        "skill": {
+          "title": "Skill",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "have",
+            "low-value",
+            "missing"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "relevance": {
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ],
+          "title": "Relevance",
+          "type": "string"
+        },
+        "note": {
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "skill",
+        "status",
+        "relevance",
+        "note"
+      ],
+      "title": "_Row",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "columns": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Columns",
+      "type": "array"
+    },
+    "rows": {
+      "items": {
+        "$ref": "#/$defs/_Row"
+      },
+      "title": "Rows",
+      "type": "array"
+    }
+  },
+  "required": [
+    "columns",
+    "rows"
+  ],
+  "title": "_Output",
+  "type": "object"
+}

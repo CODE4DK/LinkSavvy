@@ -8,12 +8,19 @@ definition file and a prompt -- never touching any of the three.
 
 from __future__ import annotations
 
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from enum import StrEnum
+from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
 
 from app.tools.context import ContextKey
+
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession
+
+    from app.models.user import User
 
 
 class Hub(StrEnum):
@@ -72,3 +79,10 @@ class ToolDefinition:
     save_as: AssetType | None = None
     free_daily_cap: int | None = None
     supports_streaming: bool = False
+    # An escape hatch for context a ContextKey can't express because it
+    # isn't profile data at all -- e.g. wrapping a deterministic engine's
+    # own output (Completeness Checker wraps Phase 2's `compute_completeness`
+    # this way). Returns flat template vars already labelled the way
+    # `assemble()` labels its own blocks; merged in after assembly, exempt
+    # from token-budget trimming since it's small and never optional.
+    precompute: Callable[[User, AsyncSession], Awaitable[dict[str, str]]] | None = None

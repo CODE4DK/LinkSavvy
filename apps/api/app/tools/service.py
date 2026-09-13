@@ -133,6 +133,8 @@ async def _run_and_persist(
             token_budget=CONTEXT_TOKEN_BUDGET,
             extra=_extra_context(input_data),
         )
+        if definition.precompute is not None:
+            context.update(await definition.precompute(user, db))
     except ContextUnavailable:
         await release(db, reservation)
         raise
@@ -238,6 +240,8 @@ async def _stream_and_persist(
             token_budget=CONTEXT_TOKEN_BUDGET,
             extra=_extra_context(input_data),
         )
+        if definition.precompute is not None:
+            context.update(await definition.precompute(user, db))
     except ContextUnavailable as exc:
         await release(db, reservation)
         yield {"type": "error", "code": exc.code.value, "message": exc.message}

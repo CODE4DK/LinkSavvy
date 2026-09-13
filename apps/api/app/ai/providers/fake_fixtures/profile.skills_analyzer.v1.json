@@ -1,0 +1,44 @@
+{
+  "response": {
+    "columns": ["skill", "status", "relevance", "note"],
+    "rows": [
+      {
+        "skill": "Python",
+        "status": "have",
+        "relevance": "high",
+        "note": "Directly backed by the Acme Corp experience bullets."
+      },
+      {
+        "skill": "Distributed Systems",
+        "status": "have",
+        "relevance": "high",
+        "note": "Matches the headline and the caching/migration work described."
+      },
+      {
+        "skill": "API Design",
+        "status": "have",
+        "relevance": "medium",
+        "note": "Implied by the API latency work but not called out explicitly in a bullet."
+      },
+      {
+        "skill": "Kubernetes",
+        "status": "have",
+        "relevance": "medium",
+        "note": "Listed on the current role but not mentioned in any bullet."
+      },
+      {
+        "skill": "SQL",
+        "status": "low-value",
+        "relevance": "low",
+        "note": "Listed but nothing in the experience section demonstrates it."
+      },
+      {
+        "skill": "Distributed Tracing",
+        "status": "missing",
+        "relevance": "medium",
+        "note": "Commonly paired with distributed-systems reliability work like the caching redesign described."
+      }
+    ]
+  },
+  "tokens_out": 220
+}
