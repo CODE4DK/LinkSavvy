@@ -67,7 +67,7 @@ def _build_registry(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
     *,
-    tool_id: str = "test.fixture",
+    tool_id: str = "fixture.tool",
     prompt_id: str = "fixture.tool.v1",
     min_plan: str = "FREE",
     free_daily_cap: int | None = None,
@@ -156,7 +156,7 @@ async def test_run_tool_persists_a_succeeded_run(
     run, quota = await service.run_tool(
         db_session,
         user=user,
-        tool_id="test.fixture",
+        tool_id="fixture.tool",
         raw_input={"user_supplied_text": "hello"},
     )
 
@@ -180,7 +180,7 @@ async def test_run_tool_rejects_input_that_fails_the_schema(
     user = await _get_user(db_session, registered_user["email"])
 
     with pytest.raises(ApiError) as exc_info:
-        await service.run_tool(db_session, user=user, tool_id="test.fixture", raw_input={})
+        await service.run_tool(db_session, user=user, tool_id="fixture.tool", raw_input={})
     assert exc_info.value.code == ErrorCode.VALIDATION_FAILED
 
 
@@ -199,7 +199,7 @@ async def test_run_tool_raises_context_unavailable_for_missing_required_key(
         await service.run_tool(
             db_session,
             user=user,
-            tool_id="test.fixture",
+            tool_id="fixture.tool",
             raw_input={"user_supplied_text": "   "},
         )
 
@@ -217,7 +217,7 @@ async def test_run_tool_gates_on_min_plan(
 
     with pytest.raises(ApiError) as exc_info:
         await service.run_tool(
-            db_session, user=user, tool_id="test.fixture", raw_input={"user_supplied_text": "hi"}
+            db_session, user=user, tool_id="fixture.tool", raw_input={"user_supplied_text": "hi"}
         )
     assert exc_info.value.code == ErrorCode.FORBIDDEN
     assert exc_info.value.details["upgrade_required"] is True
@@ -235,11 +235,11 @@ async def test_run_tool_enforces_free_daily_cap(
     user = await _get_user(db_session, registered_user["email"])
 
     await service.run_tool(
-        db_session, user=user, tool_id="test.fixture", raw_input={"user_supplied_text": "one"}
+        db_session, user=user, tool_id="fixture.tool", raw_input={"user_supplied_text": "one"}
     )
     with pytest.raises(ApiError) as exc_info:
         await service.run_tool(
-            db_session, user=user, tool_id="test.fixture", raw_input={"user_supplied_text": "two"}
+            db_session, user=user, tool_id="fixture.tool", raw_input={"user_supplied_text": "two"}
         )
     assert exc_info.value.code == ErrorCode.RATE_LIMITED
 
@@ -257,11 +257,11 @@ async def test_run_tool_records_a_failed_run_and_reraises_on_gateway_error(
 
     with pytest.raises(gateway.AIProviderUnavailable):
         await service.run_tool(
-            db_session, user=user, tool_id="test.fixture", raw_input={"user_supplied_text": "hi"}
+            db_session, user=user, tool_id="fixture.tool", raw_input={"user_supplied_text": "hi"}
         )
 
     runs = await service.list_runs(
-        db_session, user_id=user.id, tool_id="test.fixture", cursor=None, limit=10
+        db_session, user_id=user.id, tool_id="fixture.tool", cursor=None, limit=10
     )
     assert len(runs) == 1
     assert runs[0].status == "failed"
@@ -280,7 +280,7 @@ async def test_regenerate_run_creates_a_child_run_with_the_nudge(
     user = await _get_user(db_session, registered_user["email"])
 
     parent, _ = await service.run_tool(
-        db_session, user=user, tool_id="test.fixture", raw_input={"user_supplied_text": "hi"}
+        db_session, user=user, tool_id="fixture.tool", raw_input={"user_supplied_text": "hi"}
     )
 
     seen_nudge: dict[str, str] = {}
@@ -347,7 +347,7 @@ async def test_rate_run_stores_rating_and_feedback(
     _patch_gateway_success(monkeypatch)
     user = await _get_user(db_session, registered_user["email"])
     run, _ = await service.run_tool(
-        db_session, user=user, tool_id="test.fixture", raw_input={"user_supplied_text": "hi"}
+        db_session, user=user, tool_id="fixture.tool", raw_input={"user_supplied_text": "hi"}
     )
 
     rated = await service.rate_run(
@@ -368,7 +368,7 @@ async def test_save_run_as_asset_creates_an_asset(
     _patch_gateway_success(monkeypatch)
     user = await _get_user(db_session, registered_user["email"])
     run, _ = await service.run_tool(
-        db_session, user=user, tool_id="test.fixture", raw_input={"user_supplied_text": "hi"}
+        db_session, user=user, tool_id="fixture.tool", raw_input={"user_supplied_text": "hi"}
     )
 
     asset = await service.save_run_as_asset(
@@ -390,7 +390,7 @@ async def test_save_run_as_asset_rejects_a_tool_with_no_save_as(
     _patch_gateway_success(monkeypatch)
     user = await _get_user(db_session, registered_user["email"])
     run, _ = await service.run_tool(
-        db_session, user=user, tool_id="test.fixture", raw_input={"user_supplied_text": "hi"}
+        db_session, user=user, tool_id="fixture.tool", raw_input={"user_supplied_text": "hi"}
     )
 
     with pytest.raises(service.AssetNotSupported):

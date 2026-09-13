@@ -1,0 +1,8 @@
+{
+  "response": {
+    "sections": [
+      { "body": "hello from the tool framework" }
+    ]
+  },
+  "tokens_out": 8
+}

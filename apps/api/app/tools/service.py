@@ -26,9 +26,20 @@ from app.models.ai_invocation import AIInvocation
 from app.models.asset import Asset
 from app.models.tool_run import ToolRun
 from app.models.user import User
+from app.services.feature_flags import resolve_flags_for_user
 from app.tools.context import ContextKey, ContextUnavailable, assemble
 from app.tools.definition import ToolDefinition
+from app.tools.errors import ToolNotFound
 from app.tools.registry import get_tool
+
+# Prefix for a tool that exists only to prove the framework works
+# end-to-end (see app/tools/definitions/dev/echo.py) -- hidden from
+# GET /api/v1/tools and from running/listing runs for anyone who isn't
+# both an admin and has the dev.playground flag on, mirroring
+# app/routers/internal.py's require_playground_enabled. Not a
+# per-tool special case: any future dev-only tool opts in the same way,
+# just by its id.
+_HIDDEN_TOOL_PREFIX = "test."
 
 # A generous default -- individual tools don't tune this today, but the
 # assembler will still drop low-priority optional context rather than
@@ -51,6 +62,37 @@ class AssetNotSupported(ApiError):
         super().__init__(
             ErrorCode.VALIDATION_FAILED, f"tool {tool_id!r} doesn't produce a saveable result"
         )
+
+
+async def _can_see_hidden_tools(db: AsyncSession, *, user: User) -> bool:
+    if user.role != "admin":
+        return False
+    flags = await resolve_flags_for_user(db, user_id=user.id)
+    return flags.get("dev.playground", False)
+
+
+async def check_tool_visible(db: AsyncSession, *, user: User, tool_id: str) -> None:
+    """Raises `ToolNotFound` (not `FORBIDDEN`) for a hidden tool a caller
+    can't see -- same error a genuinely unknown tool id gets, so a
+    non-admin can't distinguish "doesn't exist" from "exists but isn't
+    for you" by status code alone."""
+    if tool_id.startswith(_HIDDEN_TOOL_PREFIX) and not await _can_see_hidden_tools(db, user=user):
+        raise ToolNotFound(tool_id)
+
+
+async def visible_tools(
+    db: AsyncSession, *, user: User, definitions: list[ToolDefinition]
+) -> list[ToolDefinition]:
+    if not any(definition.id.startswith(_HIDDEN_TOOL_PREFIX) for definition in definitions):
+        return definitions
+    can_see_hidden = await _can_see_hidden_tools(db, user=user)
+    if can_see_hidden:
+        return definitions
+    return [
+        definition
+        for definition in definitions
+        if not definition.id.startswith(_HIDDEN_TOOL_PREFIX)
+    ]
 
 
 def _validate_plan(user: User, definition: ToolDefinition) -> None:
@@ -198,6 +240,7 @@ async def prepare_tool_run(
     daily cap, and input validation all belong here, run once by both
     `run_tool` and the router's `?stream=true` path."""
     definition = get_tool(tool_id)
+    await check_tool_visible(db, user=user, tool_id=tool_id)
     _validate_plan(user, definition)
     await _check_free_daily_cap(db, user=user, definition=definition)
     input_data = _validate_input(definition, raw_input)

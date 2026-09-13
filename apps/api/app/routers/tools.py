@@ -46,10 +46,12 @@ router = APIRouter(prefix="/api/v1/tools", tags=["tools"])
 @router.get("", response_model=list[ToolSummary])
 async def list_tools(
     hub: Hub | None = Query(default=None),
-    _user: User = Depends(get_current_user),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ) -> list[ToolSummary]:
     registry = get_registry()
     definitions = registry.by_hub(hub) if hub is not None else registry.all()
+    definitions = await service.visible_tools(db, user=user, definitions=definitions)
     return [to_tool_summary(definition) for definition in definitions]
 
 
