@@ -1,0 +1,151 @@
+{
+  "$defs": {
+    "_ComponentScore": {
+      "additionalProperties": false,
+      "properties": {
+        "component": {
+          "enum": [
+            "hard_requirements",
+            "preferred_requirements",
+            "keyword_coverage",
+            "seniority_fit",
+            "domain_fit"
+          ],
+          "title": "Component",
+          "type": "string"
+        },
+        "weight": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Weight",
+          "type": "number"
+        },
+        "score": {
+          "maximum": 100.0,
+          "minimum": 0.0,
+          "title": "Score",
+          "type": "number"
+        },
+        "contribution": {
+          "maximum": 100.0,
+          "minimum": 0.0,
+          "title": "Contribution",
+          "type": "number"
+        }
+      },
+      "required": [
+        "component",
+        "weight",
+        "score",
+        "contribution"
+      ],
+      "title": "_ComponentScore",
+      "type": "object"
+    },
+    "_MatchedItem": {
+      "additionalProperties": false,
+      "properties": {
+        "requirement": {
+          "title": "Requirement",
+          "type": "string"
+        },
+        "evidence": {
+          "title": "Where the resume shows this",
+          "type": "string"
+        }
+      },
+      "required": [
+        "requirement",
+        "evidence"
+      ],
+      "title": "_MatchedItem",
+      "type": "object"
+    },
+    "_MissingItem": {
+      "additionalProperties": false,
+      "properties": {
+        "requirement": {
+          "title": "Requirement",
+          "type": "string"
+        },
+        "learnable": {
+          "title": "Learnable on the job, vs. a hard blocker",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "requirement",
+        "learnable"
+      ],
+      "title": "_MissingItem",
+      "type": "object"
+    },
+    "_TransferableItem": {
+      "additionalProperties": false,
+      "properties": {
+        "requirement": {
+          "title": "Requirement",
+          "type": "string"
+        },
+        "resume_experience": {
+          "title": "The resume experience this maps to",
+          "type": "string"
+        }
+      },
+      "required": [
+        "requirement",
+        "resume_experience"
+      ],
+      "title": "_TransferableItem",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "overall_match": {
+      "maximum": 100,
+      "minimum": 0,
+      "title": "Overall Match",
+      "type": "integer"
+    },
+    "component_scores": {
+      "items": {
+        "$ref": "#/$defs/_ComponentScore"
+      },
+      "maxItems": 5,
+      "minItems": 5,
+      "title": "Component Scores",
+      "type": "array"
+    },
+    "matched": {
+      "items": {
+        "$ref": "#/$defs/_MatchedItem"
+      },
+      "title": "Matched",
+      "type": "array"
+    },
+    "missing": {
+      "items": {
+        "$ref": "#/$defs/_MissingItem"
+      },
+      "title": "Missing",
+      "type": "array"
+    },
+    "transferable": {
+      "items": {
+        "$ref": "#/$defs/_TransferableItem"
+      },
+      "title": "Transferable",
+      "type": "array"
+    }
+  },
+  "required": [
+    "overall_match",
+    "component_scores",
+    "matched",
+    "missing",
+    "transferable"
+  ],
+  "title": "_Output",
+  "type": "object"
+}

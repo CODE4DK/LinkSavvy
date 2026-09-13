@@ -1,0 +1,15 @@
+{
+  "response": {
+    "sections": [
+      {
+        "heading": "Cover Letter",
+        "body": "Dear Hiring Manager,\n\nI'm writing to apply for the Senior Backend Engineer role. At Acme Corp, I led a team of eight engineers and redesigned our on-call rotation, cutting incident response time in half. I believe that same focus on ownership would serve your team well.\n\nSincerely,\nJamie Rivera"
+      },
+      {
+        "heading": "Email version",
+        "body": "Hi -- I'm applying for the Senior Backend Engineer role. At Acme Corp I led a team of eight and cut incident response time in half by redesigning on-call ownership. Happy to share more detail whenever works for you."
+      }
+    ]
+  },
+  "tokens_out": 160
+}

@@ -1,0 +1,10 @@
+{
+  "response": {
+    "variants": [
+      {"text": "Senior backend engineer with eight years leading distributed systems teams at Acme Corp, focused on reliability and clear service ownership."},
+      {"text": "Backend engineering leader at Acme Corp who redesigned on-call ownership and cut incident response time in half."},
+      {"text": "Senior engineer with a track record of building and leading backend teams, most recently reducing incident response time by 50% at Acme Corp."}
+    ]
+  },
+  "tokens_out": 90
+}

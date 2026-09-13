@@ -11,8 +11,36 @@
     "body_sha256": "d6b0ef138ed50a704ad6da0f6cd3094705df071045ff0e3e831e563b2db2d4af",
     "version": 1
   },
+  "career.ats_optimizer.v1": {
+    "body_sha256": "385b7a1f2220d4b772c5986a673fd6a79b51795b4d6b7e8e3280051cfd863dd0",
+    "version": 1
+  },
+  "career.cover_letter.v1": {
+    "body_sha256": "8b43ef5d4a25e3161a0ce898609472b99fb50e40ff9987fc086dbcca92104b53",
+    "version": 1
+  },
+  "career.interview_prep.v1": {
+    "body_sha256": "8a4babb9c87a308bae0acdc239b952fcf32d6d810c2350f2b38a52bc35cc14b4",
+    "version": 1
+  },
+  "career.resume_analyzer.v1": {
+    "body_sha256": "e64f80e4af5993d28d9cfbdc96965162bfd2a9db7467deda440f905336e3f8bf",
+    "version": 1
+  },
+  "career.resume_builder.v1": {
+    "body_sha256": "5f28b839d814662851f19791e55c12ea3f4cb89c9c8edc611843664a2ec15a9b",
+    "version": 1
+  },
+  "career.resume_jd_match.v1": {
+    "body_sha256": "58822051022ad79370e2fcfc37dd9f8347f96f4cdbde3ce44392068288e2fcbe",
+    "version": 1
+  },
   "career.resume_segment_resolver.v1": {
     "body_sha256": "ef66309ea4ee12cf04fd3786cb5217f64758bfc40d5c0ec34e07852e27ddd7aa",
+    "version": 1
+  },
+  "career.roadmap.v1": {
+    "body_sha256": "2c0be07ec56d6cc6032e5cd8ee563c4cc7fbc4334b80da9295d46a649980b3d3",
     "version": 1
   },
   "content.carousel_generator.v1": {

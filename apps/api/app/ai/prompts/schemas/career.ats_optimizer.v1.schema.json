@@ -1,0 +1,38 @@
+{
+  "$defs": {
+    "_KeywordSuggestion": {
+      "additionalProperties": false,
+      "properties": {
+        "keyword": {
+          "title": "Keyword",
+          "type": "string"
+        },
+        "suggested_placement": {
+          "title": "Where in the resume this keyword could naturally fit, given real experience shown",
+          "type": "string"
+        }
+      },
+      "required": [
+        "keyword",
+        "suggested_placement"
+      ],
+      "title": "_KeywordSuggestion",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "keyword_suggestions": {
+      "items": {
+        "$ref": "#/$defs/_KeywordSuggestion"
+      },
+      "title": "Keyword Suggestions",
+      "type": "array"
+    }
+  },
+  "required": [
+    "keyword_suggestions"
+  ],
+  "title": "_Output",
+  "type": "object"
+}

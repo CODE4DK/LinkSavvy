@@ -1,0 +1,35 @@
+{
+  "$defs": {
+    "_Variant": {
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text"
+      ],
+      "title": "_Variant",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "variants": {
+      "items": {
+        "$ref": "#/$defs/_Variant"
+      },
+      "maxItems": 3,
+      "minItems": 3,
+      "title": "Variants",
+      "type": "array"
+    }
+  },
+  "required": [
+    "variants"
+  ],
+  "title": "_Output",
+  "type": "object"
+}

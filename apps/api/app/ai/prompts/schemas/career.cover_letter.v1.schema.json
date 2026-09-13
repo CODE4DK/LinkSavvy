@@ -1,0 +1,40 @@
+{
+  "$defs": {
+    "_Section": {
+      "additionalProperties": false,
+      "properties": {
+        "heading": {
+          "title": "Heading",
+          "type": "string"
+        },
+        "body": {
+          "title": "Body",
+          "type": "string"
+        }
+      },
+      "required": [
+        "heading",
+        "body"
+      ],
+      "title": "_Section",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "sections": {
+      "items": {
+        "$ref": "#/$defs/_Section"
+      },
+      "maxItems": 2,
+      "minItems": 2,
+      "title": "Sections",
+      "type": "array"
+    }
+  },
+  "required": [
+    "sections"
+  ],
+  "title": "_Output",
+  "type": "object"
+}

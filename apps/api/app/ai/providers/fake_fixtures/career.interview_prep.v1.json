@@ -1,0 +1,31 @@
+{
+  "response": {
+    "messages": [
+      {
+        "role": "interviewer",
+        "text": "Tell me about a time you led a team through a difficult incident.\n\nWhat this assesses: leadership under pressure and technical judgement.\n\nSTAR scaffold: Situation - frequent incidents with unclear ownership at Acme Corp. Task - reduce response time. Action - redesigned the on-call rotation. Result - cut incident response time in half.\n\nLikely follow-ups: How did the team react to the change? What would you do differently?"
+      },
+      {
+        "role": "interviewer",
+        "text": "How do you approach mentoring junior engineers?\n\nWhat this assesses: leadership style and team-building.\n\nSTAR scaffold: Situation - leading a team of eight at Acme Corp. Task - grow junior engineers' ownership. Action - paired programming and gradual ownership handoff. Result - not specified in the resume; ask for a concrete example in the interview.\n\nLikely follow-ups: Can you give a specific example of someone you mentored?"
+      },
+      {
+        "role": "interviewer",
+        "text": "Walk me through how you'd design a payments reconciliation pipeline.\n\nWhat this assesses: system design depth for backend-heavy roles.\n\nSTAR scaffold: Situation - built the payments reconciliation pipeline at Acme Corp. Task - reconcile transactions reliably at scale. Action - queue-driven architecture. Result - not specified; be ready to quantify scale or accuracy improvements.\n\nLikely follow-ups: How did you handle failure modes?"
+      },
+      {
+        "role": "interviewer",
+        "text": "Describe a time you disagreed with a decision on your team.\n\nWhat this assesses: conflict resolution and communication style.\n\nSTAR scaffold: Situation - not specified in the resume; be ready with a concrete example. Task - resolve the disagreement constructively. Action - describe your actual approach. Result - describe the outcome.\n\nLikely follow-ups: How did the relationship evolve afterward?"
+      },
+      {
+        "role": "interviewer",
+        "text": "How do you decide what to prioritize when everything feels urgent?\n\nWhat this assesses: judgement under competing pressures, relevant to leading incident response.\n\nSTAR scaffold: Situation - frequent incidents at Acme Corp before the on-call redesign. Task - decide what to fix first. Action - redesigned on-call ownership to clarify priority. Result - incident response time cut in half.\n\nLikely follow-ups: How do you communicate priority calls to the team?"
+      },
+      {
+        "role": "candidate",
+        "text": "Questions you should ask:\n- What does success look like in this role after six months?\n- How is the on-call rotation currently structured on this team?\n- What's the biggest reliability challenge the team is facing right now?"
+      }
+    ]
+  },
+  "tokens_out": 300
+}
