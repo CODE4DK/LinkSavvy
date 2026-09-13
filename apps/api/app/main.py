@@ -11,6 +11,7 @@ from app.content import (  # noqa: F401 -- registers the "content_reminder" job 
 from app.errors import ApiError, api_error_handler
 from app.routers import (
     auth,
+    career,
     carousels,
     content_assets,
     content_plans,
@@ -60,6 +61,7 @@ app.include_router(content_voice.router)
 app.include_router(content_assets.router)
 app.include_router(carousels.router)
 app.include_router(content_plans.router)
+app.include_router(career.router)
 
 
 @app.get("/health")

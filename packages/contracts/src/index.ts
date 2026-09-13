@@ -15,6 +15,7 @@ export type { paths };
 export type Schemas = components["schemas"];
 
 export * from "./profile-schema";
+export * from "./career-schema";
 
 export type RegisterRequest = Schemas["RegisterRequest"];
 export type MessageResponse = Schemas["MessageResponse"];
@@ -109,6 +110,14 @@ export type BulkScheduleRequest = Schemas["BulkScheduleRequest"];
 export type ConsistencyWeek = Schemas["ConsistencyWeek"];
 export type PostTypePerformance = Schemas["PostTypePerformance"];
 export type PerformanceSummaryResponse = Schemas["PerformanceSummaryResponse"];
+
+export type ResumeParseResponse = Schemas["ResumeParseResponse"];
+export type CommitResumeRequest = Schemas["CommitResumeRequest"];
+export type ResumeResponse = Schemas["ResumeResponse"];
+export type JobDescriptionParseRequest = Schemas["JobDescriptionParseRequest"];
+export type JobDescriptionResponse = Schemas["JobDescriptionResponse"];
+export type CreateResumeMatchRequest = Schemas["CreateResumeMatchRequest"];
+export type ResumeMatchResponse = Schemas["ResumeMatchResponse"];
 
 /** The `{"error": {code, message, details}}` envelope every API error uses. */
 export interface ApiErrorEnvelope {
