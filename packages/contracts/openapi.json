@@ -1491,6 +1491,353 @@
         }
       }
     },
+    "/api/v1/tools": {
+      "get": {
+        "tags": [
+          "tools"
+        ],
+        "summary": "List Tools",
+        "operationId": "list_tools_api_v1_tools_get",
+        "parameters": [
+          {
+            "name": "hub",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/Hub"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Hub"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ToolSummary"
+                  },
+                  "title": "Response List Tools Api V1 Tools Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tools/{tool_id}/run": {
+      "post": {
+        "tags": [
+          "tools"
+        ],
+        "summary": "Run Tool",
+        "operationId": "run_tool_api_v1_tools__tool_id__run_post",
+        "parameters": [
+          {
+            "name": "tool_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Tool Id"
+            }
+          },
+          {
+            "name": "stream",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Stream"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ToolRunRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tools/{tool_id}/runs": {
+      "get": {
+        "tags": [
+          "tools"
+        ],
+        "summary": "List Tool Runs",
+        "operationId": "list_tool_runs_api_v1_tools__tool_id__runs_get",
+        "parameters": [
+          {
+            "name": "tool_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Tool Id"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ToolRunSummary"
+                  },
+                  "title": "Response List Tool Runs Api V1 Tools  Tool Id  Runs Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tools/runs/{run_id}/regenerate": {
+      "post": {
+        "tags": [
+          "tools"
+        ],
+        "summary": "Regenerate Tool Run",
+        "operationId": "regenerate_tool_run_api_v1_tools_runs__run_id__regenerate_post",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegenerateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolRunResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tools/runs/{run_id}/rate": {
+      "post": {
+        "tags": [
+          "tools"
+        ],
+        "summary": "Rate Tool Run",
+        "operationId": "rate_tool_run_api_v1_tools_runs__run_id__rate_post",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tools/runs/{run_id}/save": {
+      "post": {
+        "tags": [
+          "tools"
+        ],
+        "summary": "Save Tool Run",
+        "operationId": "save_tool_run_api_v1_tools_runs__run_id__save_post",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveAssetRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "summary": "Health",
@@ -1516,6 +1863,70 @@
   },
   "components": {
     "schemas": {
+      "AssetResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "body_format": {
+            "type": "string",
+            "title": "Body Format"
+          },
+          "source_tool_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Tool Run Id"
+          },
+          "folder_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Folder Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "title",
+          "body",
+          "body_format",
+          "source_tool_run_id",
+          "folder_id",
+          "created_at"
+        ],
+        "title": "AssetResponse"
+      },
       "AuditCategoryResultResponse": {
         "properties": {
           "category": {
@@ -2507,6 +2918,17 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
+      "Hub": {
+        "type": "string",
+        "enum": [
+          "profile",
+          "content",
+          "engagement",
+          "career",
+          "growth"
+        ],
+        "title": "Hub"
+      },
       "Identity": {
         "properties": {
           "full_name": {
@@ -3345,6 +3767,90 @@
         "type": "object",
         "title": "Project"
       },
+      "QuotaInfo": {
+        "properties": {
+          "metric": {
+            "type": "string",
+            "title": "Metric"
+          },
+          "used": {
+            "type": "integer",
+            "title": "Used"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "metric",
+          "used",
+          "limit"
+        ],
+        "title": "QuotaInfo"
+      },
+      "RateRequest": {
+        "properties": {
+          "rating": {
+            "type": "string",
+            "enum": [
+              "up",
+              "down"
+            ],
+            "title": "Rating"
+          },
+          "feedback_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Feedback Text"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "rating"
+        ],
+        "title": "RateRequest"
+      },
+      "RateResponse": {
+        "properties": {
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "rating": {
+            "type": "string",
+            "title": "Rating"
+          },
+          "feedback_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Feedback Text"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "run_id",
+          "rating",
+          "feedback_text"
+        ],
+        "title": "RateResponse"
+      },
       "RecommendationListResponse": {
         "properties": {
           "items": {
@@ -3501,6 +4007,24 @@
         ],
         "title": "RefreshResponse"
       },
+      "RegenerateRequest": {
+        "properties": {
+          "nudge": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nudge"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "RegenerateRequest"
+      },
       "RegisterRequest": {
         "properties": {
           "email": {
@@ -3556,6 +4080,37 @@
           "new_password"
         ],
         "title": "ResetPasswordRequest"
+      },
+      "SaveAssetRequest": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "folder_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Folder Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title",
+          "body"
+        ],
+        "title": "SaveAssetRequest"
       },
       "ScoreHistoryPoint": {
         "properties": {
@@ -3889,6 +4444,236 @@
           "available_fields"
         ],
         "title": "SyncResponse"
+      },
+      "ToolRunRequest": {
+        "properties": {
+          "input": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Input"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "input"
+        ],
+        "title": "ToolRunRequest"
+      },
+      "ToolRunResponse": {
+        "properties": {
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "output": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Output"
+          },
+          "context_used": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Context Used"
+          },
+          "quota": {
+            "$ref": "#/components/schemas/QuotaInfo"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "run_id",
+          "output",
+          "context_used",
+          "quota"
+        ],
+        "title": "ToolRunResponse"
+      },
+      "ToolRunSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "input": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Input"
+          },
+          "output": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Output"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "rating": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rating"
+          },
+          "feedback_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Feedback Text"
+          },
+          "parent_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Run Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "input",
+          "output",
+          "status",
+          "rating",
+          "feedback_text",
+          "parent_run_id",
+          "created_at"
+        ],
+        "title": "ToolRunSummary",
+        "description": "One row of `GET /api/v1/tools/{id}/runs`."
+      },
+      "ToolSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "hub": {
+            "type": "string",
+            "title": "Hub"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "short_description": {
+            "type": "string",
+            "title": "Short Description"
+          },
+          "input_schema": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Input Schema"
+          },
+          "output_schema": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Output Schema"
+          },
+          "required_context": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Required Context"
+          },
+          "optional_context": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Optional Context"
+          },
+          "min_plan": {
+            "type": "string",
+            "title": "Min Plan"
+          },
+          "quota_metric": {
+            "type": "string",
+            "title": "Quota Metric"
+          },
+          "result_renderer": {
+            "type": "string",
+            "title": "Result Renderer"
+          },
+          "save_as": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Save As"
+          },
+          "free_daily_cap": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Free Daily Cap"
+          },
+          "supports_streaming": {
+            "type": "boolean",
+            "title": "Supports Streaming"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "hub",
+          "name",
+          "short_description",
+          "input_schema",
+          "output_schema",
+          "required_context",
+          "optional_context",
+          "min_plan",
+          "quota_metric",
+          "result_renderer",
+          "save_as",
+          "free_daily_cap",
+          "supports_streaming"
+        ],
+        "title": "ToolSummary",
+        "description": "One row of `GET /api/v1/tools` -- everything the web app needs to\nrender a tool card and, on selection, a fully working form and\nresult view with no tool-specific frontend code."
       },
       "UpdateProfileRequest": {
         "properties": {

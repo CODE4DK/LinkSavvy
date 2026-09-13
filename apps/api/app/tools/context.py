@@ -17,9 +17,11 @@ from collections.abc import Awaitable, Callable
 from enum import StrEnum
 from typing import Any
 
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.errors import ApiError, ErrorCode
+from app.models.asset import Asset
 from app.models.user import User
 from app.profiles.schema import ProfileSnapshot
 from app.profiles.service import get_active_snapshot
@@ -232,12 +234,25 @@ async def _serialize_latest_findings(*, user: User, db: AsyncSession, **_: Any) 
     return "\n".join(lines) or None
 
 
+_RECENT_ASSETS_LIMIT = 5
+
+
 async def _serialize_recent_assets(*, user: User, db: AsyncSession, **_: Any) -> str | None:
-    # Wired up once the `assets` table lands (this same phase's next
-    # section) -- deferred rather than importing a model that doesn't
-    # exist yet, so this module stays independently correct in the
-    # meantime.
-    return None
+    assets = (
+        (
+            await db.execute(
+                select(Asset)
+                .where(Asset.user_id == user.id, Asset.deleted_at.is_(None))
+                .order_by(Asset.created_at.desc())
+                .limit(_RECENT_ASSETS_LIMIT)
+            )
+        )
+        .scalars()
+        .all()
+    )
+    if not assets:
+        return None
+    return "\n".join(f"- [{asset.type}] {asset.title}" for asset in assets)
 
 
 async def _serialize_voice_profile(**_: Any) -> str | None:

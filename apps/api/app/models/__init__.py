@@ -2,6 +2,7 @@
 
 from app.models.ai_cache import AICache
 from app.models.ai_invocation import AIInvocation
+from app.models.asset import Asset, AssetFolder
 from app.models.audit import Audit, AuditCategoryResult, AuditFinding
 from app.models.audit_log import AuditLog
 from app.models.base import Base
@@ -19,12 +20,15 @@ from app.models.profile_snapshot import ProfileSnapshotRow
 from app.models.recommendation import Recommendation
 from app.models.refresh_token import RefreshToken
 from app.models.score_history import ScoreHistory
+from app.models.tool_run import ToolRun
 from app.models.usage_counter import UsageCounter
 from app.models.user import User
 
 __all__ = [
     "AICache",
     "AIInvocation",
+    "Asset",
+    "AssetFolder",
     "Audit",
     "AuditCategoryResult",
     "AuditFinding",
@@ -45,6 +49,7 @@ __all__ = [
     "Recommendation",
     "RefreshToken",
     "ScoreHistory",
+    "ToolRun",
     "UsageCounter",
     "User",
     "UserFeatureFlag",

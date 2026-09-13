@@ -1,10 +1,19 @@
-"""ToolDefinition -> response-schema mapping, shared by the tools list
-and (once a tool is selected) anywhere else that needs to describe a
-tool on the wire."""
+"""Model -> response-schema mapping for everything the tools router
+returns: a tool's own definition, a persisted run, a saved asset, and a
+quota snapshot."""
 
 from __future__ import annotations
 
-from app.schemas.tools import ToolSummary
+from app.billing.quota import QuotaStatus
+from app.models.asset import Asset
+from app.models.tool_run import ToolRun
+from app.schemas.tools import (
+    AssetResponse,
+    QuotaInfo,
+    ToolRunResponse,
+    ToolRunSummary,
+    ToolSummary,
+)
 from app.tools.definition import ToolDefinition
 
 
@@ -24,4 +33,45 @@ def to_tool_summary(definition: ToolDefinition) -> ToolSummary:
         save_as=definition.save_as.value if definition.save_as else None,
         free_daily_cap=definition.free_daily_cap,
         supports_streaming=definition.supports_streaming,
+    )
+
+
+def to_quota_info(quota: QuotaStatus) -> QuotaInfo:
+    return QuotaInfo(metric=quota.metric, used=quota.used, limit=quota.limit)
+
+
+def to_tool_run_response(run: ToolRun, *, quota: QuotaStatus) -> ToolRunResponse:
+    assert run.output is not None  # a "failed" run never reaches this presenter
+    return ToolRunResponse(
+        run_id=str(run.id),
+        output=run.output,
+        context_used=list(run.context_keys),
+        quota=to_quota_info(quota),
+    )
+
+
+def to_tool_run_summary(run: ToolRun) -> ToolRunSummary:
+    return ToolRunSummary(
+        id=str(run.id),
+        input=run.input,
+        output=run.output,
+        context_used=list(run.context_keys),
+        status=run.status,
+        rating=run.rating,
+        feedback_text=run.feedback_text,
+        parent_run_id=str(run.parent_run_id) if run.parent_run_id else None,
+        created_at=run.created_at,
+    )
+
+
+def to_asset_response(asset: Asset) -> AssetResponse:
+    return AssetResponse(
+        id=str(asset.id),
+        type=asset.type,
+        title=asset.title,
+        body=asset.body,
+        body_format=asset.body_format,
+        source_tool_run_id=str(asset.source_tool_run_id) if asset.source_tool_run_id else None,
+        folder_id=str(asset.folder_id) if asset.folder_id else None,
+        created_at=asset.created_at,
     )
