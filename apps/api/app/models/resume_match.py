@@ -31,7 +31,7 @@ class ResumeMatch(PrimaryKeyMixin, TimestampMixin, SoftDeleteMixin, Base):
         UUIDBinary, ForeignKey("job_descriptions.id", ondelete="CASCADE"), nullable=False
     )
     overall_match: Mapped[int] = mapped_column(Integer, nullable=False)
-    component_scores: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False)
+    component_scores: Mapped[list[Any]] = mapped_column(JSON, nullable=False)
     matched: Mapped[list[Any]] = mapped_column(JSON, nullable=False)
     missing: Mapped[list[Any]] = mapped_column(JSON, nullable=False)
     transferable: Mapped[list[Any]] = mapped_column(JSON, nullable=False)

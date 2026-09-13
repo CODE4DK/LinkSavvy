@@ -76,7 +76,7 @@ class ResumeMatchResponse(BaseModel):
     resume_id: str
     job_description_id: str
     overall_match: int
-    component_scores: dict[str, Any]
+    component_scores: list[Any]
     matched: list[Any]
     missing: list[Any]
     transferable: list[Any]

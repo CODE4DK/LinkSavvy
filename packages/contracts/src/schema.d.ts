@@ -1164,6 +1164,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/career/resumes/{resume_id}/export/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Export Resume Pdf Endpoint */
+        post: operations["export_resume_pdf_endpoint_api_v1_career_resumes__resume_id__export_pdf_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/career/resumes/{resume_id}/export/docx": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Export Resume Docx Endpoint */
+        post: operations["export_resume_docx_endpoint_api_v1_career_resumes__resume_id__export_docx_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/career/job-descriptions": {
         parameters: {
             query?: never;
@@ -2381,9 +2415,7 @@ export interface components {
             /** Overall Match */
             overall_match: number;
             /** Component Scores */
-            component_scores: {
-                [key: string]: unknown;
-            };
+            component_scores: unknown[];
             /** Matched */
             matched: unknown[];
             /** Missing */
@@ -5067,6 +5099,68 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ResumeResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    export_resume_pdf_endpoint_api_v1_career_resumes__resume_id__export_pdf_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                resume_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    export_resume_docx_endpoint_api_v1_career_resumes__resume_id__export_docx_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                resume_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */

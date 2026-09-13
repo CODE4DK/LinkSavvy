@@ -3115,6 +3115,88 @@
         }
       }
     },
+    "/api/v1/career/resumes/{resume_id}/export/pdf": {
+      "post": {
+        "tags": [
+          "career"
+        ],
+        "summary": "Export Resume Pdf Endpoint",
+        "operationId": "export_resume_pdf_endpoint_api_v1_career_resumes__resume_id__export_pdf_post",
+        "parameters": [
+          {
+            "name": "resume_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Resume Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/career/resumes/{resume_id}/export/docx": {
+      "post": {
+        "tags": [
+          "career"
+        ],
+        "summary": "Export Resume Docx Endpoint",
+        "operationId": "export_resume_docx_endpoint_api_v1_career_resumes__resume_id__export_docx_post",
+        "parameters": [
+          {
+            "name": "resume_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Resume Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/career/job-descriptions": {
       "get": {
         "tags": [
@@ -7109,8 +7191,8 @@
             "title": "Overall Match"
           },
           "component_scores": {
-            "additionalProperties": true,
-            "type": "object",
+            "items": {},
+            "type": "array",
             "title": "Component Scores"
           },
           "matched": {

@@ -5,14 +5,18 @@ this is a thin translation layer, same discipline as app/routers/tools.py.
 
 from __future__ import annotations
 
+import json
 import uuid
 
 from fastapi import APIRouter, Depends, File, Query, UploadFile
+from fastapi.responses import Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.career import service
+from app.career.export import export_resume_docx, export_resume_pdf
 from app.career.parse import parse_resume_paste, parse_resume_upload
 from app.career.schema import JobDescriptionSource, ResumeDocument, ResumeSource
+from app.content.asset_service import create_asset
 from app.deps import get_current_user, get_db
 from app.errors import ApiError, ErrorCode
 from app.models.job_description import JobDescription
@@ -32,6 +36,7 @@ from app.schemas.career import (
     ResumeResponse,
 )
 from app.settings import settings
+from app.tools.definition import AssetType
 
 router = APIRouter(prefix="/api/v1/career", tags=["career"])
 
@@ -187,6 +192,54 @@ async def delete_resume_endpoint(
     db: AsyncSession = Depends(get_db),
 ) -> None:
     await service.delete_resume(db, user=user, resume_id=resume_id)
+
+
+@router.post("/resumes/{resume_id}/export/pdf")
+async def export_resume_pdf_endpoint(
+    resume_id: uuid.UUID,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> Response:
+    resume = await service.get_resume_for_user(db, resume_id=resume_id, user_id=user.id)
+    document = ResumeDocument.model_validate(resume.parsed)
+    pdf_bytes = export_resume_pdf(document)
+    await create_asset(
+        db,
+        user=user,
+        type=AssetType.RESUME,
+        title=resume.title,
+        body=json.dumps(resume.parsed),
+        body_format="json",
+    )
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{resume.title}.pdf"'},
+    )
+
+
+@router.post("/resumes/{resume_id}/export/docx")
+async def export_resume_docx_endpoint(
+    resume_id: uuid.UUID,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> Response:
+    resume = await service.get_resume_for_user(db, resume_id=resume_id, user_id=user.id)
+    document = ResumeDocument.model_validate(resume.parsed)
+    docx_bytes = export_resume_docx(document)
+    await create_asset(
+        db,
+        user=user,
+        type=AssetType.RESUME,
+        title=resume.title,
+        body=json.dumps(resume.parsed),
+        body_format="json",
+    )
+    return Response(
+        content=docx_bytes,
+        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        headers={"Content-Disposition": f'attachment; filename="{resume.title}.docx"'},
+    )
 
 
 @router.post("/job-descriptions", response_model=JobDescriptionResponse)

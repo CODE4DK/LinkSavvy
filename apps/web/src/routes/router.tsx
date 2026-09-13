@@ -51,6 +51,7 @@ export const router = createBrowserRouter([
           { path: "/engagement", element: <EngagementHubPage /> },
           { path: "/engagement/:toolId", element: <EngagementHubPage /> },
           { path: "/career", element: <CareerHubPage /> },
+          { path: "/career/:toolId", element: <CareerHubPage /> },
           { path: "/growth", element: <GrowthHubPage /> },
           { path: "/workspace", element: <WorkspaceHubPage /> },
           { path: "/settings", element: <SettingsPage /> },

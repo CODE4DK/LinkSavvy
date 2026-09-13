@@ -1,6 +1,10 @@
 from __future__ import annotations
 
 from httpx import AsyncClient
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.models.asset import Asset
 
 SAMPLE_RESUME_TEXT = """\
 Jamie Rivera
@@ -135,6 +139,42 @@ async def test_resume_from_profile_requires_a_snapshot(
     response = await client.post("/api/v1/career/resumes/from-profile", headers=headers)
     assert response.status_code == 422
     assert response.json()["error"]["code"] == "VALIDATION_FAILED"
+
+
+async def test_export_resume_pdf_and_docx_also_saves_a_workspace_asset(
+    client: AsyncClient, registered_user: dict[str, str], db_session: AsyncSession
+) -> None:
+    headers = await _auth_headers(client, registered_user)
+    draft = (
+        await client.post(
+            "/api/v1/career/resumes/parse/paste",
+            headers=headers,
+            json={"text": SAMPLE_RESUME_TEXT},
+        )
+    ).json()["draft"]
+    committed = await client.post(
+        "/api/v1/career/resumes",
+        headers=headers,
+        json={"title": "My Resume", "source": "upload", "document": draft},
+    )
+    resume_id = committed.json()["id"]
+
+    pdf_response = await client.post(
+        f"/api/v1/career/resumes/{resume_id}/export/pdf", headers=headers
+    )
+    assert pdf_response.status_code == 200
+    assert pdf_response.content.startswith(b"%PDF-")
+
+    docx_response = await client.post(
+        f"/api/v1/career/resumes/{resume_id}/export/docx", headers=headers
+    )
+    assert docx_response.status_code == 200
+    assert len(docx_response.content) > 0
+
+    resume_assets = (
+        (await db_session.execute(select(Asset).where(Asset.type == "resume"))).scalars().all()
+    )
+    assert len(resume_assets) == 2
 
 
 async def _register_and_verify(
