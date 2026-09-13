@@ -84,9 +84,19 @@ export interface ToolRunnerProps {
    * renderer is `variants`, since only the user can pick which variant
    * to accept. */
   onApplyToProfile?: (params: { assetType: string; text: string }) => void;
+  /** When provided, a result gets a "Send to Composer" action -- Content
+   * Hub's equivalent of `onApplyToProfile`, handing the extracted text
+   * (the same text Save to Workspace would save) to the caller rather
+   * than patching a `ProfileSnapshot` field. */
+  onSendToComposer?: (text: string) => void;
 }
 
-export function ToolRunner({ toolId, initialValues, onApplyToProfile }: ToolRunnerProps) {
+export function ToolRunner({
+  toolId,
+  initialValues,
+  onApplyToProfile,
+  onSendToComposer,
+}: ToolRunnerProps) {
   const { user } = useAuth();
   const { push: pushToast } = useToast();
 
@@ -573,6 +583,20 @@ export function ToolRunner({ toolId, initialValues, onApplyToProfile }: ToolRunn
                     }
                   >
                     Apply to profile
+                  </Button>
+                )}
+
+                {onSendToComposer && (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() =>
+                      onSendToComposer(
+                        editing ? editedText : extractSaveableText(tool.result_renderer, output),
+                      )
+                    }
+                  >
+                    Send to Composer
                   </Button>
                 )}
 

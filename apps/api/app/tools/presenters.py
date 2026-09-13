@@ -73,5 +73,6 @@ def to_asset_response(asset: Asset) -> AssetResponse:
         body_format=asset.body_format,
         source_tool_run_id=str(asset.source_tool_run_id) if asset.source_tool_run_id else None,
         folder_id=str(asset.folder_id) if asset.folder_id else None,
+        metadata=asset.metadata_,
         created_at=asset.created_at,
     )

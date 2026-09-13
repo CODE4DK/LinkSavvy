@@ -84,6 +84,9 @@ export type AssetResponse = Schemas["AssetResponse"];
 export type VoiceSamplesRequest = Schemas["VoiceSamplesRequest"];
 export type VoiceDescriptorResponse = Schemas["VoiceDescriptorResponse"];
 
+export type CreateAssetRequest = Schemas["CreateAssetRequest"];
+export type MarkPostedRequest = Schemas["MarkPostedRequest"];
+
 /** The `{"error": {code, message, details}}` envelope every API error uses. */
 export interface ApiErrorEnvelope {
   error: {

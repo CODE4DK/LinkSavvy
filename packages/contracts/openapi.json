@@ -1941,6 +1941,100 @@
         }
       }
     },
+    "/api/v1/assets": {
+      "post": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Create Asset Endpoint",
+        "operationId": "create_asset_endpoint_api_v1_assets_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAssetRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assets/{asset_id}/mark-posted": {
+      "post": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Mark Asset Posted",
+        "operationId": "mark_asset_posted_api_v1_assets__asset_id__mark_posted_post",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Asset Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarkPostedRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "summary": "Health",
@@ -2010,6 +2104,11 @@
             ],
             "title": "Folder Id"
           },
+          "metadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metadata"
+          },
           "created_at": {
             "type": "string",
             "format": "date-time",
@@ -2026,9 +2125,30 @@
           "body_format",
           "source_tool_run_id",
           "folder_id",
+          "metadata",
           "created_at"
         ],
         "title": "AssetResponse"
+      },
+      "AssetType": {
+        "type": "string",
+        "enum": [
+          "post",
+          "headline",
+          "about",
+          "experience_bullets",
+          "comment",
+          "message",
+          "resume",
+          "cover_letter",
+          "job_description",
+          "analysis",
+          "conversation",
+          "template",
+          "carousel",
+          "roadmap"
+        ],
+        "title": "AssetType"
       },
       "AuditCategoryResultResponse": {
         "properties": {
@@ -2395,6 +2515,41 @@
           "payload"
         ],
         "title": "CommitImportRequest"
+      },
+      "CreateAssetRequest": {
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/AssetType",
+            "default": "post"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "folder_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Folder Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title",
+          "body"
+        ],
+        "title": "CreateAssetRequest"
       },
       "DashboardHealthScore": {
         "properties": {
@@ -3412,6 +3567,24 @@
           "user"
         ],
         "title": "LoginResponse"
+      },
+      "MarkPostedRequest": {
+        "properties": {
+          "linkedin_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Linkedin Url"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "MarkPostedRequest"
       },
       "MeResponse": {
         "properties": {

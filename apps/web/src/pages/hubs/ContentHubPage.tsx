@@ -8,7 +8,7 @@
  */
 
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import type { ToolSummary } from "@linksavvy/contracts";
 import { apiFetch, ApiError } from "@/lib/api";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
@@ -104,12 +104,18 @@ function ToolList() {
 }
 
 function ToolDetail({ toolId }: { toolId: string }) {
+  const navigate = useNavigate();
+
   return (
     <div className="flex flex-col gap-4">
       <Link to="/content" className="text-sm text-fg-muted hover:text-fg">
         ← Back to Content Hub
       </Link>
-      <ToolRunner key={toolId} toolId={toolId} />
+      <ToolRunner
+        key={toolId}
+        toolId={toolId}
+        onSendToComposer={(text) => navigate("/content/composer", { state: { prefill: text } })}
+      />
     </div>
   );
 }

@@ -784,6 +784,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/assets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Asset Endpoint */
+        post: operations["create_asset_endpoint_api_v1_assets_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assets/{asset_id}/mark-posted": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mark Asset Posted */
+        post: operations["mark_asset_posted_api_v1_assets__asset_id__mark_posted_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -821,12 +855,21 @@ export interface components {
             source_tool_run_id: string | null;
             /** Folder Id */
             folder_id: string | null;
+            /** Metadata */
+            metadata: {
+                [key: string]: unknown;
+            };
             /**
              * Created At
              * Format: date-time
              */
             created_at: string;
         };
+        /**
+         * AssetType
+         * @enum {string}
+         */
+        AssetType: "post" | "headline" | "about" | "experience_bullets" | "comment" | "message" | "resume" | "cover_letter" | "job_description" | "analysis" | "conversation" | "template" | "carousel" | "roadmap";
         /** AuditCategoryResultResponse */
         AuditCategoryResultResponse: {
             /** Category */
@@ -938,6 +981,17 @@ export interface components {
         /** CommitImportRequest */
         CommitImportRequest: {
             payload: components["schemas"]["ProfileSnapshot"];
+        };
+        /** CreateAssetRequest */
+        CreateAssetRequest: {
+            /** @default post */
+            type: components["schemas"]["AssetType"];
+            /** Title */
+            title: string;
+            /** Body */
+            body: string;
+            /** Folder Id */
+            folder_id?: string | null;
         };
         /** DashboardHealthScore */
         DashboardHealthScore: {
@@ -1224,6 +1278,11 @@ export interface components {
             /** Expires In */
             expires_in: number;
             user: components["schemas"]["UserPublic"];
+        };
+        /** MarkPostedRequest */
+        MarkPostedRequest: {
+            /** Linkedin Url */
+            linkedin_url?: string | null;
         };
         /** MeResponse */
         MeResponse: {
@@ -3196,6 +3255,74 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["VoiceDescriptorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_asset_endpoint_api_v1_assets_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateAssetRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    mark_asset_posted_api_v1_assets__asset_id__mark_posted_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                asset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MarkPostedRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetResponse"];
                 };
             };
             /** @description Validation Error */
