@@ -108,4 +108,5 @@ class AssetResponse(BaseModel):
     body_format: str
     source_tool_run_id: str | None
     folder_id: str | None
+    metadata: dict[str, Any]
     created_at: datetime

@@ -155,6 +155,32 @@ def _extra_context(input_data: dict[str, Any]) -> dict[ContextKey, str]:
     return extra
 
 
+def _stringify_field_value(value: Any) -> str:
+    if isinstance(value, bool):
+        return "yes" if value else "no"
+    if isinstance(value, list):
+        return ", ".join(str(item) for item in value) if value else "none"
+    if value is None:
+        return ""
+    return str(value)
+
+
+def _input_template_vars(input_data: dict[str, Any]) -> dict[str, str]:
+    """Every field on a tool's own input schema, keyed by its own field
+    name, so a prompt can reference `{{ topic }}` / `{{ post_type }}` /
+    etc. directly -- a generic convention (any field name works) rather
+    than special-casing any one tool's inputs. `target_role` and
+    `user_supplied_text` are excluded: those two reach the prompt as a
+    labelled context block through their `ContextKey` instead (see
+    `_extra_context`), and writing them here too would clobber that
+    label with the bare value."""
+    return {
+        field: _stringify_field_value(value)
+        for field, value in input_data.items()
+        if field not in _EXTRA_CONTEXT_FIELDS
+    }
+
+
 async def _run_and_persist(
     db: AsyncSession,
     *,
@@ -180,6 +206,8 @@ async def _run_and_persist(
     except ContextUnavailable:
         await release(db, reservation)
         raise
+
+    context.update(_input_template_vars(input_data))
 
     if nudge:
         context["regeneration_nudge"] = f"## Additional instruction for this regeneration\n{nudge}"
@@ -290,6 +318,7 @@ async def _stream_and_persist(
         yield {"type": "error", "code": exc.code.value, "message": exc.message}
         return
 
+    context.update(_input_template_vars(input_data))
     context["regeneration_nudge"] = ""
 
     started = time.monotonic()

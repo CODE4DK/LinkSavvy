@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "tone_adjectives": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 6,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "recurring_themes": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 5,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "signature_structures": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 4,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "vocabulary_preferences": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 6,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "never_does": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 4,
+      "items": { "type": "string", "minLength": 1 }
+    }
+  },
+  "required": [
+    "tone_adjectives",
+    "recurring_themes",
+    "signature_structures",
+    "vocabulary_preferences",
+    "never_does"
+  ],
+  "additionalProperties": false
+}

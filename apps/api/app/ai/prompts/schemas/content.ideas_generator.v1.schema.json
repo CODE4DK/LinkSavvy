@@ -1,0 +1,77 @@
+{
+  "$defs": {
+    "_Row": {
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "angle": {
+          "title": "Angle",
+          "type": "string"
+        },
+        "post_type": {
+          "enum": [
+            "story",
+            "insight",
+            "how-to",
+            "announcement",
+            "opinion",
+            "case study",
+            "list"
+          ],
+          "title": "Post Type",
+          "type": "string"
+        },
+        "why": {
+          "title": "Why",
+          "type": "string"
+        },
+        "difficulty": {
+          "enum": [
+            "easy",
+            "medium",
+            "hard"
+          ],
+          "title": "Difficulty",
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "angle",
+        "post_type",
+        "why",
+        "difficulty"
+      ],
+      "title": "_Row",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "columns": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Columns",
+      "type": "array"
+    },
+    "rows": {
+      "items": {
+        "$ref": "#/$defs/_Row"
+      },
+      "maxItems": 20,
+      "minItems": 10,
+      "title": "Rows",
+      "type": "array"
+    }
+  },
+  "required": [
+    "columns",
+    "rows"
+  ],
+  "title": "_Output",
+  "type": "object"
+}

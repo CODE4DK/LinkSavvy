@@ -1838,6 +1838,992 @@
         }
       }
     },
+    "/api/v1/content/voice": {
+      "get": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Get Voice Profile",
+        "operationId": "get_voice_profile_api_v1_content_voice_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VoiceDescriptorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/content/voice/samples": {
+      "post": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Submit Pasted Samples",
+        "operationId": "submit_pasted_samples_api_v1_content_voice_samples_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VoiceSamplesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VoiceDescriptorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/content/voice/samples/upload": {
+      "post": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Submit Uploaded Samples",
+        "operationId": "submit_uploaded_samples_api_v1_content_voice_samples_upload_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_submit_uploaded_samples_api_v1_content_voice_samples_upload_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VoiceDescriptorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assets": {
+      "post": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Create Asset Endpoint",
+        "operationId": "create_asset_endpoint_api_v1_assets_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAssetRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assets/{asset_id}/mark-posted": {
+      "post": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Mark Asset Posted",
+        "operationId": "mark_asset_posted_api_v1_assets__asset_id__mark_posted_post",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Asset Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarkPostedRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/carousels": {
+      "post": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Create Carousel Endpoint",
+        "operationId": "create_carousel_endpoint_api_v1_carousels_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveCarouselRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CarouselResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/carousels/{asset_id}": {
+      "get": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Get Carousel Endpoint",
+        "operationId": "get_carousel_endpoint_api_v1_carousels__asset_id__get",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Asset Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CarouselResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Update Carousel Endpoint",
+        "operationId": "update_carousel_endpoint_api_v1_carousels__asset_id__put",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Asset Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveCarouselRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CarouselResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/carousels/{asset_id}/export/pdf": {
+      "post": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Export Carousel Pdf Endpoint",
+        "operationId": "export_carousel_pdf_endpoint_api_v1_carousels__asset_id__export_pdf_post",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Asset Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/carousels/{asset_id}/export/png": {
+      "post": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Export Carousel Png Endpoint",
+        "operationId": "export_carousel_png_endpoint_api_v1_carousels__asset_id__export_png_post",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Asset Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/content-plans": {
+      "post": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Create Plan Endpoint",
+        "operationId": "create_plan_endpoint_api_v1_content_plans_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentPlanCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentPlanResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "content"
+        ],
+        "summary": "List Plans Endpoint",
+        "operationId": "list_plans_endpoint_api_v1_content_plans_get",
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "Start"
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "End"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ContentPlanResponse"
+                  },
+                  "title": "Response List Plans Endpoint Api V1 Content Plans Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/content-plans/consistency": {
+      "get": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Consistency Endpoint",
+        "operationId": "consistency_endpoint_api_v1_content_plans_consistency_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ConsistencyWeek"
+                  },
+                  "type": "array",
+                  "title": "Response Consistency Endpoint Api V1 Content Plans Consistency Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/content-plans/performance-summary": {
+      "get": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Performance Summary Endpoint",
+        "operationId": "performance_summary_endpoint_api_v1_content_plans_performance_summary_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PerformanceSummaryResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/content-plans/{plan_id}": {
+      "get": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Get Plan Endpoint",
+        "operationId": "get_plan_endpoint_api_v1_content_plans__plan_id__get",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentPlanResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Update Plan Endpoint",
+        "operationId": "update_plan_endpoint_api_v1_content_plans__plan_id__patch",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentPlanUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentPlanResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Delete Plan Endpoint",
+        "operationId": "delete_plan_endpoint_api_v1_content_plans__plan_id__delete",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/content-plans/{plan_id}/reschedule": {
+      "post": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Reschedule Plan Endpoint",
+        "operationId": "reschedule_plan_endpoint_api_v1_content_plans__plan_id__reschedule_post",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RescheduleRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentPlanResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/content-plans/{plan_id}/reminder": {
+      "post": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Set Reminder Endpoint",
+        "operationId": "set_reminder_endpoint_api_v1_content_plans__plan_id__reminder_post",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReminderRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentPlanResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/content-plans/{plan_id}/mark-posted": {
+      "post": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Mark Posted Endpoint",
+        "operationId": "mark_posted_endpoint_api_v1_content_plans__plan_id__mark_posted_post",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarkContentPlanPostedRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentPlanResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/content-plans/{plan_id}/performance": {
+      "post": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Record Performance Endpoint",
+        "operationId": "record_performance_endpoint_api_v1_content_plans__plan_id__performance_post",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PerformanceNumbers"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentPlanResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/content-plans/recurring-slots": {
+      "post": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Recurring Slots Endpoint",
+        "operationId": "recurring_slots_endpoint_api_v1_content_plans_recurring_slots_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecurringSlotsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ContentPlanResponse"
+                  },
+                  "type": "array",
+                  "title": "Response Recurring Slots Endpoint Api V1 Content Plans Recurring Slots Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/content-plans/bulk-schedule": {
+      "post": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Bulk Schedule Endpoint",
+        "operationId": "bulk_schedule_endpoint_api_v1_content_plans_bulk_schedule_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkScheduleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ContentPlanResponse"
+                  },
+                  "type": "array",
+                  "title": "Response Bulk Schedule Endpoint Api V1 Content Plans Bulk Schedule Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "summary": "Health",
@@ -1907,6 +2893,11 @@
             ],
             "title": "Folder Id"
           },
+          "metadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metadata"
+          },
           "created_at": {
             "type": "string",
             "format": "date-time",
@@ -1923,9 +2914,30 @@
           "body_format",
           "source_tool_run_id",
           "folder_id",
+          "metadata",
           "created_at"
         ],
         "title": "AssetResponse"
+      },
+      "AssetType": {
+        "type": "string",
+        "enum": [
+          "post",
+          "headline",
+          "about",
+          "experience_bullets",
+          "comment",
+          "message",
+          "resume",
+          "cover_letter",
+          "job_description",
+          "analysis",
+          "conversation",
+          "template",
+          "carousel",
+          "roadmap"
+        ],
+        "title": "AssetType"
       },
       "AuditCategoryResultResponse": {
         "properties": {
@@ -2188,6 +3200,207 @@
         ],
         "title": "Body_create_upload_import_api_v1_profile_imports_upload_post"
       },
+      "Body_submit_uploaded_samples_api_v1_content_voice_samples_upload_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_submit_uploaded_samples_api_v1_content_voice_samples_upload_post"
+      },
+      "BulkScheduleRequest": {
+        "properties": {
+          "cadence": {
+            "$ref": "#/components/schemas/Cadence"
+          },
+          "plan_ids": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Plan Ids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "cadence",
+          "plan_ids"
+        ],
+        "title": "BulkScheduleRequest"
+      },
+      "Cadence": {
+        "properties": {
+          "days_of_week": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Days Of Week",
+            "description": "0=Monday ... 6=Sunday"
+          },
+          "time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Time"
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Start Date"
+          },
+          "weeks": {
+            "type": "integer",
+            "maximum": 52.0,
+            "minimum": 1.0,
+            "title": "Weeks"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "days_of_week",
+          "start_date",
+          "weeks"
+        ],
+        "title": "Cadence"
+      },
+      "CarouselClosing": {
+        "properties": {
+          "cta": {
+            "type": "string",
+            "title": "Cta",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "CarouselClosing"
+      },
+      "CarouselCover": {
+        "properties": {
+          "headline": {
+            "type": "string",
+            "title": "Headline"
+          },
+          "subhead": {
+            "type": "string",
+            "title": "Subhead",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "headline"
+        ],
+        "title": "CarouselCover"
+      },
+      "CarouselData": {
+        "properties": {
+          "template": {
+            "type": "string",
+            "enum": [
+              "clean",
+              "bold",
+              "minimal"
+            ],
+            "title": "Template",
+            "default": "clean"
+          },
+          "cover": {
+            "$ref": "#/components/schemas/CarouselCover"
+          },
+          "slides": {
+            "items": {
+              "$ref": "#/components/schemas/CarouselSlide"
+            },
+            "type": "array",
+            "maxItems": 12,
+            "minItems": 1,
+            "title": "Slides"
+          },
+          "closing": {
+            "$ref": "#/components/schemas/CarouselClosing"
+          },
+          "caption": {
+            "type": "string",
+            "title": "Caption",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "cover",
+          "slides"
+        ],
+        "title": "CarouselData",
+        "description": "The carousel's re-editable structure -- stored as `Asset.body`\n(JSON) so the slide-by-slide editor can load it back exactly."
+      },
+      "CarouselResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "data": {
+            "$ref": "#/components/schemas/CarouselData"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "data"
+        ],
+        "title": "CarouselResponse"
+      },
+      "CarouselSlide": {
+        "properties": {
+          "headline": {
+            "type": "string",
+            "title": "Headline"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "visual_note": {
+            "type": "string",
+            "title": "Visual Note",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "headline",
+          "body"
+        ],
+        "title": "CarouselSlide"
+      },
       "Certification": {
         "properties": {
           "name": {
@@ -2278,6 +3491,375 @@
           "payload"
         ],
         "title": "CommitImportRequest"
+      },
+      "ConsistencyWeek": {
+        "properties": {
+          "week_start": {
+            "type": "string",
+            "format": "date",
+            "title": "Week Start"
+          },
+          "posted_count": {
+            "type": "integer",
+            "title": "Posted Count"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "week_start",
+          "posted_count"
+        ],
+        "title": "ConsistencyWeek"
+      },
+      "ContentPlanCreate": {
+        "properties": {
+          "asset_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Asset Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "default": ""
+          },
+          "body_preview": {
+            "type": "string",
+            "title": "Body Preview",
+            "default": ""
+          },
+          "content_type": {
+            "type": "string",
+            "title": "Content Type",
+            "default": "post"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "idea",
+              "drafted",
+              "ready",
+              "scheduled",
+              "posted",
+              "skipped"
+            ],
+            "title": "Status",
+            "default": "idea"
+          },
+          "planned_for": {
+            "type": "string",
+            "format": "date",
+            "title": "Planned For"
+          },
+          "planned_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Planned Time"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tags"
+          },
+          "notes": {
+            "type": "string",
+            "title": "Notes",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "planned_for"
+        ],
+        "title": "ContentPlanCreate"
+      },
+      "ContentPlanResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "asset_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Asset Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "body_preview": {
+            "type": "string",
+            "title": "Body Preview"
+          },
+          "content_type": {
+            "type": "string",
+            "title": "Content Type"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "idea",
+              "drafted",
+              "ready",
+              "scheduled",
+              "posted",
+              "skipped"
+            ],
+            "title": "Status"
+          },
+          "planned_for": {
+            "type": "string",
+            "format": "date",
+            "title": "Planned For"
+          },
+          "planned_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Planned Time"
+          },
+          "posted_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Posted At"
+          },
+          "reminder_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reminder At"
+          },
+          "recurrence_rule": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recurrence Rule"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tags"
+          },
+          "performance": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "type": "object",
+            "title": "Performance"
+          },
+          "notes": {
+            "type": "string",
+            "title": "Notes"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "asset_id",
+          "title",
+          "body_preview",
+          "content_type",
+          "status",
+          "planned_for",
+          "planned_time",
+          "posted_at",
+          "reminder_at",
+          "recurrence_rule",
+          "tags",
+          "performance",
+          "notes",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ContentPlanResponse"
+      },
+      "ContentPlanUpdate": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "body_preview": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Body Preview"
+          },
+          "content_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content Type"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "idea",
+                  "drafted",
+                  "ready",
+                  "scheduled",
+                  "posted",
+                  "skipped"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ContentPlanUpdate"
+      },
+      "CreateAssetRequest": {
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/AssetType",
+            "default": "post"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "folder_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Folder Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title",
+          "body"
+        ],
+        "title": "CreateAssetRequest"
       },
       "DashboardHealthScore": {
         "properties": {
@@ -3296,6 +4878,64 @@
         ],
         "title": "LoginResponse"
       },
+      "MarkContentPlanPostedRequest": {
+        "properties": {
+          "linkedin_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Linkedin Url"
+          },
+          "posted_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Posted At"
+          },
+          "performance": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PerformanceNumbers"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "MarkContentPlanPostedRequest"
+      },
+      "MarkPostedRequest": {
+        "properties": {
+          "linkedin_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Linkedin Url"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "MarkPostedRequest"
+      },
       "MeResponse": {
         "properties": {
           "user": {
@@ -3368,6 +5008,95 @@
         "additionalProperties": false,
         "type": "object",
         "title": "Metrics"
+      },
+      "PerformanceNumbers": {
+        "properties": {
+          "impressions": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Impressions"
+          },
+          "reactions": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reactions"
+          },
+          "comments": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comments"
+          },
+          "reposts": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reposts"
+          },
+          "profile_views": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile Views"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "PerformanceNumbers"
+      },
+      "PerformanceSummaryResponse": {
+        "properties": {
+          "sufficient_data": {
+            "type": "boolean",
+            "title": "Sufficient Data"
+          },
+          "total_data_points": {
+            "type": "integer",
+            "title": "Total Data Points"
+          },
+          "by_content_type": {
+            "items": {
+              "$ref": "#/components/schemas/PostTypePerformance"
+            },
+            "type": "array",
+            "title": "By Content Type"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "sufficient_data",
+          "total_data_points",
+          "by_content_type"
+        ],
+        "title": "PerformanceSummaryResponse"
       },
       "PlaygroundPromptSummary": {
         "properties": {
@@ -3547,6 +5276,30 @@
           "correlation_id"
         ],
         "title": "PlaygroundRunResponse"
+      },
+      "PostTypePerformance": {
+        "properties": {
+          "content_type": {
+            "type": "string",
+            "title": "Content Type"
+          },
+          "sample_size": {
+            "type": "integer",
+            "title": "Sample Size"
+          },
+          "median_engagement": {
+            "type": "number",
+            "title": "Median Engagement"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "content_type",
+          "sample_size",
+          "median_engagement"
+        ],
+        "title": "PostTypePerformance"
       },
       "ProfileSnapshot": {
         "properties": {
@@ -3984,6 +5737,19 @@
         ],
         "title": "RecommendationUpdateRequest"
       },
+      "RecurringSlotsRequest": {
+        "properties": {
+          "cadence": {
+            "$ref": "#/components/schemas/Cadence"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "cadence"
+        ],
+        "title": "RecurringSlotsRequest"
+      },
       "RefreshResponse": {
         "properties": {
           "access_token": {
@@ -4049,6 +5815,52 @@
         ],
         "title": "RegisterRequest"
       },
+      "ReminderRequest": {
+        "properties": {
+          "reminder_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reminder At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ReminderRequest"
+      },
+      "RescheduleRequest": {
+        "properties": {
+          "planned_for": {
+            "type": "string",
+            "format": "date",
+            "title": "Planned For"
+          },
+          "planned_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Planned Time"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "planned_for"
+        ],
+        "title": "RescheduleRequest"
+      },
       "ResendVerificationRequest": {
         "properties": {
           "email": {
@@ -4111,6 +5923,24 @@
           "body"
         ],
         "title": "SaveAssetRequest"
+      },
+      "SaveCarouselRequest": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "data": {
+            "$ref": "#/components/schemas/CarouselData"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title",
+          "data"
+        ],
+        "title": "SaveCarouselRequest"
       },
       "ScoreHistoryPoint": {
         "properties": {
@@ -4840,6 +6670,89 @@
           "token"
         ],
         "title": "VerifyEmailRequest"
+      },
+      "VoiceDescriptorResponse": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "enum": [
+              "supplied",
+              "derived",
+              "default"
+            ],
+            "title": "Source"
+          },
+          "sample_count": {
+            "type": "integer",
+            "title": "Sample Count"
+          },
+          "tone_adjectives": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tone Adjectives"
+          },
+          "recurring_themes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Recurring Themes"
+          },
+          "signature_structures": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Signature Structures"
+          },
+          "vocabulary_preferences": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Vocabulary Preferences"
+          },
+          "never_does": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Never Does"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source",
+          "sample_count",
+          "tone_adjectives",
+          "recurring_themes",
+          "signature_structures",
+          "vocabulary_preferences",
+          "never_does"
+        ],
+        "title": "VoiceDescriptorResponse"
+      },
+      "VoiceSamplesRequest": {
+        "properties": {
+          "texts": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "minItems": 5,
+            "title": "Texts"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "texts"
+        ],
+        "title": "VoiceSamplesRequest"
       }
     }
   }

@@ -1,0 +1,18 @@
+{
+  "response": {
+    "columns": ["title", "angle", "post_type", "why", "difficulty"],
+    "rows": [
+      {"title": "The code review habit that changed my team", "angle": "A personal before/after story about review culture", "post_type": "story", "why": "You led backend teams at Acme Corp and have direct experience reshaping review culture.", "difficulty": "easy"},
+      {"title": "3 signs your onboarding process needs work", "angle": "Diagnostic listicle drawn from mentoring engineers", "post_type": "list", "why": "You've mentored engineers directly, so you have real examples to draw from.", "difficulty": "easy"},
+      {"title": "How I structure a distributed systems design review", "angle": "A step-by-step walkthrough of your own process", "post_type": "how-to", "why": "Distributed systems is a recurring theme in your own work.", "difficulty": "medium"},
+      {"title": "Why I stopped giving directive feedback", "angle": "A contrarian take grounded in your management experience", "post_type": "opinion", "why": "Draws on your actual experience managing engineers at Acme Corp.", "difficulty": "easy"},
+      {"title": "A backend outage that taught me about ownership", "angle": "Case study of a real incident and its root cause", "post_type": "case study", "why": "Senior backend engineers have outage stories worth sharing honestly.", "difficulty": "medium"},
+      {"title": "Announcing a new mentoring format on my team", "angle": "Share a concrete change you're making", "post_type": "announcement", "why": "Mentoring engineers is already part of your day-to-day.", "difficulty": "easy"},
+      {"title": "The one metric that predicts a healthy backend team", "angle": "A single-idea insight post", "post_type": "insight", "why": "Backed by your years leading backend teams.", "difficulty": "medium"},
+      {"title": "What junior engineers taught me that seniors didn't", "angle": "Story flipping the usual mentoring narrative", "post_type": "story", "why": "You've directly mentored engineers across levels.", "difficulty": "easy"},
+      {"title": "5 questions I ask before approving a design doc", "angle": "A practical checklist from your own reviews", "post_type": "list", "why": "Reflects your real review practice on distributed systems work.", "difficulty": "medium"},
+      {"title": "Why distributed systems reward patience over cleverness", "angle": "An opinion piece grounded in hard-won experience", "post_type": "opinion", "why": "Distributed systems is a named strength in your background.", "difficulty": "hard"}
+    ]
+  },
+  "tokens_out": 620
+}

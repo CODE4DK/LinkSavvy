@@ -11,6 +11,42 @@
     "body_sha256": "d6b0ef138ed50a704ad6da0f6cd3094705df071045ff0e3e831e563b2db2d4af",
     "version": 1
   },
+  "content.carousel_generator.v1": {
+    "body_sha256": "63b75053857ba61c0c939b0c7f2b947dba69686c0fc881cf76f609c05cd93817",
+    "version": 1
+  },
+  "content.cta_generator.v1": {
+    "body_sha256": "8964ec39e1c28f32b6cfac7b70eb1ed8bd0d96bc300388d941d189129c7f8cd1",
+    "version": 1
+  },
+  "content.hashtag_generator.v1": {
+    "body_sha256": "2a72a5e681f482700e2802e381d80425a634861cfd142829f6ff75e68ff02620",
+    "version": 1
+  },
+  "content.hook_generator.v1": {
+    "body_sha256": "4c1285c9334897f498795032e824821ecdf630230be6a93d0877a98a6e693fc7",
+    "version": 1
+  },
+  "content.ideas_generator.v1": {
+    "body_sha256": "e6b8ad673e4e9eec51a743df7d8cdc7b2a34e9b4439074657070d7f9500da036",
+    "version": 1
+  },
+  "content.post_generator.v1": {
+    "body_sha256": "38f1b447f7e02ec948bb25ba5e55986bdc381e0b0fefab7e73ad2d2de67dea88",
+    "version": 1
+  },
+  "content.post_rewriter.v1": {
+    "body_sha256": "9cb5491bc9ea9c6e5e68e1946f89cc36d6ae09fa44e948afe4b181be1c8ba023",
+    "version": 1
+  },
+  "content.repurpose.v1": {
+    "body_sha256": "e8b07692b6337516d2c6c10dd85df42f505dd0ad675535d12c9543ae8b986eb5",
+    "version": 1
+  },
+  "content.voice_profile.v1": {
+    "body_sha256": "cab7e431a0ac77d1fe0dd6f60cd9705409c3f58e7502c7be6a2c080a77b97417",
+    "version": 1
+  },
   "meta.classify_intent.v1": {
     "body_sha256": "064db24061bf02c656a90769bf3639b6212b27bafc8700ad38174fd3983bc58b",
     "version": 1

@@ -1,0 +1,17 @@
+{
+  "response": {
+    "variants": [
+      {"pattern": "question", "hook": "What if the bug you fixed last week was never really the problem?", "fold_preview": "What if the bug you fixed last week was never really the problem?"},
+      {"pattern": "contrarian", "hook": "Code review doesn't make your code better. It makes your team better.", "fold_preview": "Code review doesn't make your code better. It makes your team better."},
+      {"pattern": "number", "hook": "3 things I wish someone told me before I led my first backend team.", "fold_preview": "3 things I wish someone told me before I led my first backend team."},
+      {"pattern": "story-open", "hook": "Two years ago at Acme Corp, a junior engineer taught me something I still use.", "fold_preview": "Two years ago at Acme Corp, a junior engineer taught me something I still use."},
+      {"pattern": "confession", "hook": "I used to reject every PR that didn't match my own style. I was wrong.", "fold_preview": "I used to reject every PR that didn't match my own style. I was wrong."},
+      {"pattern": "observation", "hook": "The best engineers I've managed ask more questions than they answer.", "fold_preview": "The best engineers I've managed ask more questions than they answer."},
+      {"pattern": "question", "hook": "Why do so many senior engineers stop asking for feedback?", "fold_preview": "Why do so many senior engineers stop asking for feedback?"},
+      {"pattern": "number", "hook": "5 code review habits that quietly build trust on a team.", "fold_preview": "5 code review habits that quietly build trust on a team."},
+      {"pattern": "contrarian", "hook": "Your onboarding docs aren't the problem. Your assumptions are.", "fold_preview": "Your onboarding docs aren't the problem. Your assumptions are."},
+      {"pattern": "observation", "hook": "Every distributed system I've debugged had the same root cause: unclear ownership.", "fold_preview": "Every distributed system I've debugged had the same root cause: unclear ownership."}
+    ]
+  },
+  "tokens_out": 340
+}

@@ -192,7 +192,7 @@ expects — there's no per-tool frontend code to adapt a mismatched shape:
 | `analysis` | `{ summary?, score?, findings: [{ title, severity?: "info"\|"warning"\|"critical", description?, recommendation? }] }` |
 | `table` | `{ columns: string[], rows: [{ ...one key per column... }] }` — tell the model in the prompt exactly what `columns` must be. |
 | `calendar` | `{ days: [{ date, items: [{ title, time?, kind? }] }] }` |
-| `thread` | `{ messages: [{ author?, role?, text, timestamp? }] }` |
+| `thread` | `{ messages: [{ author?, role?, text, timestamp? }] }` — or, with no `messages`, a carousel-shaped `{ cover: {headline, subhead}, slides: [{index, headline, body, visual_note}], closing: {cta}, caption }` (see `content.carousel_generator`), shown the same way with cover and closing bookending the slides. |
 
 ## Input widgets
 
@@ -214,6 +214,21 @@ needs bespoke form code:
 A field named exactly `target_role` or `user_supplied_text` is both a
 normal form field *and* the way that value reaches your prompt (see
 above) — no extra wiring needed on either side.
+
+### Every other input field reaches the prompt by its own name
+
+Beyond those two, **every field on a tool's own `input_schema` is
+available to its prompt as a flat template variable named after the
+field itself** — `topic: str` becomes `{{ topic }}`, `include_hashtags:
+bool` becomes `{{ include_hashtags }}` (rendered `"yes"`/`"no"`),
+`themes_to_avoid: list[str]` becomes a comma-joined string (or
+`"none"` if empty). This is `app/tools/service.py`'s
+`_input_template_vars` — a generic pass over the validated input dict,
+not per-tool wiring, so a content tool with a dozen input fields (post
+type, audience, tone, length, …) needs no more plumbing than a
+Profile Hub tool with one. List every field your prompt reads under
+`required_context` in its frontmatter, guarded with `is defined` if
+it's ever legitimately blank.
 
 ## Gating a tool behind admin + a feature flag
 

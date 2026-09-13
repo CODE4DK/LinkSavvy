@@ -42,6 +42,25 @@ import {
 
 const PLAN_RANK: Record<string, number> = { free: 0, pro: 1 };
 
+function isIdeaRows(output: unknown): boolean {
+  if (typeof output !== "object" || output === null) return false;
+  const rows = (output as { rows?: unknown }).rows;
+  return (
+    Array.isArray(rows) &&
+    rows.length > 0 &&
+    rows.every(
+      (row) =>
+        typeof row === "object" &&
+        row !== null &&
+        typeof (row as { title?: unknown }).title === "string",
+    )
+  );
+}
+
+function ideaRowsOf(output: unknown): Record<string, unknown>[] {
+  return (output as { rows: Record<string, unknown>[] }).rows ?? [];
+}
+
 function lastUsedKey(toolId: string): string {
   return `linksavvy:tool-runner:last-input:${toolId}`;
 }
@@ -84,9 +103,34 @@ export interface ToolRunnerProps {
    * renderer is `variants`, since only the user can pick which variant
    * to accept. */
   onApplyToProfile?: (params: { assetType: string; text: string }) => void;
+  /** When provided, a result gets a "Send to Composer" action -- Content
+   * Hub's equivalent of `onApplyToProfile`, handing the extracted text
+   * (the same text Save to Workspace would save) to the caller rather
+   * than patching a `ProfileSnapshot` field. */
+  onSendToComposer?: (text: string) => void;
+  /** When provided, and the current tool's `save_as` is `carousel`, a
+   * result gets an "Open in Carousel Builder" action handing the raw
+   * parsed output (already shaped like `CarouselData` minus `template`)
+   * to the caller, rather than the generic Save to Workspace's plain
+   * text -- the builder needs the real structure, not a flattened
+   * string. */
+  onSendToCarouselBuilder?: (output: unknown) => void;
+  /** When provided, and the result is a `table` of rows that each carry
+   * a `title` (the shape `content.ideas_generator` and any future
+   * ideas-shaped tool produces), a result gets a "Send ideas to
+   * calendar" action handing every row to the caller at once, so ideas
+   * can go straight onto the calendar without a manual copy per idea. */
+  onSendIdeasToCalendar?: (rows: Record<string, unknown>[]) => void;
 }
 
-export function ToolRunner({ toolId, initialValues, onApplyToProfile }: ToolRunnerProps) {
+export function ToolRunner({
+  toolId,
+  initialValues,
+  onApplyToProfile,
+  onSendToComposer,
+  onSendToCarouselBuilder,
+  onSendIdeasToCalendar,
+}: ToolRunnerProps) {
   const { user } = useAuth();
   const { push: pushToast } = useToast();
 
@@ -575,6 +619,42 @@ export function ToolRunner({ toolId, initialValues, onApplyToProfile }: ToolRunn
                     Apply to profile
                   </Button>
                 )}
+
+                {onSendToComposer && (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() =>
+                      onSendToComposer(
+                        editing ? editedText : extractSaveableText(tool.result_renderer, output),
+                      )
+                    }
+                  >
+                    Send to Composer
+                  </Button>
+                )}
+
+                {onSendToCarouselBuilder && tool.save_as === "carousel" && (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => onSendToCarouselBuilder(output)}
+                  >
+                    Open in Carousel Builder
+                  </Button>
+                )}
+
+                {onSendIdeasToCalendar &&
+                  tool.result_renderer === "table" &&
+                  isIdeaRows(output) && (
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => onSendIdeasToCalendar(ideaRowsOf(output))}
+                    >
+                      Send ideas to calendar
+                    </Button>
+                  )}
 
                 {contextUsed.length > 0 && (
                   <details className="text-sm">

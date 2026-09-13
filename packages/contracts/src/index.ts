@@ -54,13 +54,15 @@ export type JobStatusResponse = Schemas["JobStatusResponse"];
 export type AuditRunRequest = Schemas["AuditRunRequest"];
 export type AuditRunResponse = Schemas["AuditRunResponse"];
 export type AuditFindingResponse = Schemas["AuditFindingResponse"];
-export type AuditCategoryResultResponse = Schemas["AuditCategoryResultResponse"];
+export type AuditCategoryResultResponse =
+  Schemas["AuditCategoryResultResponse"];
 export type AuditDetailResponse = Schemas["AuditDetailResponse"];
 export type ScoreHistoryPoint = Schemas["ScoreHistoryPoint"];
 export type ScoreHistoryResponse = Schemas["ScoreHistoryResponse"];
 export type RecommendationResponse = Schemas["RecommendationResponse"];
 export type RecommendationListResponse = Schemas["RecommendationListResponse"];
-export type RecommendationUpdateRequest = Schemas["RecommendationUpdateRequest"];
+export type RecommendationUpdateRequest =
+  Schemas["RecommendationUpdateRequest"];
 
 export type DashboardUser = Schemas["DashboardUser"];
 export type DashboardHealthScore = Schemas["DashboardHealthScore"];
@@ -78,6 +80,35 @@ export type RateRequest = Schemas["RateRequest"];
 export type RateResponse = Schemas["RateResponse"];
 export type SaveAssetRequest = Schemas["SaveAssetRequest"];
 export type AssetResponse = Schemas["AssetResponse"];
+
+export type VoiceSamplesRequest = Schemas["VoiceSamplesRequest"];
+export type VoiceDescriptorResponse = Schemas["VoiceDescriptorResponse"];
+
+export type CreateAssetRequest = Schemas["CreateAssetRequest"];
+export type MarkPostedRequest = Schemas["MarkPostedRequest"];
+
+export type CarouselCover = Schemas["CarouselCover"];
+export type CarouselSlide = Schemas["CarouselSlide"];
+export type CarouselClosing = Schemas["CarouselClosing"];
+export type CarouselData = Schemas["CarouselData"];
+export type SaveCarouselRequest = Schemas["SaveCarouselRequest"];
+export type CarouselResponse = Schemas["CarouselResponse"];
+
+export type ContentPlanStatus = Schemas["ContentPlanCreate"]["status"];
+export type ContentPlanCreate = Schemas["ContentPlanCreate"];
+export type ContentPlanUpdate = Schemas["ContentPlanUpdate"];
+export type ContentPlanResponse = Schemas["ContentPlanResponse"];
+export type RescheduleRequest = Schemas["RescheduleRequest"];
+export type ReminderRequest = Schemas["ReminderRequest"];
+export type PerformanceNumbers = Schemas["PerformanceNumbers"];
+export type MarkContentPlanPostedRequest =
+  Schemas["MarkContentPlanPostedRequest"];
+export type Cadence = Schemas["Cadence"];
+export type RecurringSlotsRequest = Schemas["RecurringSlotsRequest"];
+export type BulkScheduleRequest = Schemas["BulkScheduleRequest"];
+export type ConsistencyWeek = Schemas["ConsistencyWeek"];
+export type PostTypePerformance = Schemas["PostTypePerformance"];
+export type PerformanceSummaryResponse = Schemas["PerformanceSummaryResponse"];
 
 /** The `{"error": {code, message, details}}` envelope every API error uses. */
 export interface ApiErrorEnvelope {
@@ -103,7 +134,13 @@ export interface ApiErrorEnvelope {
 
 /** One SSE frame from POST /internal/playground/stream. */
 export type PlaygroundStreamFrame =
-  | { type: "meta"; correlation_id: string; model: string; provider: string; cached: boolean }
+  | {
+      type: "meta";
+      correlation_id: string;
+      model: string;
+      provider: string;
+      cached: boolean;
+    }
   | { type: "delta"; text: string }
   | { type: "error"; code: string; message: string }
   | {
@@ -123,7 +160,13 @@ export type PlaygroundStreamFrame =
  * information the non-streaming `ToolRunResponse` returns in one shot.
  */
 export type ToolRunStreamFrame =
-  | { type: "meta"; correlation_id: string; model: string; provider: string; cached: boolean }
+  | {
+      type: "meta";
+      correlation_id: string;
+      model: string;
+      provider: string;
+      cached: boolean;
+    }
   | { type: "delta"; text: string }
   | { type: "error"; code: string; message: string }
   | {
@@ -134,4 +177,9 @@ export type ToolRunStreamFrame =
       latency_ms?: number;
       fallback_used?: boolean;
     }
-  | { type: "tool_run"; run_id: string; context_used: string[]; quota: QuotaInfo };
+  | {
+      type: "tool_run";
+      run_id: string;
+      context_used: string[];
+      quota: QuotaInfo;
+    };

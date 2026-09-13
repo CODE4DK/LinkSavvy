@@ -14,6 +14,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.audit.orchestrator import run_audit
+from app.content.content_history import resolve_content_history
 from app.db import SessionFactory
 from app.jobs.registry import register_handler, register_progress_calculator
 from app.models.audit import Audit, AuditCategoryResult
@@ -40,13 +41,16 @@ async def run_audit_job(
     if snapshot_row is None:
         raise RuntimeError(f"audit job {job.id}: user {job.user_id} has no active profile snapshot")
 
+    content_history = await resolve_content_history(
+        db, user_id=job.user_id, explicit=job.payload.get("content_history")
+    )
     audit = await run_audit(
         user=user,
         db=db,
         snapshot_row=snapshot_row,
         trigger=job.payload.get("trigger", "manual"),
         target_role=job.payload.get("target_role"),
-        content_history=job.payload.get("content_history"),
+        content_history=content_history,
         job_id=job.id,
         session_factory=session_factory,
     )
