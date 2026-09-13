@@ -1,14 +1,17 @@
 """The AI Growth Coach: a conversational surface built directly on the
-gateway (see growth.coach.v1.prompt.md) -- separate from the Phase 9
-assistant, which will later absorb this as a mode. Every turn re-sends
-the user's real current scores and real progress since their last visit
-so the model can never manufacture a "you're doing great!" that the data
-doesn't support.
+gateway (see growth.coach.v1.prompt.md), absorbed into the Phase 9
+Assistant's shared conversation store as `mode="coach"` (see
+app/assistant/conversations.py and docs/adr/0010) rather than keeping
+its own session/message tables -- `/hubs/growth/coach` stays a distinct
+frontend route and this module still owns its own prompt and honesty
+mechanism, but every message it writes is an ordinary `Message` row like
+any other conversation. Every turn re-sends the user's real current
+scores and real progress since their last visit so the model can never
+manufacture a "you're doing great!" that the data doesn't support.
 """
 
 from __future__ import annotations
 
-import uuid
 from datetime import UTC, datetime
 from typing import Any
 
@@ -16,13 +19,19 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.ai import gateway
+from app.assistant.conversations import (
+    append_message,
+    get_or_create_active_conversation,
+    get_thread,
+)
+from app.assistant.summarize import conversation_history_text
 from app.growth import history as history_service
-from app.growth.goals import get_active_goal, start_goal
+from app.growth.goals import get_active_goal, goal_summary, start_goal
 from app.growth.schema import GrowthScore
 from app.growth.service import get_growth_scores
-from app.models.coach_message import CoachMessage
-from app.models.coach_session import CoachSession
+from app.models.conversation import Conversation
 from app.models.growth_goal import GrowthGoal
+from app.models.message import Message
 from app.models.user import User
 from app.models.weekly_plan import WeeklyPlan
 
@@ -34,60 +43,15 @@ _SCORE_LABELS: dict[str, str] = {
 }
 
 _PROMPT_ID = "growth.coach.v1"
-_MAX_HISTORY_MESSAGES = 20
+_MODE = "coach"
 
 
-async def get_or_create_session(db: AsyncSession, *, user: User) -> CoachSession:
-    result = await db.execute(
-        select(CoachSession)
-        .where(CoachSession.user_id == user.id, CoachSession.status == "active")
-        .order_by(CoachSession.started_at.desc())
-        .limit(1)
-    )
-    session = result.scalar_one_or_none()
-    if session is not None:
-        return session
-
-    goal = await get_active_goal(db, user_id=user.id)
-    session = CoachSession(
-        user_id=user.id,
-        goal_id=goal.id if goal else None,
-        status="active",
-        started_at=datetime.now(UTC),
-    )
-    db.add(session)
-    await db.commit()
-    await db.refresh(session)
-    return session
+async def get_or_create_conversation(db: AsyncSession, *, user: User) -> Conversation:
+    return await get_or_create_active_conversation(db, user=user, mode=_MODE)
 
 
-async def list_messages(db: AsyncSession, *, session_id: uuid.UUID) -> list[CoachMessage]:
-    result = await db.execute(
-        select(CoachMessage)
-        .where(CoachMessage.session_id == session_id)
-        .order_by(CoachMessage.created_at.asc())
-    )
-    return list(result.scalars().all())
-
-
-def _goal_summary(goal: GrowthGoal | None) -> str:
-    if goal is None:
-        return "No active growth goal has been set yet."
-    parts = [f"Goal type: {goal.goal_type}."]
-    if goal.target_role:
-        parts.append(f"Target role: {goal.target_role}.")
-    if goal.target_description:
-        parts.append(f"Description: {goal.target_description}")
-    parts.append(
-        f"Horizon: {goal.horizon_weeks} weeks, started {goal.started_at.date().isoformat()}."
-    )
-    phases = (goal.coach_state or {}).get("phases") or []
-    if phases:
-        phase_text = "; ".join(
-            f"{p['name']} ({p['duration_weeks']}w): {p['focus']}" for p in phases
-        )
-        parts.append(f"Working plan phases: {phase_text}.")
-    return " ".join(parts)
+async def list_messages(db: AsyncSession, *, conversation_id: Any) -> list[Message]:
+    return await get_thread(db, conversation_id=conversation_id)
 
 
 def _scores_summary(scores: dict[str, GrowthScore]) -> str:
@@ -151,37 +115,27 @@ async def _progress_since_last_visit(
     return " ".join(parts)
 
 
-def _conversation_history(messages: list[CoachMessage]) -> str:
-    if not messages:
-        return "(no messages yet)"
-    lines = []
-    for message in messages[-_MAX_HISTORY_MESSAGES:]:
-        speaker = "User" if message.role == "user" else "Coach"
-        lines.append(f"{speaker}: {message.content}")
-    return "\n".join(lines)
-
-
 async def send_message(
-    db: AsyncSession, *, user: User, session: CoachSession, text: str
-) -> CoachMessage:
-    prior_messages = await list_messages(db, session_id=session.id)
-    prior_last_message_at = session.last_message_at
+    db: AsyncSession, *, user: User, conversation: Conversation, text: str
+) -> Message:
+    prior_messages = await get_thread(db, conversation_id=conversation.id)
+    prior_last_message_at = conversation.last_message_at
+    prior_leaf_id = prior_messages[-1].id if prior_messages else None
 
-    db.add(CoachMessage(session_id=session.id, role="user", content=text, metadata_={}))
-    await db.commit()
+    goal = await get_active_goal(db, user_id=user.id)
 
-    goal: GrowthGoal | None = None
-    if session.goal_id is not None:
-        goal = await db.get(GrowthGoal, session.goal_id)
+    user_message = await append_message(
+        db, conversation=conversation, role="user", content=text, parent_message_id=prior_leaf_id
+    )
 
     scores = await get_growth_scores(db, user=user)
     context = {
-        "goal_summary": _goal_summary(goal),
+        "goal_summary": goal_summary(goal),
         "scores_summary": _scores_summary(scores),
         "progress_since_last_visit": await _progress_since_last_visit(
             db, user=user, prior_last_message_at=prior_last_message_at
         ),
-        "conversation_history": _conversation_history(prior_messages),
+        "conversation_history": conversation_history_text(prior_messages, assistant_label="Coach"),
         "user_message": text,
     }
 
@@ -201,21 +155,21 @@ async def send_message(
                 horizon_weeks=working_plan["horizon_weeks"],
                 baseline_scores={key: score.value for key, score in scores.items()},
             )
-            session.goal_id = goal.id
+        else:
+            goal = await db.get(GrowthGoal, goal.id)
+            assert goal is not None
         goal.coach_state = working_plan
+        await db.commit()
 
-    assistant_message = CoachMessage(
-        session_id=session.id,
+    return await append_message(
+        db,
+        conversation=conversation,
         role="assistant",
         content=parsed["reply"],
-        metadata_={
+        parent_message_id=user_message.id,
+        tool_call={
             "phase": parsed["phase"],
             "proposed_tool_id": parsed.get("proposed_tool_id"),
             "score_movement": parsed["score_movement"],
         },
     )
-    db.add(assistant_message)
-    session.last_message_at = datetime.now(UTC)
-    await db.commit()
-    await db.refresh(assistant_message)
-    return assistant_message

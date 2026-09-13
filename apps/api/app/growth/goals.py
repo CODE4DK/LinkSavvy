@@ -18,6 +18,31 @@ from app.models.growth_goal import GrowthGoal
 from app.models.user import User
 
 
+def goal_summary(goal: GrowthGoal | None) -> str:
+    """A short natural-language summary of a goal for a prompt context
+    block -- shared by the absorbed Growth Coach (app.growth.coach) and
+    the general Assistant's context assembly (app.tools.context's
+    GROWTH_GOAL key), so both describe "the user's active goal" the same
+    way rather than drifting into two summaries that disagree."""
+    if goal is None:
+        return "No active growth goal has been set yet."
+    parts = [f"Goal type: {goal.goal_type}."]
+    if goal.target_role:
+        parts.append(f"Target role: {goal.target_role}.")
+    if goal.target_description:
+        parts.append(f"Description: {goal.target_description}")
+    parts.append(
+        f"Horizon: {goal.horizon_weeks} weeks, started {goal.started_at.date().isoformat()}."
+    )
+    phases = (goal.coach_state or {}).get("phases") or []
+    if phases:
+        phase_text = "; ".join(
+            f"{p['name']} ({p['duration_weeks']}w): {p['focus']}" for p in phases
+        )
+        parts.append(f"Working plan phases: {phase_text}.")
+    return " ".join(parts)
+
+
 async def get_active_goal(db: AsyncSession, *, user_id: uuid.UUID) -> GrowthGoal | None:
     result = await db.execute(
         select(GrowthGoal)

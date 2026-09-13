@@ -7,10 +7,9 @@ from app.models.asset_version import AssetVersion
 from app.models.audit import Audit, AuditCategoryResult, AuditFinding
 from app.models.audit_log import AuditLog
 from app.models.base import Base
-from app.models.coach_message import CoachMessage
-from app.models.coach_session import CoachSession
 from app.models.content_plan import ContentPlan
 from app.models.content_sample import ContentSample
+from app.models.conversation import Conversation
 from app.models.email_verification import EmailVerification
 from app.models.feature_flag import FeatureFlag, UserFeatureFlag
 from app.models.growth_goal import GrowthGoal
@@ -19,6 +18,7 @@ from app.models.job import Job
 from app.models.job_description import JobDescription
 from app.models.linkedin_connection import LinkedInConnection
 from app.models.login_attempt import LoginAttempt
+from app.models.message import Message
 from app.models.oauth_identity import OAuthIdentity
 from app.models.oauth_login_state import OAuthLoginState
 from app.models.password_reset import PasswordReset
@@ -47,10 +47,9 @@ __all__ = [
     "AuditFinding",
     "AuditLog",
     "Base",
-    "CoachMessage",
-    "CoachSession",
     "ContentPlan",
     "ContentSample",
+    "Conversation",
     "EmailVerification",
     "FeatureFlag",
     "GrowthGoal",
@@ -59,6 +58,7 @@ __all__ = [
     "JobDescription",
     "LinkedInConnection",
     "LoginAttempt",
+    "Message",
     "OAuthIdentity",
     "OAuthLoginState",
     "PasswordReset",

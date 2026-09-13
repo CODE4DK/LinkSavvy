@@ -13,6 +13,7 @@ from app.growth import (
     weekly_plan_job,  # noqa: F401 -- registers the "weekly_plan.generate" job handler
 )
 from app.routers import (
+    assistant,
     auth,
     career,
     carousels,
@@ -71,6 +72,7 @@ app.include_router(career.router)
 app.include_router(growth.router)
 app.include_router(workspace_router)
 app.include_router(asset_folders_router)
+app.include_router(assistant.router)
 
 
 @app.get("/health")

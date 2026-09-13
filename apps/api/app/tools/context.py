@@ -13,6 +13,7 @@ that into an actionable prompt instead of a generic failure.
 
 from __future__ import annotations
 
+import uuid
 from collections.abc import Awaitable, Callable
 from enum import StrEnum
 from typing import Any
@@ -40,9 +41,12 @@ class ContextKey(StrEnum):
     PROFILE_SKILLS = "profile.skills"
     PROFILE_FULL = "profile.full"
     AUDIT_LATEST_FINDINGS = "audit.latest_findings"
+    AUDIT_SUMMARY = "audit.summary"
     TARGET_ROLE = "target_role"
     VOICE_PROFILE = "voice_profile"
     RECENT_ASSETS = "recent_assets"
+    RECENT_ASSET_TITLES = "recent_asset_titles"
+    GROWTH_GOAL = "growth.goal"
     USER_SUPPLIED_TEXT = "user_supplied_text"
 
     @property
@@ -80,8 +84,11 @@ _PRIORITY: dict[ContextKey, int] = {
     ContextKey.PROFILE_EXPERIENCES: 60,
     ContextKey.PROFILE_SKILLS: 60,
     ContextKey.AUDIT_LATEST_FINDINGS: 50,
+    ContextKey.AUDIT_SUMMARY: 55,
+    ContextKey.GROWTH_GOAL: 45,
     ContextKey.VOICE_PROFILE: 40,
     ContextKey.RECENT_ASSETS: 30,
+    ContextKey.RECENT_ASSET_TITLES: 30,
     ContextKey.PROFILE_FULL: 20,
 }
 
@@ -93,9 +100,12 @@ _LABELS: dict[ContextKey, str] = {
     ContextKey.PROFILE_SKILLS: "Skills",
     ContextKey.PROFILE_FULL: "Full profile (JSON)",
     ContextKey.AUDIT_LATEST_FINDINGS: "Latest audit findings",
+    ContextKey.AUDIT_SUMMARY: "Latest audit summary",
     ContextKey.TARGET_ROLE: "Target role",
     ContextKey.VOICE_PROFILE: "Voice profile",
     ContextKey.RECENT_ASSETS: "Recently saved assets",
+    ContextKey.RECENT_ASSET_TITLES: "Recently saved assets (titles only)",
+    ContextKey.GROWTH_GOAL: "Active growth goal",
     ContextKey.USER_SUPPLIED_TEXT: "User-supplied text",
 }
 
@@ -139,6 +149,18 @@ _UNAVAILABLE_MESSAGES: dict[ContextKey, tuple[str, str]] = {
     ContextKey.RECENT_ASSETS: (
         "you have no saved assets yet",
         "Save something to your Workspace first.",
+    ),
+    ContextKey.RECENT_ASSET_TITLES: (
+        "you have no saved assets yet",
+        "Save something to your Workspace first.",
+    ),
+    ContextKey.AUDIT_SUMMARY: (
+        "no audit has been run yet",
+        "Run an audit from the Dashboard first.",
+    ),
+    ContextKey.GROWTH_GOAL: (
+        "no active growth goal has been set yet",
+        "Start a goal from the Growth Hub or the Growth Coach first.",
     ),
     ContextKey.USER_SUPPLIED_TEXT: (
         "this tool needs some text to work with",
@@ -235,16 +257,17 @@ async def _serialize_latest_findings(*, user: User, db: AsyncSession, **_: Any) 
 
 
 _RECENT_ASSETS_LIMIT = 5
+_RECENT_ASSET_TITLES_LIMIT = 10
 
 
-async def _serialize_recent_assets(*, user: User, db: AsyncSession, **_: Any) -> str | None:
+async def _recent_asset_titles(db: AsyncSession, *, user_id: uuid.UUID, limit: int) -> str | None:
     assets = (
         (
             await db.execute(
                 select(Asset)
-                .where(Asset.user_id == user.id, Asset.deleted_at.is_(None))
+                .where(Asset.user_id == user_id, Asset.deleted_at.is_(None))
                 .order_by(Asset.created_at.desc())
-                .limit(_RECENT_ASSETS_LIMIT)
+                .limit(limit)
             )
         )
         .scalars()
@@ -253,6 +276,42 @@ async def _serialize_recent_assets(*, user: User, db: AsyncSession, **_: Any) ->
     if not assets:
         return None
     return "\n".join(f"- [{asset.type}] {asset.title}" for asset in assets)
+
+
+async def _serialize_recent_assets(*, user: User, db: AsyncSession, **_: Any) -> str | None:
+    return await _recent_asset_titles(db, user_id=user.id, limit=_RECENT_ASSETS_LIMIT)
+
+
+async def _serialize_recent_asset_titles(*, user: User, db: AsyncSession, **_: Any) -> str | None:
+    """The Assistant's own, slightly larger version of `RECENT_ASSETS` --
+    titles only, same as the tool-framework key, just a longer list (ten
+    rather than five) since it stands in for "what's in my Workspace"
+    rather than seeding one tool's own context. Never the assets'
+    bodies -- CLAUDE.md's "never dump full assets into context unasked"
+    is exactly why this stays title-only; fetching a specific asset's
+    content is what `search_my_workspace` is for."""
+    return await _recent_asset_titles(db, user_id=user.id, limit=_RECENT_ASSET_TITLES_LIMIT)
+
+
+async def _serialize_audit_summary(*, user: User, db: AsyncSession, **_: Any) -> str | None:
+    from app.audit.service import get_latest_audit
+
+    audit = await get_latest_audit(db, user_id=user.id)
+    if audit is None or audit.overall_score is None:
+        return None
+    return (
+        f"Overall Health Score: {audit.overall_score}/100, from an audit run on "
+        f"{audit.created_at.date().isoformat()} (status: {audit.status})."
+    )
+
+
+async def _serialize_growth_goal(*, user: User, db: AsyncSession, **_: Any) -> str | None:
+    from app.growth.goals import get_active_goal, goal_summary
+
+    goal = await get_active_goal(db, user_id=user.id)
+    if goal is None:
+        return None
+    return goal_summary(goal)
 
 
 def _join_or(items: list[str] | None, fallback: str) -> str:
@@ -295,9 +354,12 @@ _SERIALIZERS: dict[ContextKey, Serializer] = {
     ContextKey.PROFILE_SKILLS: _serialize_skills,
     ContextKey.PROFILE_FULL: _serialize_full,
     ContextKey.AUDIT_LATEST_FINDINGS: _serialize_latest_findings,
+    ContextKey.AUDIT_SUMMARY: _serialize_audit_summary,
     ContextKey.TARGET_ROLE: _make_extra_serializer(ContextKey.TARGET_ROLE),
     ContextKey.VOICE_PROFILE: _serialize_voice_profile,
     ContextKey.RECENT_ASSETS: _serialize_recent_assets,
+    ContextKey.RECENT_ASSET_TITLES: _serialize_recent_asset_titles,
+    ContextKey.GROWTH_GOAL: _serialize_growth_goal,
     ContextKey.USER_SUPPLIED_TEXT: _make_extra_serializer(ContextKey.USER_SUPPLIED_TEXT),
 }
 

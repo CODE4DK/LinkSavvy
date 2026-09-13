@@ -1,4 +1,12 @@
 {
+  "assistant.intent_classifier.v1": {
+    "body_sha256": "be5e00e573f9a57495e9ee95c36877539c9894ef2fefd92ff3634be3fe872e65",
+    "version": 1
+  },
+  "assistant.reply.v1": {
+    "body_sha256": "ad630ddef6bbe16a3b451d6ca11876c86c1a39122a5b6ac4ebc66508e43280c4",
+    "version": 1
+  },
   "audit.engagement_opportunities.v1": {
     "body_sha256": "95f20b2606ae26896d9110c33e235f9e00ba1aad9a9b483d2fbf71a76271d687",
     "version": 1

@@ -41,22 +41,24 @@ def _fake_gateway_result(parsed: dict[str, Any]) -> gateway.GatewayResult:
     )
 
 
-async def test_get_or_create_session_is_idempotent(db_session: AsyncSession) -> None:
+async def test_get_or_create_conversation_is_idempotent(db_session: AsyncSession) -> None:
     user = await _create_user(db_session)
-    first = await coach.get_or_create_session(db_session, user=user)
-    second = await coach.get_or_create_session(db_session, user=user)
+    first = await coach.get_or_create_conversation(db_session, user=user)
+    second = await coach.get_or_create_conversation(db_session, user=user)
     assert first.id == second.id
+    assert first.mode == "coach"
 
 
 async def test_first_message_uses_the_interviewing_fixture(db_session: AsyncSession) -> None:
     user = await _create_user(db_session)
-    session = await coach.get_or_create_session(db_session, user=user)
+    conversation = await coach.get_or_create_conversation(db_session, user=user)
 
-    reply = await coach.send_message(db_session, user=user, session=session, text="Hi")
+    reply = await coach.send_message(db_session, user=user, conversation=conversation, text="Hi")
 
     assert reply.role == "assistant"
-    assert reply.metadata_["phase"] == "interviewing"
-    messages = await coach.list_messages(db_session, session_id=session.id)
+    assert reply.tool_call is not None
+    assert reply.tool_call["phase"] == "interviewing"
+    messages = await coach.list_messages(db_session, conversation_id=conversation.id)
     assert [m.role for m in messages] == ["user", "assistant"]
 
 
@@ -64,7 +66,7 @@ async def test_planning_phase_starts_a_goal_and_sets_coach_state(
     db_session: AsyncSession, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     user = await _create_user(db_session)
-    session = await coach.get_or_create_session(db_session, user=user)
+    conversation = await coach.get_or_create_conversation(db_session, user=user)
 
     async def _fake_run(*args: Any, **kwargs: Any) -> gateway.GatewayResult:
         return _fake_gateway_result(
@@ -89,7 +91,7 @@ async def test_planning_phase_starts_a_goal_and_sets_coach_state(
     monkeypatch.setattr(gateway, "run", _fake_run)
 
     await coach.send_message(
-        db_session, user=user, session=session, text="I want to become a Staff Engineer."
+        db_session, user=user, conversation=conversation, text="I want to become a Staff Engineer."
     )
 
     goal = await get_active_goal(db_session, user_id=user.id)
@@ -98,9 +100,6 @@ async def test_planning_phase_starts_a_goal_and_sets_coach_state(
     assert goal.target_role == "Staff Engineer"
     assert goal.coach_state is not None
     assert goal.coach_state["phases"][0]["name"] == "Foundation"
-
-    await db_session.refresh(session)
-    assert session.goal_id == goal.id
 
 
 async def test_progress_since_last_visit_is_honest_about_missing_history(

@@ -12,6 +12,8 @@ from datetime import UTC, date, datetime, timedelta
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.assistant import orchestrator
+from app.assistant.presenters import to_conversation_summary, to_message_response
 from app.deps import get_current_user, get_db
 from app.errors import ApiError, ErrorCode
 from app.growth import coach as coach_service
@@ -20,18 +22,14 @@ from app.growth import history as history_service
 from app.growth.schema import GrowthScore
 from app.growth.service import get_growth_scores
 from app.growth.weekly_plan import get_current_plan, set_item_completed
-from app.models.coach_message import CoachMessage
-from app.models.coach_session import CoachSession
 from app.models.growth_goal import GrowthGoal
 from app.models.user import User
 from app.models.weekly_plan import WeeklyPlan
+from app.schemas.assistant import ConversationSummary, MessageResponse, SendMessageRequest
 from app.schemas.growth import (
     BeforeAfterProfileEditResponse,
     BeforeAfterResponse,
     BeforeAfterToolRunResponse,
-    CoachMessageCreate,
-    CoachMessageResponse,
-    CoachSessionResponse,
     GrowthGoalCreate,
     GrowthGoalResponse,
     GrowthScoreHistoryResponse,
@@ -87,26 +85,6 @@ def _goal_to_response(goal: GrowthGoal) -> GrowthGoalResponse:
         started_at=goal.started_at,
         status=goal.status,  # type: ignore[arg-type]
         baseline_scores=goal.baseline_scores,
-    )
-
-
-def _message_to_response(message: CoachMessage) -> CoachMessageResponse:
-    return CoachMessageResponse(
-        id=str(message.id),
-        role=message.role,  # type: ignore[arg-type]
-        content=message.content,
-        metadata=message.metadata_,
-        created_at=message.created_at,
-    )
-
-
-async def _session_to_response(db: AsyncSession, session: CoachSession) -> CoachSessionResponse:
-    messages = await coach_service.list_messages(db, session_id=session.id)
-    return CoachSessionResponse(
-        id=str(session.id),
-        goal_id=str(session.goal_id) if session.goal_id else None,
-        started_at=session.started_at,
-        messages=[_message_to_response(m) for m in messages],
     )
 
 
@@ -187,24 +165,40 @@ async def start_goal_endpoint(
     return _goal_to_response(goal)
 
 
-@router.get("/coach/session", response_model=CoachSessionResponse)
-async def get_coach_session_endpoint(
+@router.get("/coach/conversation", response_model=ConversationSummary)
+async def get_coach_conversation_endpoint(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> CoachSessionResponse:
-    session = await coach_service.get_or_create_session(db, user=user)
-    return await _session_to_response(db, session)
+) -> ConversationSummary:
+    """Gets or creates the user's one ongoing `mode="coach"` conversation
+    -- the shared Assistant conversation store's answer to "which thread
+    does /hubs/growth/coach open" (see docs/adr/0010). Sending and
+    reading messages in it goes through the same generic
+    `/api/v1/assistant/conversations/{id}/messages` endpoints every other
+    conversation uses; this is the one growth-specific piece: knowing
+    which conversation that is."""
+    conversation = await coach_service.get_or_create_conversation(db, user=user)
+    return to_conversation_summary(conversation)
 
 
-@router.post("/coach/messages", response_model=CoachMessageResponse)
+@router.post("/coach/messages", response_model=MessageResponse)
 async def send_coach_message_endpoint(
-    payload: CoachMessageCreate,
+    payload: SendMessageRequest,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> CoachMessageResponse:
-    session = await coach_service.get_or_create_session(db, user=user)
-    reply = await coach_service.send_message(db, user=user, session=session, text=payload.text)
-    return _message_to_response(reply)
+) -> MessageResponse:
+    """A convenience alias for sending into the coach conversation
+    without the frontend first fetching its id -- routes through the same
+    `orchestrator.handle_message` every conversation uses (mode="coach"
+    dispatches straight to `coach_service.send_message`), so this still
+    enforces the `assistant_messages` quota exactly like sending through
+    `/api/v1/assistant/conversations/{coach_conversation_id}/messages`
+    directly would."""
+    conversation = await coach_service.get_or_create_conversation(db, user=user)
+    result = await orchestrator.handle_message(
+        db, user=user, conversation=conversation, text=payload.text
+    )
+    return to_message_response(result.message)
 
 
 @router.get("/scores/history", response_model=GrowthScoreHistoryResponse)

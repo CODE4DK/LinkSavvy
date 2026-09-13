@@ -10,21 +10,21 @@ async def _auth_headers(client: AsyncClient, creds: dict[str, str]) -> dict[str,
 
 
 async def test_coach_endpoints_require_auth(client: AsyncClient) -> None:
-    assert (await client.get("/api/v1/growth/coach/session")).status_code == 401
+    assert (await client.get("/api/v1/growth/coach/conversation")).status_code == 401
     response = await client.post("/api/v1/growth/coach/messages", json={"text": "hi"})
     assert response.status_code == 401
 
 
-async def test_coach_session_starts_empty_then_grows_with_messages(
+async def test_coach_conversation_starts_empty_then_grows_with_messages(
     client: AsyncClient, registered_user: dict[str, str]
 ) -> None:
     headers = await _auth_headers(client, registered_user)
 
-    session_response = await client.get("/api/v1/growth/coach/session", headers=headers)
-    assert session_response.status_code == 200
-    session_body = session_response.json()
-    assert session_body["messages"] == []
-    assert session_body["goal_id"] is None
+    conversation_response = await client.get("/api/v1/growth/coach/conversation", headers=headers)
+    assert conversation_response.status_code == 200
+    conversation_body = conversation_response.json()
+    assert conversation_body["mode"] == "coach"
+    assert conversation_body["message_count"] == 0
 
     message_response = await client.post(
         "/api/v1/growth/coach/messages", headers=headers, json={"text": "Hi coach"}
@@ -32,12 +32,19 @@ async def test_coach_session_starts_empty_then_grows_with_messages(
     assert message_response.status_code == 200
     reply = message_response.json()
     assert reply["role"] == "assistant"
-    assert reply["metadata"]["phase"] == "interviewing"
+    assert reply["tool_call"]["phase"] == "interviewing"
 
-    session_response_again = await client.get("/api/v1/growth/coach/session", headers=headers)
-    messages = session_response_again.json()["messages"]
+    conversation_id = conversation_body["id"]
+    detail_response = await client.get(
+        f"/api/v1/assistant/conversations/{conversation_id}", headers=headers
+    )
+    messages = detail_response.json()["messages"]
     assert [m["role"] for m in messages] == ["user", "assistant"]
     assert messages[0]["content"] == "Hi coach"
+
+    conversation_again = await client.get("/api/v1/growth/coach/conversation", headers=headers)
+    assert conversation_again.json()["id"] == conversation_id
+    assert conversation_again.json()["message_count"] == 2
 
 
 async def test_coach_message_requires_non_empty_text(
