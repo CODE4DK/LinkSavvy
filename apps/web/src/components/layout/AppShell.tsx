@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
 import { MobileDrawer } from "./MobileDrawer";
+import { AssistantSidePanel } from "./AssistantSidePanel";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 
 const SIDEBAR_COLLAPSED_KEY = "linksavvy.sidebar-collapsed";
@@ -46,6 +47,7 @@ export function AppShell() {
           </ErrorBoundary>
         </main>
       </div>
+      <AssistantSidePanel />
     </div>
   );
 }

@@ -1,11 +1,14 @@
 import { ThemeToggle } from "./ThemeToggle";
 import { UserMenu } from "./UserMenu";
+import { useAssistant } from "@/lib/assistant-context";
 
 export interface TopBarProps {
   onOpenMobileNav: () => void;
 }
 
 export function TopBar({ onOpenMobileNav }: TopBarProps) {
+  const { togglePanel } = useAssistant();
+
   return (
     <header className="flex h-topbar items-center gap-4 border-b border-border bg-bg px-4">
       <button
@@ -27,6 +30,14 @@ export function TopBar({ onOpenMobileNav }: TopBarProps) {
         />
       </div>
 
+      <button
+        type="button"
+        onClick={togglePanel}
+        aria-label="Toggle AI Assistant panel"
+        className="rounded-md p-2 text-fg hover:bg-bg-subtle"
+      >
+        💬
+      </button>
       <ThemeToggle />
       <UserMenu />
     </header>

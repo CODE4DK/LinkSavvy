@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { DashboardResponse } from "@linksavvy/contracts";
 import { apiFetch } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
+import { useAssistant } from "@/lib/assistant-context";
 import { PRIMARY_NAV_ITEMS } from "@/lib/nav-items";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -26,12 +27,19 @@ function useDashboard() {
 function AssistantPromptBar() {
   const [value, setValue] = useState("");
   const navigate = useNavigate();
+  const { startConversationWithMessage } = useAssistant();
 
   return (
     <Card>
       <form
         onSubmit={(event) => {
           event.preventDefault();
+          const text = value.trim();
+          if (!text) {
+            navigate("/assistant");
+            return;
+          }
+          startConversationWithMessage(text);
           navigate("/assistant");
         }}
         className="flex flex-col gap-3 sm:flex-row sm:items-center"
