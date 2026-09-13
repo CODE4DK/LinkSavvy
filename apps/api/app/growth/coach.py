@@ -16,15 +16,22 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.ai import gateway
+from app.growth import history as history_service
 from app.growth.goals import get_active_goal, start_goal
 from app.growth.schema import GrowthScore
 from app.growth.service import get_growth_scores
 from app.models.coach_message import CoachMessage
 from app.models.coach_session import CoachSession
 from app.models.growth_goal import GrowthGoal
-from app.models.score_history import ScoreHistory
 from app.models.user import User
 from app.models.weekly_plan import WeeklyPlan
+
+_SCORE_LABELS: dict[str, str] = {
+    "health": "Health",
+    "visibility": "Visibility",
+    "consistency": "Consistency",
+    "personal_branding": "Personal Branding",
+}
 
 _PROMPT_ID = "growth.coach.v1"
 _MAX_HISTORY_MESSAGES = 20
@@ -99,24 +106,36 @@ async def _progress_since_last_visit(
     if prior_last_message_at is None:
         return "This is the user's first time using the Growth Coach."
 
-    days = max(0, (datetime.now(UTC) - prior_last_message_at).days)
+    now = datetime.now(UTC)
+    days = max(0, (now - prior_last_message_at).days)
     parts = [f"{days} day(s) since the user's last coach visit."]
 
-    audit_result = await db.execute(
-        select(ScoreHistory)
-        .where(
-            ScoreHistory.user_id == user.id,
-            ScoreHistory.recorded_at > prior_last_message_at,
-        )
-        .order_by(ScoreHistory.recorded_at.asc())
+    before_after = await history_service.get_before_after(
+        db,
+        user_id=user.id,
+        from_date=prior_last_message_at.date(),
+        to_date=now.date(),
     )
-    new_history = audit_result.scalars().all()
-    if new_history:
-        parts.append(
-            f"A new audit ran since then; overall Health Score is now {new_history[-1].overall}."
-        )
+
+    movements = []
+    for delta in before_after["score_deltas"]:
+        label = _SCORE_LABELS[delta["score_type"]]
+        if delta["delta"] is not None and delta["delta"] != 0:
+            direction = "up" if delta["delta"] > 0 else "down"
+            movements.append(f"{label} {direction} {abs(delta['delta'])} to {delta['to_value']}")
+        elif delta["delta"] == 0:
+            movements.append(f"{label} unchanged at {delta['to_value']}")
+        elif delta["to_value"] is not None:
+            movements.append(f"{label} is {delta['to_value']} (no snapshot from before then)")
+    if movements:
+        parts.append("Real score movement since then: " + "; ".join(movements) + ".")
     else:
-        parts.append("No new audit has run since the last visit.")
+        parts.append("No score history is available to compare yet.")
+
+    if before_after["tool_runs"]:
+        parts.append(f"{len(before_after['tool_runs'])} tool run(s) happened since then.")
+    else:
+        parts.append("No tools were run since then.")
 
     plans_result = await db.execute(
         select(WeeklyPlan).where(
@@ -129,10 +148,6 @@ async def _progress_since_last_visit(
     else:
         parts.append("No weekly-plan items were marked complete since then.")
 
-    parts.append(
-        "Only the Health Score has tracked history between visits right now; Visibility, "
-        "Consistency, and Personal Branding show only their current values (see ADR 0009)."
-    )
     return " ".join(parts)
 
 

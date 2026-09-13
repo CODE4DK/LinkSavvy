@@ -10,8 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.ai import gateway
 from app.growth import coach
 from app.growth.goals import get_active_goal
-from app.models.audit import Audit
-from app.models.score_history import ScoreHistory
+from app.models.growth_score_snapshot import GrowthScoreSnapshot
 from app.models.user import User
 from app.models.weekly_plan import WeeklyPlan
 
@@ -104,7 +103,7 @@ async def test_planning_phase_starts_a_goal_and_sets_coach_state(
     assert session.goal_id == goal.id
 
 
-async def test_progress_since_last_visit_is_honest_about_untracked_scores(
+async def test_progress_since_last_visit_is_honest_about_missing_history(
     db_session: AsyncSession,
 ) -> None:
     user = await _create_user(db_session)
@@ -113,32 +112,52 @@ async def test_progress_since_last_visit_is_honest_about_untracked_scores(
     text = await coach._progress_since_last_visit(
         db_session, user=user, prior_last_message_at=last_visit
     )
-    assert "No new audit has run since the last visit." in text
+    assert "No score history is available to compare yet." in text
+    assert "No tools were run since then." in text
     assert "No weekly-plan items were marked complete since then." in text
-    assert "Only the Health Score has tracked history between visits" in text
 
 
-async def test_progress_since_last_visit_reports_real_movement(db_session: AsyncSession) -> None:
+async def test_progress_since_last_visit_reports_real_movement_for_every_score(
+    db_session: AsyncSession,
+) -> None:
     user = await _create_user(db_session)
     last_visit = datetime.now(UTC) - timedelta(days=3)
 
-    audit = Audit(user_id=user.id, status="completed", scoring_version="2026.1", trigger="manual")
-    db_session.add(audit)
-    await db_session.commit()
-    await db_session.refresh(audit)
-    db_session.add(
-        ScoreHistory(
-            user_id=user.id,
-            audit_id=audit.id,
-            scoring_version="2026.1",
-            overall=75,
-            profile=80,
-            content=None,
-            engagement=60,
-            career=None,
-            visibility=70,
-            recorded_at=datetime.now(UTC),
-        )
+    db_session.add_all(
+        [
+            GrowthScoreSnapshot(
+                user_id=user.id,
+                score_type="health",
+                value=70,
+                status="needs_attention",
+                scoring_version="2026.1",
+                snapshot_date=(last_visit - timedelta(days=1)).date(),
+            ),
+            GrowthScoreSnapshot(
+                user_id=user.id,
+                score_type="health",
+                value=75,
+                status="needs_attention",
+                scoring_version="2026.1",
+                snapshot_date=datetime.now(UTC).date(),
+            ),
+            GrowthScoreSnapshot(
+                user_id=user.id,
+                score_type="visibility",
+                value=60,
+                status="needs_attention",
+                scoring_version="2026.1",
+                snapshot_date=(last_visit - timedelta(days=1)).date(),
+            ),
+            GrowthScoreSnapshot(
+                user_id=user.id,
+                score_type="visibility",
+                value=60,
+                status="needs_attention",
+                scoring_version="2026.1",
+                snapshot_date=datetime.now(UTC).date(),
+            ),
+        ]
     )
     db_session.add(
         WeeklyPlan(
@@ -156,7 +175,8 @@ async def test_progress_since_last_visit_reports_real_movement(db_session: Async
     text = await coach._progress_since_last_visit(
         db_session, user=user, prior_last_message_at=last_visit
     )
-    assert "overall Health Score is now 75" in text
+    assert "Health up 5 to 75" in text
+    assert "Visibility unchanged at 60" in text
     assert "2 weekly-plan item(s) were marked complete" in text
 
 
