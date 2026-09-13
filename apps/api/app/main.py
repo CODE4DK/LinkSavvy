@@ -6,14 +6,19 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.ai.prompts.loader import get_registry
 from app.audit import job_handler  # noqa: F401 -- registers the "audit" job handler
 from app.errors import ApiError, api_error_handler
-from app.routers import auth, internal, jobs, me, profile
+from app.routers import auth, internal, jobs, me, profile, tools
 from app.routers.audits import audits_router, recommendations_router, scores_router
 from app.routers.dashboard import router as dashboard_router
 from app.settings import settings
+from app.tools.registry import get_registry as get_tool_registry
 
 # Fails application startup loudly if any .prompt.md file is malformed,
 # rather than failing the first request that happens to use it.
 get_registry()
+# Same discipline for tool definitions: a bad one (an unknown prompt_id,
+# an output_schema that's drifted from its prompt) fails boot, not a
+# request.
+get_tool_registry()
 
 app = FastAPI(title="LinkSavvy API", version="0.1.0")
 
@@ -36,6 +41,7 @@ app.include_router(audits_router)
 app.include_router(scores_router)
 app.include_router(recommendations_router)
 app.include_router(dashboard_router)
+app.include_router(tools.router)
 
 
 @app.get("/health")
