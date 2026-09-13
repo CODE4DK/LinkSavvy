@@ -57,6 +57,7 @@ def to_tool_run_response(
 def to_tool_run_summary(run: ToolRun) -> ToolRunSummary:
     return ToolRunSummary(
         id=str(run.id),
+        tool_id=run.tool_id,
         input=run.input,
         output=run.output,
         context_used=list(run.context_keys),

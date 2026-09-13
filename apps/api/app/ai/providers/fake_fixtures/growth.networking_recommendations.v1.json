@@ -1,0 +1,38 @@
+{
+  "response": {
+    "sections": [
+      {
+        "heading": "People to build relationships with",
+        "body": "",
+        "bullets": [
+          { "text": "Engineering managers at mid-size backend teams who care about reliability and on-call practices." },
+          { "text": "Senior backend engineers at companies of a similar size to Acme Corp, especially ones posting about distributed systems." },
+          { "text": "Technical leads who've recently written about scaling a backend team, since they're likely open to a conversation." }
+        ]
+      },
+      {
+        "heading": "Communities and conversations worth joining",
+        "body": "",
+        "bullets": [
+          { "text": "LinkedIn groups and hashtags focused on backend engineering and distributed systems." },
+          { "text": "Comment threads under posts about on-call ownership and incident response -- a natural fit for your background." },
+          { "text": "Discussions tagged with system design, where thoughtful, specific comments stand out." }
+        ]
+      },
+      {
+        "heading": "A realistic weekly cadence",
+        "body": "Aim for two to three genuine interactions a week -- a thoughtful comment, a reply to someone who engaged with your post, or a short message to someone you already share a real connection with. Consistency over a few months matters far more than a burst of outreach in one week.",
+        "bullets": []
+      },
+      {
+        "heading": "Warm-intro paths through your existing network",
+        "body": "",
+        "bullets": [
+          { "text": "Reconnect with former colleagues from your time at Acme Corp -- they already know your work firsthand." },
+          { "text": "Ask a former teammate to introduce you to someone on their current team if your paths have diverged." }
+        ]
+      }
+    ]
+  },
+  "tokens_out": 260
+}

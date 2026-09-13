@@ -3,13 +3,18 @@
 from app.models.ai_cache import AICache
 from app.models.ai_invocation import AIInvocation
 from app.models.asset import Asset, AssetFolder
+from app.models.asset_version import AssetVersion
 from app.models.audit import Audit, AuditCategoryResult, AuditFinding
 from app.models.audit_log import AuditLog
 from app.models.base import Base
+from app.models.coach_message import CoachMessage
+from app.models.coach_session import CoachSession
 from app.models.content_plan import ContentPlan
 from app.models.content_sample import ContentSample
 from app.models.email_verification import EmailVerification
 from app.models.feature_flag import FeatureFlag, UserFeatureFlag
+from app.models.growth_goal import GrowthGoal
+from app.models.growth_score_snapshot import GrowthScoreSnapshot
 from app.models.job import Job
 from app.models.job_description import JobDescription
 from app.models.linkedin_connection import LinkedInConnection
@@ -29,21 +34,27 @@ from app.models.tool_run import ToolRun
 from app.models.usage_counter import UsageCounter
 from app.models.user import User
 from app.models.voice_profile import VoiceProfile
+from app.models.weekly_plan import WeeklyPlan
 
 __all__ = [
     "AICache",
     "AIInvocation",
     "Asset",
     "AssetFolder",
+    "AssetVersion",
     "Audit",
     "AuditCategoryResult",
     "AuditFinding",
     "AuditLog",
     "Base",
+    "CoachMessage",
+    "CoachSession",
     "ContentPlan",
     "ContentSample",
     "EmailVerification",
     "FeatureFlag",
+    "GrowthGoal",
+    "GrowthScoreSnapshot",
     "Job",
     "JobDescription",
     "LinkedInConnection",
@@ -65,4 +76,5 @@ __all__ = [
     "User",
     "UserFeatureFlag",
     "VoiceProfile",
+    "WeeklyPlan",
 ]

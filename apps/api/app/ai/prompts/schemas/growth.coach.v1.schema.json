@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "reply": { "type": "string" },
+    "phase": { "type": "string", "enum": ["interviewing", "planning", "check_in"] },
+    "interview_complete": { "type": "boolean" },
+    "questions_asked": { "type": "integer", "minimum": 0, "maximum": 5 },
+    "score_movement": {
+      "type": "string",
+      "enum": ["improved", "stalled", "declined", "not_enough_history"]
+    },
+    "working_plan": {
+      "type": ["object", "null"],
+      "properties": {
+        "goal_type": { "type": "string" },
+        "target_role": { "type": ["string", "null"] },
+        "horizon_weeks": { "type": "integer", "minimum": 1, "maximum": 104 },
+        "phases": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "focus": { "type": "string" },
+              "duration_weeks": { "type": "integer", "minimum": 1 }
+            },
+            "required": ["name", "focus", "duration_weeks"],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": ["goal_type", "target_role", "horizon_weeks", "phases"],
+      "additionalProperties": false
+    },
+    "proposed_tool_id": { "type": ["string", "null"] }
+  },
+  "required": [
+    "reply",
+    "phase",
+    "interview_complete",
+    "questions_asked",
+    "score_movement",
+    "working_plan",
+    "proposed_tool_id"
+  ],
+  "additionalProperties": false
+}

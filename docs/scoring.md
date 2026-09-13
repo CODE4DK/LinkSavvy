@@ -123,3 +123,111 @@ If we ever change these weights or add a component, we bump
 `scoring_version` — so a jump in your trend line always has an honest
 explanation (a real change in your profile, or a change in how we score)
 rather than silently comparing scores computed two different ways.
+
+# The Growth Hub's four scores
+
+The Growth Hub (`apps/api/app/growth/`) shows four scores side by side.
+One of them — Health — is the same Audit Engine score documented above,
+just reshaped for this view. The other three (Visibility, Consistency,
+Personal Branding) are new for the Growth Hub and live in their own
+`growth:` section of `config/scoring.yaml`, versioned independently as
+`growth.scoring_version` (currently also `2026.1`, but the two versions
+are free to diverge if one side changes without the other).
+
+Every score — all four — returns the same envelope:
+
+```json
+{
+  "score_type": "visibility",
+  "value": 62,
+  "status": "partial",
+  "components": [
+    {"name": "keyword_coverage", "weight": 25, "value": 80, "evidence": {"...": "..."}}
+  ],
+  "computed_at": "2026-09-13T12:00:00Z",
+  "scoring_version": "2026.1",
+  "needed": null
+}
+```
+
+`status` is one of:
+
+- **ok** — every component was computable.
+- **partial** — at least one component is missing (a field the user
+  hasn't filled in, a component the AI couldn't support with evidence),
+  but there's enough to show a number.
+- **insufficient_data** — there isn't enough history yet to compute the
+  score meaningfully at all (currently only Consistency, before four
+  weeks of posting activity). `needed` explains exactly what's missing —
+  never a bare zero.
+- **skipped** — nothing has been provided to compute the score from at
+  all (no profile snapshot committed, no audit ever run).
+
+A component with `value` set always has non-empty `evidence` — a
+component the code (or the AI) couldn't actually support is left out of
+`components` entirely rather than shown with a fabricated or blank
+justification. This is enforced in code, not just by convention: every
+Growth Hub score test asserts it.
+
+## Health — reused, not recomputed
+
+The Growth Hub's Health Score is the exact same overall Health Score
+computed above, read back from your existing `score_history` row and
+reshaped into the shared envelope — the five categories above become
+five components (weight = each category's `category_weights` entry from
+`config/scoring.yaml`), and `computed_at`/`scoring_version` come directly
+from that row. It is never recomputed here; run an audit to refresh it.
+If you've never run an audit, this score is `skipped`.
+
+## Visibility — 25/10/15/15/15/20
+
+| Component | Weight | What it measures |
+| --- | --- | --- |
+| Keyword coverage | 25% | How many of the target role's vocabulary words appear across the headline, About, *and* experience bullets combined — broader than the Audit Engine's own `keyword_density`, which only looks at headline + About. Uses the same AI-resolved role vocabulary the audit uses (cached, so this costs no extra AI calls after the first). |
+| Custom URL | 10% | Whether a custom, memorable LinkedIn URL is claimed. |
+| Profile metadata | 15% | Whether industry and location are set — both are fields recruiters filter search by. |
+| Skill alignment | 15% | Overlap between the user's listed skills and the target role's expected skill vocabulary. |
+| Photo and banner | 15% | Whether a profile photo is set. **Photo-only for now** — `ProfileSnapshot` doesn't capture a banner/background image anywhere yet (see ADR 0009), so this component is disclosed as photo-only rather than silently scored as if banner presence were checked. |
+| Recommendations received | 20% | Whether the profile shows received recommendations, scaled against a realistic target of 3. |
+
+Deterministic apart from the keyword-relevance judgement (which role
+vocabulary counts as "relevant" is an AI call, same as the audit's).
+`skipped` if no profile snapshot has ever been committed.
+
+## Consistency — 30/25/25/20
+
+| Component | Weight | What it measures |
+| --- | --- | --- |
+| Posts per week | 30% | Average recorded posts per week over the trailing 12 weeks, scored against a target cadence of 2/week. |
+| Variance | 25% | How evenly spread posting is across the 12 weeks — a steady weekly habit scores higher than the same total posts bunched into a couple of weeks. |
+| Longest gap | 25% | The longest run of consecutive weeks with zero recorded posts. |
+| Streak length | 20% | The current run of consecutive weeks with at least one recorded post, scaled against a target streak of 8 weeks. |
+
+Fully deterministic — no AI call at all. Reuses the same 12-week posted-
+post window (`app.content.calendar_service.consistency_strip`) the
+Content Hub's own consistency strip already computes, so the two never
+disagree. If fewer than four of the trailing twelve weeks have any
+recorded posting activity, the score is `insufficient_data` rather than a
+misleadingly low number — `needed` names how many weeks you have and how
+many you need.
+
+## Personal Branding — 25/20/20/20/15
+
+| Component | Weight | What it measures |
+| --- | --- | --- |
+| Positioning clarity | 25% | Whether a reader could state, in one sentence, who this person is and what they do. |
+| Message consistency | 20% | Whether the headline, About, and experience sections tell the same professional story rather than pulling in different directions. |
+| Distinctiveness | 20% | Whether the profile says something specific to this person, rather than reading like it could describe anyone in the role. |
+| Proof | 20% | Whether claims are backed by concrete evidence — a result, a project, a number — rather than unsupported adjectives. |
+| Content-to-profile alignment | 15% | Whether the themes of the user's own recent content samples (if any) match the positioning claimed in the profile. If no content samples have been recorded, the AI is told so explicitly and scores this component on that absence rather than guessing. |
+
+This one leans entirely on the gateway: a single AI call
+(`growth.personal_branding.v1`) scores all five components at once
+against a fixed rubric, and every component in its response must carry
+non-empty `evidence` quoting or paraphrasing the user's own text. Any
+component the model returns with blank or whitespace-only evidence is
+**discarded**, not trusted at face value — the same "no evidence, no
+score" rule the audit's own quality judgements follow. If every component
+comes back without usable evidence, the whole score is `skipped` rather
+than shown as a hollow number; `skipped` also applies if no profile
+snapshot has ever been committed.

@@ -682,6 +682,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/tools/runs/{run_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Tool Run
+         * @description Single-run fetch -- the Workspace Hub's detail drawer uses this
+         *     to show which tool produced a saved asset, with what inputs, so
+         *     "open in tool" can re-run it.
+         */
+        get: operations["get_tool_run_api_v1_tools_runs__run_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/tools/runs/{run_id}/regenerate": {
         parameters: {
             query?: never;
@@ -791,7 +813,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** List Assets Endpoint */
+        get: operations["list_assets_endpoint_api_v1_assets_get"];
         put?: never;
         /** Create Asset Endpoint */
         post: operations["create_asset_endpoint_api_v1_assets_post"];
@@ -1252,6 +1275,300 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/growth/scores": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Scores Endpoint */
+        get: operations["get_scores_endpoint_api_v1_growth_scores_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/growth/plan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Current Plan Endpoint */
+        get: operations["get_current_plan_endpoint_api_v1_growth_plan_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/growth/plan/{plan_id}/items/{item_index}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Plan Item Endpoint */
+        patch: operations["update_plan_item_endpoint_api_v1_growth_plan__plan_id__items__item_index__patch"];
+        trace?: never;
+    };
+    "/api/v1/growth/goal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Active Goal Endpoint */
+        get: operations["get_active_goal_endpoint_api_v1_growth_goal_get"];
+        put?: never;
+        /** Start Goal Endpoint */
+        post: operations["start_goal_endpoint_api_v1_growth_goal_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/growth/coach/session": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Coach Session Endpoint */
+        get: operations["get_coach_session_endpoint_api_v1_growth_coach_session_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/growth/coach/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Send Coach Message Endpoint */
+        post: operations["send_coach_message_endpoint_api_v1_growth_coach_messages_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/growth/scores/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Score History Endpoint */
+        get: operations["get_score_history_endpoint_api_v1_growth_scores_history_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/growth/before-after": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Before After Endpoint */
+        get: operations["get_before_after_endpoint_api_v1_growth_before_after_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assets/trash": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Trash Endpoint */
+        get: operations["list_trash_endpoint_api_v1_assets_trash_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assets/{asset_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Asset Endpoint */
+        get: operations["get_asset_endpoint_api_v1_assets__asset_id__get"];
+        put?: never;
+        post?: never;
+        /** Delete Asset Endpoint */
+        delete: operations["delete_asset_endpoint_api_v1_assets__asset_id__delete"];
+        options?: never;
+        head?: never;
+        /** Patch Asset Endpoint */
+        patch: operations["patch_asset_endpoint_api_v1_assets__asset_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/assets/{asset_id}/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Restore Asset Endpoint */
+        post: operations["restore_asset_endpoint_api_v1_assets__asset_id__restore_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assets/{asset_id}/duplicate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Duplicate Asset Endpoint */
+        post: operations["duplicate_asset_endpoint_api_v1_assets__asset_id__duplicate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assets/{asset_id}/versions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Versions Endpoint */
+        get: operations["list_versions_endpoint_api_v1_assets__asset_id__versions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assets/{asset_id}/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Export Asset Endpoint */
+        get: operations["export_asset_endpoint_api_v1_assets__asset_id__export_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assets/bulk": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Bulk Action Endpoint */
+        post: operations["bulk_action_endpoint_api_v1_assets_bulk_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/asset-folders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Folders Endpoint */
+        get: operations["list_folders_endpoint_api_v1_asset_folders_get"];
+        put?: never;
+        /** Create Folder Endpoint */
+        post: operations["create_folder_endpoint_api_v1_asset_folders_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/asset-folders/{folder_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Folder Endpoint */
+        delete: operations["delete_folder_endpoint_api_v1_asset_folders__folder_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Folder Endpoint */
+        patch: operations["update_folder_endpoint_api_v1_asset_folders__folder_id__patch"];
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -1273,6 +1590,59 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AssetFolderCreateRequest */
+        AssetFolderCreateRequest: {
+            /** Name */
+            name: string;
+            /** Parent Id */
+            parent_id?: string | null;
+        };
+        /** AssetFolderResponse */
+        AssetFolderResponse: {
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+            /** Parent Id */
+            parent_id: string | null;
+        };
+        /** AssetFolderUpdateRequest */
+        AssetFolderUpdateRequest: {
+            /** Name */
+            name?: string | null;
+            /** Parent Id */
+            parent_id?: string | null;
+            /**
+             * Unfile
+             * @default false
+             */
+            unfile: boolean;
+        };
+        /** AssetListResponse */
+        AssetListResponse: {
+            /** Items */
+            items: components["schemas"]["WorkspaceAssetResponse"][];
+            /** Next Cursor */
+            next_cursor: string | null;
+        };
+        /** AssetPatchRequest */
+        AssetPatchRequest: {
+            /** Title */
+            title?: string | null;
+            /** Body */
+            body?: string | null;
+            /** Tags */
+            tags?: string[] | null;
+            /** Folder Id */
+            folder_id?: string | null;
+            /**
+             * Unfile
+             * @default false
+             */
+            unfile: boolean;
+            /** Is Favourite */
+            is_favourite?: boolean | null;
+        };
         /** AssetResponse */
         AssetResponse: {
             /** Id */
@@ -1304,6 +1674,22 @@ export interface components {
          * @enum {string}
          */
         AssetType: "post" | "headline" | "about" | "experience_bullets" | "comment" | "message" | "resume" | "cover_letter" | "job_description" | "analysis" | "conversation" | "template" | "carousel" | "roadmap";
+        /** AssetVersionResponse */
+        AssetVersionResponse: {
+            /** Version */
+            version: number;
+            /** Title */
+            title: string;
+            /** Body */
+            body: string;
+            /** Body Format */
+            body_format: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
         /** AuditCategoryResultResponse */
         AuditCategoryResultResponse: {
             /** Category */
@@ -1383,6 +1769,49 @@ export interface components {
              */
             audit_status: "queued";
         };
+        /** BeforeAfterProfileEditResponse */
+        BeforeAfterProfileEditResponse: {
+            /** Version */
+            version: number;
+            /** Source */
+            source: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** BeforeAfterResponse */
+        BeforeAfterResponse: {
+            /**
+             * From Date
+             * Format: date
+             */
+            from_date: string;
+            /**
+             * To Date
+             * Format: date
+             */
+            to_date: string;
+            /** Score Deltas */
+            score_deltas: components["schemas"]["ScoreDeltaResponse"][];
+            /** Tool Runs */
+            tool_runs: components["schemas"]["BeforeAfterToolRunResponse"][];
+            /** Profile Edits */
+            profile_edits: components["schemas"]["BeforeAfterProfileEditResponse"][];
+        };
+        /** BeforeAfterToolRunResponse */
+        BeforeAfterToolRunResponse: {
+            /** Tool Id */
+            tool_id: string;
+            /** Status */
+            status: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
         /** Body_create_upload_import_api_v1_profile_imports_upload_post */
         Body_create_upload_import_api_v1_profile_imports_upload_post: {
             /** File */
@@ -1397,6 +1826,31 @@ export interface components {
         Body_submit_uploaded_samples_api_v1_content_voice_samples_upload_post: {
             /** File */
             file: string;
+        };
+        /** BulkActionRequest */
+        BulkActionRequest: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "move" | "tag" | "delete" | "export";
+            /** Asset Ids */
+            asset_ids: string[];
+            /** Folder Id */
+            folder_id?: string | null;
+            /** Tags */
+            tags?: string[] | null;
+            /**
+             * Format
+             * @default txt
+             * @enum {string}
+             */
+            format: "txt" | "md" | "pdf" | "docx";
+        };
+        /** BulkActionResponse */
+        BulkActionResponse: {
+            /** Affected Count */
+            affected_count: number;
         };
         /** BulkScheduleRequest */
         BulkScheduleRequest: {
@@ -1499,6 +1953,46 @@ export interface components {
             current_password: string;
             /** New Password */
             new_password: string;
+        };
+        /** CoachMessageCreate */
+        CoachMessageCreate: {
+            /** Text */
+            text: string;
+        };
+        /** CoachMessageResponse */
+        CoachMessageResponse: {
+            /** Id */
+            id: string;
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "user" | "assistant";
+            /** Content */
+            content: string;
+            /** Metadata */
+            metadata: {
+                [key: string]: unknown;
+            };
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** CoachSessionResponse */
+        CoachSessionResponse: {
+            /** Id */
+            id: string;
+            /** Goal Id */
+            goal_id: string | null;
+            /**
+             * Started At
+             * Format: date-time
+             */
+            started_at: string;
+            /** Messages */
+            messages: components["schemas"]["CoachMessageResponse"][];
         };
         /** CommitImportRequest */
         CommitImportRequest: {
@@ -1801,6 +2295,87 @@ export interface components {
             cost_per_user_per_day_minor: {
                 [key: string]: number;
             };
+        };
+        /** GrowthGoalCreate */
+        GrowthGoalCreate: {
+            /** Goal Type */
+            goal_type: string;
+            /** Target Role */
+            target_role?: string | null;
+            /**
+             * Target Description
+             * @default
+             */
+            target_description: string;
+            /** Horizon Weeks */
+            horizon_weeks: number;
+        };
+        /** GrowthGoalResponse */
+        GrowthGoalResponse: {
+            /** Id */
+            id: string;
+            /** Goal Type */
+            goal_type: string;
+            /** Target Role */
+            target_role: string | null;
+            /** Target Description */
+            target_description: string;
+            /** Horizon Weeks */
+            horizon_weeks: number;
+            /**
+             * Started At
+             * Format: date-time
+             */
+            started_at: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "active" | "completed" | "abandoned";
+            /** Baseline Scores */
+            baseline_scores: {
+                [key: string]: unknown;
+            };
+        };
+        /** GrowthScoreHistoryResponse */
+        GrowthScoreHistoryResponse: {
+            /** Health */
+            health: components["schemas"]["ScoreHistoryPointResponse"][];
+            /** Visibility */
+            visibility: components["schemas"]["ScoreHistoryPointResponse"][];
+            /** Consistency */
+            consistency: components["schemas"]["ScoreHistoryPointResponse"][];
+            /** Personal Branding */
+            personal_branding: components["schemas"]["ScoreHistoryPointResponse"][];
+        };
+        /** GrowthScoreResponse */
+        GrowthScoreResponse: {
+            /** Score Type */
+            score_type: string;
+            /** Value */
+            value: number | null;
+            /** Status */
+            status: string;
+            /** Components */
+            components: components["schemas"]["ScoreComponentResponse"][];
+            /**
+             * Computed At
+             * Format: date-time
+             */
+            computed_at: string;
+            /** Scoring Version */
+            scoring_version: string;
+            /** Needed */
+            needed: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /** GrowthScoresResponse */
+        GrowthScoresResponse: {
+            health: components["schemas"]["GrowthScoreResponse"];
+            visibility: components["schemas"]["GrowthScoreResponse"];
+            consistency: components["schemas"]["GrowthScoreResponse"];
+            personal_branding: components["schemas"]["GrowthScoreResponse"];
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -2516,6 +3091,30 @@ export interface components {
             title: string;
             data: components["schemas"]["CarouselData"];
         };
+        /** ScoreComponentResponse */
+        ScoreComponentResponse: {
+            /** Name */
+            name: string;
+            /** Weight */
+            weight: number;
+            /** Value */
+            value: number | null;
+            /** Evidence */
+            evidence: {
+                [key: string]: unknown;
+            };
+        };
+        /** ScoreDeltaResponse */
+        ScoreDeltaResponse: {
+            /** Score Type */
+            score_type: string;
+            /** From Value */
+            from_value: number | null;
+            /** To Value */
+            to_value: number | null;
+            /** Delta */
+            delta: number | null;
+        };
         /** ScoreHistoryPoint */
         ScoreHistoryPoint: {
             /** Audit Id */
@@ -2537,6 +3136,16 @@ export interface components {
             career: number | null;
             /** Visibility */
             visibility: number | null;
+        };
+        /** ScoreHistoryPointResponse */
+        ScoreHistoryPointResponse: {
+            /**
+             * Snapshot Date
+             * Format: date
+             */
+            snapshot_date: string;
+            /** Value */
+            value: number;
         };
         /** ScoreHistoryResponse */
         ScoreHistoryResponse: {
@@ -2657,6 +3266,8 @@ export interface components {
         ToolRunSummary: {
             /** Id */
             id: string;
+            /** Tool Id */
+            tool_id: string;
             /** Input */
             input: {
                 [key: string]: unknown;
@@ -2800,6 +3411,92 @@ export interface components {
         VoiceSamplesRequest: {
             /** Texts */
             texts: string[];
+        };
+        /** WeeklyPlanItemResponse */
+        WeeklyPlanItemResponse: {
+            /** Title */
+            title: string;
+            /** Why Now */
+            why_now: string;
+            /** Tool Id */
+            tool_id: string | null;
+            /** Estimated Minutes */
+            estimated_minutes: number;
+            /** Expected Impact */
+            expected_impact: number;
+            /** Category */
+            category: string;
+            /** Completed */
+            completed: boolean;
+        };
+        /** WeeklyPlanItemUpdate */
+        WeeklyPlanItemUpdate: {
+            /** Completed */
+            completed: boolean;
+        };
+        /** WeeklyPlanResponse */
+        WeeklyPlanResponse: {
+            /** Id */
+            id: string;
+            /**
+             * Week Start
+             * Format: date
+             */
+            week_start: string;
+            /**
+             * Generated At
+             * Format: date-time
+             */
+            generated_at: string;
+            /** Focus */
+            focus: string;
+            /** Items */
+            items: components["schemas"]["WeeklyPlanItemResponse"][];
+            /** Status */
+            status: string;
+            /** Completed Count */
+            completed_count: number;
+            /** Reflection */
+            reflection: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /** WorkspaceAssetResponse */
+        WorkspaceAssetResponse: {
+            /** Id */
+            id: string;
+            /** Type */
+            type: string;
+            /** Title */
+            title: string;
+            /** Body */
+            body: string;
+            /** Body Format */
+            body_format: string;
+            /** Metadata */
+            metadata: {
+                [key: string]: unknown;
+            };
+            /** Source Tool Run Id */
+            source_tool_run_id: string | null;
+            /** Tags */
+            tags: string[];
+            /** Is Favourite */
+            is_favourite: boolean;
+            /** Folder Id */
+            folder_id: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Deleted At */
+            deleted_at: string | null;
         };
     };
     responses: never;
@@ -4054,6 +4751,37 @@ export interface operations {
             };
         };
     };
+    get_tool_run_api_v1_tools_runs__run_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ToolRunSummary"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     regenerate_tool_run_api_v1_tools_runs__run_id__regenerate_post: {
         parameters: {
             query?: never;
@@ -4232,6 +4960,46 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["VoiceDescriptorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_assets_endpoint_api_v1_assets_get: {
+        parameters: {
+            query?: {
+                type?: string | null;
+                folder_id?: string | null;
+                tags?: string[] | null;
+                favourite?: boolean | null;
+                date_from?: string | null;
+                date_to?: string | null;
+                source_tool_id?: string | null;
+                q?: string | null;
+                cursor?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetListResponse"];
                 };
             };
             /** @description Validation Error */
@@ -5339,6 +6107,644 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ResumeMatchResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_scores_endpoint_api_v1_growth_scores_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GrowthScoresResponse"];
+                };
+            };
+        };
+    };
+    get_current_plan_endpoint_api_v1_growth_plan_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WeeklyPlanResponse"];
+                };
+            };
+        };
+    };
+    update_plan_item_endpoint_api_v1_growth_plan__plan_id__items__item_index__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plan_id: string;
+                item_index: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WeeklyPlanItemUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WeeklyPlanResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_active_goal_endpoint_api_v1_growth_goal_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GrowthGoalResponse"];
+                };
+            };
+        };
+    };
+    start_goal_endpoint_api_v1_growth_goal_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GrowthGoalCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GrowthGoalResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_coach_session_endpoint_api_v1_growth_coach_session_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CoachSessionResponse"];
+                };
+            };
+        };
+    };
+    send_coach_message_endpoint_api_v1_growth_coach_messages_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CoachMessageCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CoachMessageResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_score_history_endpoint_api_v1_growth_scores_history_get: {
+        parameters: {
+            query?: {
+                months?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GrowthScoreHistoryResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_before_after_endpoint_api_v1_growth_before_after_get: {
+        parameters: {
+            query: {
+                from_date: string;
+                to_date: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BeforeAfterResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_trash_endpoint_api_v1_assets_trash_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkspaceAssetResponse"][];
+                };
+            };
+        };
+    };
+    get_asset_endpoint_api_v1_assets__asset_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                asset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkspaceAssetResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_asset_endpoint_api_v1_assets__asset_id__delete: {
+        parameters: {
+            query?: {
+                permanent?: boolean;
+            };
+            header?: never;
+            path: {
+                asset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    patch_asset_endpoint_api_v1_assets__asset_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                asset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetPatchRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkspaceAssetResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    restore_asset_endpoint_api_v1_assets__asset_id__restore_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                asset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkspaceAssetResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    duplicate_asset_endpoint_api_v1_assets__asset_id__duplicate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                asset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WorkspaceAssetResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_versions_endpoint_api_v1_assets__asset_id__versions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                asset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetVersionResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    export_asset_endpoint_api_v1_assets__asset_id__export_get: {
+        parameters: {
+            query?: {
+                format?: string;
+            };
+            header?: never;
+            path: {
+                asset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    bulk_action_endpoint_api_v1_assets_bulk_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BulkActionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BulkActionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_folders_endpoint_api_v1_asset_folders_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetFolderResponse"][];
+                };
+            };
+        };
+    };
+    create_folder_endpoint_api_v1_asset_folders_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetFolderCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetFolderResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_folder_endpoint_api_v1_asset_folders__folder_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                folder_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_folder_endpoint_api_v1_asset_folders__folder_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                folder_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetFolderUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetFolderResponse"];
                 };
             };
             /** @description Validation Error */

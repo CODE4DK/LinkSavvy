@@ -18,6 +18,7 @@ from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.deps import get_current_user, get_db
+from app.errors import ApiError, ErrorCode
 from app.models.user import User
 from app.schemas.tools import (
     AssetResponse,
@@ -94,6 +95,21 @@ async def list_tool_runs(
     get_tool(tool_id)  # 404s on an unknown tool before we bother listing anything
     runs = await service.list_runs(db, user_id=user.id, tool_id=tool_id, cursor=cursor, limit=limit)
     return [to_tool_run_summary(run) for run in runs]
+
+
+@router.get("/runs/{run_id}", response_model=ToolRunSummary)
+async def get_tool_run(
+    run_id: uuid.UUID,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> ToolRunSummary:
+    """Single-run fetch -- the Workspace Hub's detail drawer uses this
+    to show which tool produced a saved asset, with what inputs, so
+    "open in tool" can re-run it."""
+    run = await service.get_run_for_user(db, run_id=run_id, user_id=user.id)
+    if run is None:
+        raise ApiError(ErrorCode.NOT_FOUND, "no such tool run")
+    return to_tool_run_summary(run)
 
 
 @router.post("/runs/{run_id}/regenerate", response_model=ToolRunResponse)

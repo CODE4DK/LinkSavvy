@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import type { ToolSummary } from "@linksavvy/contracts";
 import { ToolRunner } from "./ToolRunner";
 
@@ -93,13 +94,21 @@ afterEach(() => {
 describe("ToolRunner", () => {
   it("shows a not-found state for an unknown tool id", async () => {
     mockedApiFetch.mockResolvedValueOnce([FIXTURE_TOOL]);
-    render(<ToolRunner toolId="no.such.tool" />);
+    render(
+      <MemoryRouter>
+        <ToolRunner toolId="no.such.tool" />
+      </MemoryRouter>,
+    );
     expect(await screen.findByText(/tool not found/i)).toBeInTheDocument();
   });
 
   it("renders a generic form from the tool's input schema", async () => {
     mockedApiFetch.mockResolvedValueOnce([FIXTURE_TOOL]);
-    render(<ToolRunner toolId="test.fixture" />);
+    render(
+      <MemoryRouter>
+        <ToolRunner toolId="test.fixture" />
+      </MemoryRouter>,
+    );
 
     expect(await screen.findByText("Fixture Tool")).toBeInTheDocument();
     expect(screen.getByText("Your text")).toBeInTheDocument();
@@ -109,7 +118,11 @@ describe("ToolRunner", () => {
 
   it("blocks the run and shows a field error when a required field is blank", async () => {
     mockedApiFetch.mockResolvedValueOnce([FIXTURE_TOOL]);
-    render(<ToolRunner toolId="test.fixture" />);
+    render(
+      <MemoryRouter>
+        <ToolRunner toolId="test.fixture" />
+      </MemoryRouter>,
+    );
 
     await screen.findByText("Fixture Tool");
     fireEvent.click(screen.getByRole("button", { name: "Run" }));
@@ -126,7 +139,11 @@ describe("ToolRunner", () => {
       quota: { metric: "tool_runs", used: 1, limit: 15 },
     });
 
-    render(<ToolRunner toolId="test.fixture" />);
+    render(
+      <MemoryRouter>
+        <ToolRunner toolId="test.fixture" />
+      </MemoryRouter>,
+    );
 
     await screen.findByText("Fixture Tool");
     typeInto(screen.getByLabelText("Your text"), "hello there");
@@ -162,7 +179,11 @@ describe("ToolRunner", () => {
       });
     });
 
-    render(<ToolRunner toolId="test.stream" />);
+    render(
+      <MemoryRouter>
+        <ToolRunner toolId="test.stream" />
+      </MemoryRouter>,
+    );
 
     await screen.findByText("Fixture Tool");
     typeInto(screen.getByLabelText("Your text"), "hi");
@@ -195,7 +216,11 @@ describe("ToolRunner", () => {
         quota: { metric: "tool_runs", used: 2, limit: 15 },
       });
 
-    render(<ToolRunner toolId="test.fixture" />);
+    render(
+      <MemoryRouter>
+        <ToolRunner toolId="test.fixture" />
+      </MemoryRouter>,
+    );
     await screen.findByText("Fixture Tool");
     typeInto(screen.getByLabelText("Your text"), "hello");
     fireEvent.click(screen.getByRole("button", { name: "Run" }));
@@ -222,7 +247,11 @@ describe("ToolRunner", () => {
       })
       .mockResolvedValueOnce({ run_id: "run-1", rating: "up", feedback_text: null });
 
-    render(<ToolRunner toolId="test.fixture" />);
+    render(
+      <MemoryRouter>
+        <ToolRunner toolId="test.fixture" />
+      </MemoryRouter>,
+    );
     await screen.findByText("Fixture Tool");
     typeInto(screen.getByLabelText("Your text"), "hello");
     fireEvent.click(screen.getByRole("button", { name: "Run" }));
@@ -258,7 +287,11 @@ describe("ToolRunner", () => {
         created_at: new Date().toISOString(),
       });
 
-    render(<ToolRunner toolId="test.fixture" />);
+    render(
+      <MemoryRouter>
+        <ToolRunner toolId="test.fixture" />
+      </MemoryRouter>,
+    );
     await screen.findByText("Fixture Tool");
     typeInto(screen.getByLabelText("Your text"), "hello");
     fireEvent.click(screen.getByRole("button", { name: "Run" }));
@@ -290,7 +323,11 @@ describe("ToolRunner", () => {
       },
     ]);
 
-    render(<ToolRunner toolId="test.fixture" />);
+    render(
+      <MemoryRouter>
+        <ToolRunner toolId="test.fixture" />
+      </MemoryRouter>,
+    );
     await screen.findByText("Fixture Tool");
 
     fireEvent.click(screen.getByRole("button", { name: "Show history" }));
@@ -312,7 +349,11 @@ describe("ToolRunner", () => {
       quota: { metric: "tool_runs", used: 1, limit: 15 },
     });
 
-    render(<ToolRunner toolId="test.outreach" />);
+    render(
+      <MemoryRouter>
+        <ToolRunner toolId="test.outreach" />
+      </MemoryRouter>,
+    );
     await screen.findByText("Fixture Tool");
     typeInto(screen.getByLabelText("Your text"), "hello");
     fireEvent.click(screen.getByRole("button", { name: "Run" }));
@@ -327,5 +368,33 @@ describe("ToolRunner", () => {
     expect(copyButton).toBeEnabled();
     fireEvent.click(copyButton);
     expect(writeText).toHaveBeenCalledWith("a message meant for one person");
+  });
+
+  it("reproduces a saved run's exact inputs when opened with ?run_id=", async () => {
+    mockedApiFetch.mockResolvedValueOnce([FIXTURE_TOOL]).mockResolvedValueOnce({
+      id: "run-1",
+      tool_id: "test.fixture",
+      input: { user_supplied_text: "the original input", target_role: "Staff Engineer" },
+      output: documentOutput("first"),
+      context_used: [],
+      status: "succeeded",
+      rating: null,
+      feedback_text: null,
+      parent_run_id: null,
+      created_at: new Date().toISOString(),
+    });
+
+    render(
+      <MemoryRouter initialEntries={["/profile/test.fixture?run_id=run-1"]}>
+        <ToolRunner toolId="test.fixture" />
+      </MemoryRouter>,
+    );
+
+    await screen.findByText("Fixture Tool");
+    expect(mockedApiFetch).toHaveBeenCalledWith("/api/v1/tools/runs/run-1");
+    await waitFor(() =>
+      expect(screen.getByLabelText("Your text")).toHaveValue("the original input"),
+    );
+    expect(screen.getByLabelText("Target role")).toHaveValue("Staff Engineer");
   });
 });

@@ -61,6 +61,7 @@ class ToolRunSummary(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     id: str
+    tool_id: str
     input: dict[str, Any]
     output: dict[str, Any] | None
     context_used: list[str]

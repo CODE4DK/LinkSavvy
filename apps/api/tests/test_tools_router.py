@@ -320,6 +320,19 @@ async def test_regenerate_and_rate_and_save_and_history(
     history = history_response.json()
     assert {run["id"] for run in history} == {run_id, child_run_id}
 
+    get_run_response = await client.get(f"/api/v1/tools/runs/{run_id}", headers=headers)
+    assert get_run_response.status_code == 200
+    fetched = get_run_response.json()
+    assert fetched["id"] == run_id
+    assert fetched["tool_id"] == "profile.fixture"
+    assert fetched["input"] == {"text": "ignored", "user_supplied_text": "hello"}
+
+
+async def test_get_run_requires_auth_and_404s_for_a_run_that_doesnt_exist(
+    client: AsyncClient,
+) -> None:
+    assert (await client.get(f"/api/v1/tools/runs/{uuid.uuid4()}")).status_code == 401
+
 
 async def test_rate_and_regenerate_return_404_for_a_run_that_doesnt_exist(
     client: AsyncClient,

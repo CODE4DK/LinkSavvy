@@ -121,3 +121,100 @@ categories:
           Whether the headline and About section both carry at least some of
           the target role's expected vocabulary, as a proxy for telling a
           consistent professional story.
+
+# The Growth Hub's own scores (Phase 8). Health Score is *not* listed
+# here -- it's the Audit Engine's overall score above, surfaced as-is
+# with its five categories as sub-scores, so it shares scoring_version
+# and category_weights/categories with the rest of this file rather
+# than duplicating them. Visibility, Consistency, and Personal Branding
+# are new, independent scores -- not categories rolled into one
+# overall number -- so each gets its own component list, weighted to
+# 100, validated the same way app/audit/scoring.py validates categories
+# above (see app/growth/scoring_config.py).
+growth:
+  scoring_version: "2026.1"
+  scores:
+    visibility:
+      components:
+        - code: keyword_coverage
+          weight: 25
+          description: >-
+            How many of the target role's vocabulary words appear across the
+            headline, About section, and experience bullets combined --
+            broader than the audit's own keyword_density component, which
+            only looks at headline + About.
+        - code: custom_url
+          weight: 10
+          description: "Whether a custom, memorable LinkedIn URL is claimed."
+        - code: profile_metadata
+          weight: 15
+          description: "Whether industry and location are set -- both are searchable fields."
+        - code: skill_alignment
+          weight: 15
+          description: >-
+            Overlap between the user's listed skills and the target role's
+            expected skill vocabulary.
+        - code: photo_and_banner
+          weight: 15
+          description: >-
+            Whether a profile photo is set. LinkSavvy doesn't currently
+            capture a banner image anywhere in ProfileSnapshot (see ADR
+            0009), so this component is photo-only until a later phase adds
+            banner capture -- disclosed here rather than silently scored as
+            if banner presence were checked.
+        - code: recommendations_received
+          weight: 20
+          description: >-
+            Whether the profile shows any received recommendations, when the
+            connected LinkedIn API or manual entry makes the count visible.
+
+    consistency:
+      components:
+        - code: posts_per_week
+          weight: 30
+          description: >-
+            Average recorded posts per week over the trailing 12 weeks,
+            scored against a realistic target cadence.
+        - code: variance
+          weight: 25
+          description: >-
+            How evenly spread posting is across the 12 weeks -- a steady
+            weekly habit scores higher than the same total posts bunched
+            into a couple of weeks.
+        - code: longest_gap
+          weight: 25
+          description: "The longest run of consecutive weeks with zero recorded posts."
+        - code: streak_length
+          weight: 20
+          description: "The current run of consecutive weeks with at least one recorded post."
+
+    personal_branding:
+      components:
+        - code: positioning_clarity
+          weight: 25
+          description: >-
+            Whether a reader could state, in one sentence, who this person is
+            and what they do -- judged by AI against a rubric, never a
+            fabricated score.
+        - code: message_consistency
+          weight: 20
+          description: >-
+            Whether the headline, About, and experience sections tell the
+            same professional story rather than pulling in different
+            directions.
+        - code: distinctiveness
+          weight: 20
+          description: >-
+            Whether the profile says something specific to this person,
+            rather than reading like it could describe anyone in the role.
+        - code: proof
+          weight: 20
+          description: >-
+            Whether claims (skills, strengths, expertise) are backed by
+            concrete evidence -- a result, a project, a number -- somewhere
+            in the profile or content.
+        - code: content_profile_alignment
+          weight: 15
+          description: >-
+            Whether the themes of the user's own content samples (if any)
+            match the positioning claimed in the profile.

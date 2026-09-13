@@ -1679,6 +1679,50 @@
         }
       }
     },
+    "/api/v1/tools/runs/{run_id}": {
+      "get": {
+        "tags": [
+          "tools"
+        ],
+        "summary": "Get Tool Run",
+        "description": "Single-run fetch -- the Workspace Hub's detail drawer uses this\nto show which tool produced a saved asset, with what inputs, so\n\"open in tool\" can re-run it.",
+        "operationId": "get_tool_run_api_v1_tools_runs__run_id__get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolRunSummary"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/tools/runs/{run_id}/regenerate": {
       "post": {
         "tags": [
@@ -1949,14 +1993,14 @@
         "summary": "Create Asset Endpoint",
         "operationId": "create_asset_endpoint_api_v1_assets_post",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/CreateAssetRequest"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
@@ -1965,6 +2009,199 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AssetResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "workspace"
+        ],
+        "summary": "List Assets Endpoint",
+        "operationId": "list_assets_endpoint_api_v1_assets_get",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Type"
+            }
+          },
+          {
+            "name": "folder_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Folder Id"
+            }
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Tags"
+            }
+          },
+          {
+            "name": "favourite",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Favourite"
+            }
+          },
+          {
+            "name": "date_from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Date From"
+            }
+          },
+          {
+            "name": "date_to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Date To"
+            }
+          },
+          {
+            "name": "source_tool_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Source Tool Id"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 25,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetListResponse"
                 }
               }
             }
@@ -3448,6 +3685,870 @@
         }
       }
     },
+    "/api/v1/growth/scores": {
+      "get": {
+        "tags": [
+          "growth"
+        ],
+        "summary": "Get Scores Endpoint",
+        "operationId": "get_scores_endpoint_api_v1_growth_scores_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GrowthScoresResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/growth/plan": {
+      "get": {
+        "tags": [
+          "growth"
+        ],
+        "summary": "Get Current Plan Endpoint",
+        "operationId": "get_current_plan_endpoint_api_v1_growth_plan_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeeklyPlanResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/growth/plan/{plan_id}/items/{item_index}": {
+      "patch": {
+        "tags": [
+          "growth"
+        ],
+        "summary": "Update Plan Item Endpoint",
+        "operationId": "update_plan_item_endpoint_api_v1_growth_plan__plan_id__items__item_index__patch",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          },
+          {
+            "name": "item_index",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Item Index"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WeeklyPlanItemUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeeklyPlanResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/growth/goal": {
+      "get": {
+        "tags": [
+          "growth"
+        ],
+        "summary": "Get Active Goal Endpoint",
+        "operationId": "get_active_goal_endpoint_api_v1_growth_goal_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GrowthGoalResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "growth"
+        ],
+        "summary": "Start Goal Endpoint",
+        "operationId": "start_goal_endpoint_api_v1_growth_goal_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GrowthGoalCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GrowthGoalResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/growth/coach/session": {
+      "get": {
+        "tags": [
+          "growth"
+        ],
+        "summary": "Get Coach Session Endpoint",
+        "operationId": "get_coach_session_endpoint_api_v1_growth_coach_session_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoachSessionResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/growth/coach/messages": {
+      "post": {
+        "tags": [
+          "growth"
+        ],
+        "summary": "Send Coach Message Endpoint",
+        "operationId": "send_coach_message_endpoint_api_v1_growth_coach_messages_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CoachMessageCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoachMessageResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/growth/scores/history": {
+      "get": {
+        "tags": [
+          "growth"
+        ],
+        "summary": "Get Score History Endpoint",
+        "operationId": "get_score_history_endpoint_api_v1_growth_scores_history_get",
+        "parameters": [
+          {
+            "name": "months",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 24,
+              "minimum": 1,
+              "default": 6,
+              "title": "Months"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GrowthScoreHistoryResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/growth/before-after": {
+      "get": {
+        "tags": [
+          "growth"
+        ],
+        "summary": "Get Before After Endpoint",
+        "operationId": "get_before_after_endpoint_api_v1_growth_before_after_get",
+        "parameters": [
+          {
+            "name": "from_date",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "From Date"
+            }
+          },
+          {
+            "name": "to_date",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "To Date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BeforeAfterResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assets/trash": {
+      "get": {
+        "tags": [
+          "workspace"
+        ],
+        "summary": "List Trash Endpoint",
+        "operationId": "list_trash_endpoint_api_v1_assets_trash_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/WorkspaceAssetResponse"
+                  },
+                  "type": "array",
+                  "title": "Response List Trash Endpoint Api V1 Assets Trash Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assets/{asset_id}": {
+      "get": {
+        "tags": [
+          "workspace"
+        ],
+        "summary": "Get Asset Endpoint",
+        "operationId": "get_asset_endpoint_api_v1_assets__asset_id__get",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Asset Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceAssetResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "workspace"
+        ],
+        "summary": "Patch Asset Endpoint",
+        "operationId": "patch_asset_endpoint_api_v1_assets__asset_id__patch",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Asset Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetPatchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceAssetResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "workspace"
+        ],
+        "summary": "Delete Asset Endpoint",
+        "operationId": "delete_asset_endpoint_api_v1_assets__asset_id__delete",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Asset Id"
+            }
+          },
+          {
+            "name": "permanent",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Permanent"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assets/{asset_id}/restore": {
+      "post": {
+        "tags": [
+          "workspace"
+        ],
+        "summary": "Restore Asset Endpoint",
+        "operationId": "restore_asset_endpoint_api_v1_assets__asset_id__restore_post",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Asset Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceAssetResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assets/{asset_id}/duplicate": {
+      "post": {
+        "tags": [
+          "workspace"
+        ],
+        "summary": "Duplicate Asset Endpoint",
+        "operationId": "duplicate_asset_endpoint_api_v1_assets__asset_id__duplicate_post",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Asset Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceAssetResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assets/{asset_id}/versions": {
+      "get": {
+        "tags": [
+          "workspace"
+        ],
+        "summary": "List Versions Endpoint",
+        "operationId": "list_versions_endpoint_api_v1_assets__asset_id__versions_get",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Asset Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AssetVersionResponse"
+                  },
+                  "title": "Response List Versions Endpoint Api V1 Assets  Asset Id  Versions Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assets/{asset_id}/export": {
+      "get": {
+        "tags": [
+          "workspace"
+        ],
+        "summary": "Export Asset Endpoint",
+        "operationId": "export_asset_endpoint_api_v1_assets__asset_id__export_get",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Asset Id"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(txt|md|pdf|docx)$",
+              "default": "txt",
+              "title": "Format"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assets/bulk": {
+      "post": {
+        "tags": [
+          "workspace"
+        ],
+        "summary": "Bulk Action Endpoint",
+        "operationId": "bulk_action_endpoint_api_v1_assets_bulk_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkActionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkActionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/asset-folders": {
+      "get": {
+        "tags": [
+          "workspace"
+        ],
+        "summary": "List Folders Endpoint",
+        "operationId": "list_folders_endpoint_api_v1_asset_folders_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AssetFolderResponse"
+                  },
+                  "type": "array",
+                  "title": "Response List Folders Endpoint Api V1 Asset Folders Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "workspace"
+        ],
+        "summary": "Create Folder Endpoint",
+        "operationId": "create_folder_endpoint_api_v1_asset_folders_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetFolderCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetFolderResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/asset-folders/{folder_id}": {
+      "patch": {
+        "tags": [
+          "workspace"
+        ],
+        "summary": "Update Folder Endpoint",
+        "operationId": "update_folder_endpoint_api_v1_asset_folders__folder_id__patch",
+        "parameters": [
+          {
+            "name": "folder_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Folder Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetFolderUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetFolderResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "workspace"
+        ],
+        "summary": "Delete Folder Endpoint",
+        "operationId": "delete_folder_endpoint_api_v1_asset_folders__folder_id__delete",
+        "parameters": [
+          {
+            "name": "folder_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Folder Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "summary": "Health",
@@ -3473,6 +4574,197 @@
   },
   "components": {
     "schemas": {
+      "AssetFolderCreateRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "parent_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "AssetFolderCreateRequest"
+      },
+      "AssetFolderResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "parent_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "parent_id"
+        ],
+        "title": "AssetFolderResponse"
+      },
+      "AssetFolderUpdateRequest": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "parent_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Id"
+          },
+          "unfile": {
+            "type": "boolean",
+            "title": "Unfile",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "AssetFolderUpdateRequest"
+      },
+      "AssetListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/WorkspaceAssetResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items",
+          "next_cursor"
+        ],
+        "title": "AssetListResponse"
+      },
+      "AssetPatchRequest": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "body": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Body"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags"
+          },
+          "folder_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Folder Id"
+          },
+          "unfile": {
+            "type": "boolean",
+            "title": "Unfile",
+            "default": false
+          },
+          "is_favourite": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Favourite"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "AssetPatchRequest"
+      },
       "AssetResponse": {
         "properties": {
           "id": {
@@ -3562,6 +4854,41 @@
           "roadmap"
         ],
         "title": "AssetType"
+      },
+      "AssetVersionResponse": {
+        "properties": {
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "body_format": {
+            "type": "string",
+            "title": "Body Format"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "version",
+          "title",
+          "body",
+          "body_format",
+          "created_at"
+        ],
+        "title": "AssetVersionResponse"
       },
       "AuditCategoryResultResponse": {
         "properties": {
@@ -3810,6 +5137,101 @@
         ],
         "title": "AuditRunResponse"
       },
+      "BeforeAfterProfileEditResponse": {
+        "properties": {
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "version",
+          "source",
+          "created_at"
+        ],
+        "title": "BeforeAfterProfileEditResponse"
+      },
+      "BeforeAfterResponse": {
+        "properties": {
+          "from_date": {
+            "type": "string",
+            "format": "date",
+            "title": "From Date"
+          },
+          "to_date": {
+            "type": "string",
+            "format": "date",
+            "title": "To Date"
+          },
+          "score_deltas": {
+            "items": {
+              "$ref": "#/components/schemas/ScoreDeltaResponse"
+            },
+            "type": "array",
+            "title": "Score Deltas"
+          },
+          "tool_runs": {
+            "items": {
+              "$ref": "#/components/schemas/BeforeAfterToolRunResponse"
+            },
+            "type": "array",
+            "title": "Tool Runs"
+          },
+          "profile_edits": {
+            "items": {
+              "$ref": "#/components/schemas/BeforeAfterProfileEditResponse"
+            },
+            "type": "array",
+            "title": "Profile Edits"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "from_date",
+          "to_date",
+          "score_deltas",
+          "tool_runs",
+          "profile_edits"
+        ],
+        "title": "BeforeAfterResponse"
+      },
+      "BeforeAfterToolRunResponse": {
+        "properties": {
+          "tool_id": {
+            "type": "string",
+            "title": "Tool Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "tool_id",
+          "status",
+          "created_at"
+        ],
+        "title": "BeforeAfterToolRunResponse"
+      },
       "Body_create_upload_import_api_v1_profile_imports_upload_post": {
         "properties": {
           "file": {
@@ -3851,6 +5273,86 @@
           "file"
         ],
         "title": "Body_submit_uploaded_samples_api_v1_content_voice_samples_upload_post"
+      },
+      "BulkActionRequest": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "move",
+              "tag",
+              "delete",
+              "export"
+            ],
+            "title": "Action"
+          },
+          "asset_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 200,
+            "minItems": 1,
+            "title": "Asset Ids"
+          },
+          "folder_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Folder Id"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "txt",
+              "md",
+              "pdf",
+              "docx"
+            ],
+            "title": "Format",
+            "default": "txt"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "action",
+          "asset_ids"
+        ],
+        "title": "BulkActionRequest"
+      },
+      "BulkActionResponse": {
+        "properties": {
+          "affected_count": {
+            "type": "integer",
+            "title": "Affected Count"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "affected_count"
+        ],
+        "title": "BulkActionResponse"
       },
       "BulkScheduleRequest": {
         "properties": {
@@ -4117,6 +5619,102 @@
           "new_password"
         ],
         "title": "ChangePasswordRequest"
+      },
+      "CoachMessageCreate": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Text"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "title": "CoachMessageCreate"
+      },
+      "CoachMessageResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "assistant"
+            ],
+            "title": "Role"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content"
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metadata"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "role",
+          "content",
+          "metadata",
+          "created_at"
+        ],
+        "title": "CoachMessageResponse"
+      },
+      "CoachSessionResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "goal_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Goal Id"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Started At"
+          },
+          "messages": {
+            "items": {
+              "$ref": "#/components/schemas/CoachMessageResponse"
+            },
+            "type": "array",
+            "title": "Messages"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "goal_id",
+          "started_at",
+          "messages"
+        ],
+        "title": "CoachSessionResponse"
       },
       "CommitImportRequest": {
         "properties": {
@@ -5177,6 +6775,235 @@
           "cost_per_user_per_day_minor"
         ],
         "title": "GatewayMetricsResponse"
+      },
+      "GrowthGoalCreate": {
+        "properties": {
+          "goal_type": {
+            "type": "string",
+            "title": "Goal Type"
+          },
+          "target_role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Role"
+          },
+          "target_description": {
+            "type": "string",
+            "title": "Target Description",
+            "default": ""
+          },
+          "horizon_weeks": {
+            "type": "integer",
+            "maximum": 104.0,
+            "minimum": 1.0,
+            "title": "Horizon Weeks"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "goal_type",
+          "horizon_weeks"
+        ],
+        "title": "GrowthGoalCreate"
+      },
+      "GrowthGoalResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "goal_type": {
+            "type": "string",
+            "title": "Goal Type"
+          },
+          "target_role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Role"
+          },
+          "target_description": {
+            "type": "string",
+            "title": "Target Description"
+          },
+          "horizon_weeks": {
+            "type": "integer",
+            "title": "Horizon Weeks"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Started At"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "completed",
+              "abandoned"
+            ],
+            "title": "Status"
+          },
+          "baseline_scores": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Baseline Scores"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "goal_type",
+          "target_role",
+          "target_description",
+          "horizon_weeks",
+          "started_at",
+          "status",
+          "baseline_scores"
+        ],
+        "title": "GrowthGoalResponse"
+      },
+      "GrowthScoreHistoryResponse": {
+        "properties": {
+          "health": {
+            "items": {
+              "$ref": "#/components/schemas/ScoreHistoryPointResponse"
+            },
+            "type": "array",
+            "title": "Health"
+          },
+          "visibility": {
+            "items": {
+              "$ref": "#/components/schemas/ScoreHistoryPointResponse"
+            },
+            "type": "array",
+            "title": "Visibility"
+          },
+          "consistency": {
+            "items": {
+              "$ref": "#/components/schemas/ScoreHistoryPointResponse"
+            },
+            "type": "array",
+            "title": "Consistency"
+          },
+          "personal_branding": {
+            "items": {
+              "$ref": "#/components/schemas/ScoreHistoryPointResponse"
+            },
+            "type": "array",
+            "title": "Personal Branding"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "health",
+          "visibility",
+          "consistency",
+          "personal_branding"
+        ],
+        "title": "GrowthScoreHistoryResponse"
+      },
+      "GrowthScoreResponse": {
+        "properties": {
+          "score_type": {
+            "type": "string",
+            "title": "Score Type"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "components": {
+            "items": {
+              "$ref": "#/components/schemas/ScoreComponentResponse"
+            },
+            "type": "array",
+            "title": "Components"
+          },
+          "computed_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Computed At"
+          },
+          "scoring_version": {
+            "type": "string",
+            "title": "Scoring Version"
+          },
+          "needed": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Needed"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "score_type",
+          "value",
+          "status",
+          "components",
+          "computed_at",
+          "scoring_version",
+          "needed"
+        ],
+        "title": "GrowthScoreResponse"
+      },
+      "GrowthScoresResponse": {
+        "properties": {
+          "health": {
+            "$ref": "#/components/schemas/GrowthScoreResponse"
+          },
+          "visibility": {
+            "$ref": "#/components/schemas/GrowthScoreResponse"
+          },
+          "consistency": {
+            "$ref": "#/components/schemas/GrowthScoreResponse"
+          },
+          "personal_branding": {
+            "$ref": "#/components/schemas/GrowthScoreResponse"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "health",
+          "visibility",
+          "consistency",
+          "personal_branding"
+        ],
+        "title": "GrowthScoresResponse"
       },
       "HTTPValidationError": {
         "properties": {
@@ -7509,6 +9336,93 @@
         ],
         "title": "SaveCarouselRequest"
       },
+      "ScoreComponentResponse": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "weight": {
+            "type": "integer",
+            "title": "Weight"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "evidence": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Evidence"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "weight",
+          "value",
+          "evidence"
+        ],
+        "title": "ScoreComponentResponse"
+      },
+      "ScoreDeltaResponse": {
+        "properties": {
+          "score_type": {
+            "type": "string",
+            "title": "Score Type"
+          },
+          "from_value": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "From Value"
+          },
+          "to_value": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "To Value"
+          },
+          "delta": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delta"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "score_type",
+          "from_value",
+          "to_value",
+          "delta"
+        ],
+        "title": "ScoreDeltaResponse"
+      },
       "ScoreHistoryPoint": {
         "properties": {
           "audit_id": {
@@ -7593,6 +9507,26 @@
           "visibility"
         ],
         "title": "ScoreHistoryPoint"
+      },
+      "ScoreHistoryPointResponse": {
+        "properties": {
+          "snapshot_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Snapshot Date"
+          },
+          "value": {
+            "type": "integer",
+            "title": "Value"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "snapshot_date",
+          "value"
+        ],
+        "title": "ScoreHistoryPointResponse"
       },
       "ScoreHistoryResponse": {
         "properties": {
@@ -7906,6 +9840,10 @@
             "type": "string",
             "title": "Id"
           },
+          "tool_id": {
+            "type": "string",
+            "title": "Tool Id"
+          },
           "input": {
             "additionalProperties": true,
             "type": "object",
@@ -7977,6 +9915,7 @@
         "type": "object",
         "required": [
           "id",
+          "tool_id",
           "input",
           "output",
           "context_used",
@@ -8336,6 +10275,235 @@
           "texts"
         ],
         "title": "VoiceSamplesRequest"
+      },
+      "WeeklyPlanItemResponse": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "why_now": {
+            "type": "string",
+            "title": "Why Now"
+          },
+          "tool_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Id"
+          },
+          "estimated_minutes": {
+            "type": "integer",
+            "title": "Estimated Minutes"
+          },
+          "expected_impact": {
+            "type": "integer",
+            "title": "Expected Impact"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "completed": {
+            "type": "boolean",
+            "title": "Completed"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title",
+          "why_now",
+          "tool_id",
+          "estimated_minutes",
+          "expected_impact",
+          "category",
+          "completed"
+        ],
+        "title": "WeeklyPlanItemResponse"
+      },
+      "WeeklyPlanItemUpdate": {
+        "properties": {
+          "completed": {
+            "type": "boolean",
+            "title": "Completed"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "completed"
+        ],
+        "title": "WeeklyPlanItemUpdate"
+      },
+      "WeeklyPlanResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "week_start": {
+            "type": "string",
+            "format": "date",
+            "title": "Week Start"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Generated At"
+          },
+          "focus": {
+            "type": "string",
+            "title": "Focus"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/WeeklyPlanItemResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "completed_count": {
+            "type": "integer",
+            "title": "Completed Count"
+          },
+          "reflection": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reflection"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "week_start",
+          "generated_at",
+          "focus",
+          "items",
+          "status",
+          "completed_count",
+          "reflection"
+        ],
+        "title": "WeeklyPlanResponse"
+      },
+      "WorkspaceAssetResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "body_format": {
+            "type": "string",
+            "title": "Body Format"
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metadata"
+          },
+          "source_tool_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Tool Run Id"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tags"
+          },
+          "is_favourite": {
+            "type": "boolean",
+            "title": "Is Favourite"
+          },
+          "folder_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Folder Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "deleted_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Deleted At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "title",
+          "body",
+          "body_format",
+          "metadata",
+          "source_tool_run_id",
+          "tags",
+          "is_favourite",
+          "folder_id",
+          "created_at",
+          "updated_at",
+          "deleted_at"
+        ],
+        "title": "WorkspaceAssetResponse"
       }
     }
   }

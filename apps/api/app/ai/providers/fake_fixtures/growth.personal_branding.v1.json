@@ -1,0 +1,32 @@
+{
+  "response": {
+    "components": [
+      {
+        "code": "positioning_clarity",
+        "score": 70,
+        "evidence": "Headline 'Senior Backend Engineer' and the About section both describe a backend/distributed-systems focus, so the one-sentence positioning is clear but generic."
+      },
+      {
+        "code": "message_consistency",
+        "score": 80,
+        "evidence": "Headline, About, and the Acme Corp experience entry all describe the same senior backend engineering role -- no contradictions in seniority or domain."
+      },
+      {
+        "code": "distinctiveness",
+        "score": 40,
+        "evidence": "The About section reads like many other senior backend engineers' profiles -- no specific niche, framework, or outcome sets this profile apart."
+      },
+      {
+        "code": "proof",
+        "score": 55,
+        "evidence": "Experience bullets mention concrete systems work but few quantified outcomes (no metrics like latency, scale, or team size)."
+      },
+      {
+        "code": "content_profile_alignment",
+        "score": 0,
+        "evidence": "No content samples provided, so there is nothing to compare against the profile's positioning."
+      }
+    ]
+  },
+  "tokens_out": 210
+}
