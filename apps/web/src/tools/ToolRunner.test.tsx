@@ -65,6 +65,12 @@ const STREAMING_TOOL: ToolSummary = {
   supports_streaming: true,
 };
 
+const OUTREACH_TOOL: ToolSummary = {
+  ...FIXTURE_TOOL,
+  id: "test.outreach",
+  counts_as_outreach: true,
+} as unknown as ToolSummary;
+
 function documentOutput(text: string) {
   return { sections: [{ body: text }] };
 }
@@ -293,5 +299,33 @@ describe("ToolRunner", () => {
     const historyButton = historyLabel.closest("button");
     expect(historyButton).not.toBeNull();
     expect(within(historyButton as HTMLElement).getByText("succeeded")).toBeInTheDocument();
+  });
+
+  it("gates Copy behind a review checkbox for a tool that counts as outreach", async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.assign(navigator, { clipboard: { writeText } });
+
+    mockedApiFetch.mockResolvedValueOnce([OUTREACH_TOOL]).mockResolvedValueOnce({
+      run_id: "run-1",
+      output: documentOutput("a message meant for one person"),
+      context_used: [],
+      quota: { metric: "tool_runs", used: 1, limit: 15 },
+    });
+
+    render(<ToolRunner toolId="test.outreach" />);
+    await screen.findByText("Fixture Tool");
+    typeInto(screen.getByLabelText("Your text"), "hello");
+    fireEvent.click(screen.getByRole("button", { name: "Run" }));
+    await screen.findByText("a message meant for one person");
+
+    const copyButton = screen.getByRole("button", { name: "Copy" });
+    expect(copyButton).toBeDisabled();
+    fireEvent.click(copyButton);
+    expect(writeText).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("checkbox"));
+    expect(copyButton).toBeEnabled();
+    fireEvent.click(copyButton);
+    expect(writeText).toHaveBeenCalledWith("a message meant for one person");
   });
 });

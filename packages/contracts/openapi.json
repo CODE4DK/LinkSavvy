@@ -6310,6 +6310,17 @@
           },
           "quota": {
             "$ref": "#/components/schemas/QuotaInfo"
+          },
+          "warning": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Warning"
           }
         },
         "additionalProperties": false,
@@ -6490,6 +6501,10 @@
           "supports_streaming": {
             "type": "boolean",
             "title": "Supports Streaming"
+          },
+          "counts_as_outreach": {
+            "type": "boolean",
+            "title": "Counts As Outreach"
           }
         },
         "additionalProperties": false,
@@ -6508,7 +6523,8 @@
           "result_renderer",
           "save_as",
           "free_daily_cap",
-          "supports_streaming"
+          "supports_streaming",
+          "counts_as_outreach"
         ],
         "title": "ToolSummary",
         "description": "One row of `GET /api/v1/tools` -- everything the web app needs to\nrender a tool card and, on selection, a fully working form and\nresult view with no tool-specific frontend code."

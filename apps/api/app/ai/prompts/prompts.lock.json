@@ -47,6 +47,34 @@
     "body_sha256": "cab7e431a0ac77d1fe0dd6f60cd9705409c3f58e7502c7be6a2c080a77b97417",
     "version": 1
   },
+  "engagement.comment_generator.v1": {
+    "body_sha256": "b3b02a60c8b409402e0ee88fc9a9302bd3cb92e09703261b3eef1edafec58453",
+    "version": 1
+  },
+  "engagement.connection_request.v1": {
+    "body_sha256": "30a076416f11e83b7554291efc1f593f6132cbdf1f145f55e91df1c4b5c36554",
+    "version": 1
+  },
+  "engagement.direct_message.v1": {
+    "body_sha256": "21dab205e2ffed0054f14007f67d8245a1306572f66a95270a3c79e1f16ab61c",
+    "version": 1
+  },
+  "engagement.follow_up.v1": {
+    "body_sha256": "85233c97437e3dc77c08b19cdc0353cb3df4804186cb11c09ab8da09cb578bd9",
+    "version": 1
+  },
+  "engagement.recommendations.v1": {
+    "body_sha256": "5cc531c1ff8ac68327b91e533efa2c42f2a363d1ce261f48b1b2ebba6ad124f1",
+    "version": 1
+  },
+  "engagement.reply_generator.v1": {
+    "body_sha256": "e64406978ad5cfbcb2b1251c57ea3a6a83085b1a2a5fe2a39bc57f13e00b4e1b",
+    "version": 1
+  },
+  "engagement.thought_leadership_comment.v1": {
+    "body_sha256": "ab870463e1608eb7e51558859f40da5b3a05c004426e4856892397f8c7f2724b",
+    "version": 1
+  },
   "meta.classify_intent.v1": {
     "body_sha256": "064db24061bf02c656a90769bf3639b6212b27bafc8700ad38174fd3983bc58b",
     "version": 1

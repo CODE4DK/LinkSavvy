@@ -2177,6 +2177,8 @@ export interface components {
             /** Context Used */
             context_used: string[];
             quota: components["schemas"]["QuotaInfo"];
+            /** Warning */
+            warning?: string | null;
         };
         /**
          * ToolRunSummary
@@ -2248,6 +2250,8 @@ export interface components {
             free_daily_cap: number | null;
             /** Supports Streaming */
             supports_streaming: boolean;
+            /** Counts As Outreach */
+            counts_as_outreach: boolean;
         };
         /** UpdateProfileRequest */
         UpdateProfileRequest: {

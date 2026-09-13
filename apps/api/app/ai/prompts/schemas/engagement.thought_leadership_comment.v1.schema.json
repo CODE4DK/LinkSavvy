@@ -1,0 +1,41 @@
+{
+  "$defs": {
+    "_Variant": {
+      "additionalProperties": false,
+      "properties": {
+        "comment": {
+          "maxLength": 1250,
+          "title": "Comment",
+          "type": "string"
+        },
+        "what_this_adds": {
+          "title": "What this adds beyond the post itself",
+          "type": "string"
+        }
+      },
+      "required": [
+        "comment",
+        "what_this_adds"
+      ],
+      "title": "_Variant",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "variants": {
+      "items": {
+        "$ref": "#/$defs/_Variant"
+      },
+      "maxItems": 1,
+      "minItems": 1,
+      "title": "Variants",
+      "type": "array"
+    }
+  },
+  "required": [
+    "variants"
+  ],
+  "title": "_Output",
+  "type": "object"
+}

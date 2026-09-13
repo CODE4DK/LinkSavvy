@@ -31,7 +31,7 @@ from app.services.feature_flags import resolve_flags_for_user
 from app.tools.context import ContextKey, ContextUnavailable, assemble
 from app.tools.definition import ToolDefinition
 from app.tools.errors import ToolNotFound
-from app.tools.registry import get_registry, get_tool
+from app.tools.registry import get_tool, outreach_tool_ids
 
 # Prefix for a tool that exists only to prove the framework works
 # end-to-end (see app/tools/definitions/dev/echo.py) -- hidden from
@@ -188,10 +188,8 @@ async def _outreach_runs_today(db: AsyncSession, *, user: User) -> int:
     overall, not on any one tool (Engagement Recommendations, for
     instance, is advice about outreach, not outreach itself, and must
     never count toward it)."""
-    outreach_tool_ids = [
-        definition.id for definition in get_registry().all() if definition.counts_as_outreach
-    ]
-    if not outreach_tool_ids:
+    tool_ids = outreach_tool_ids()
+    if not tool_ids:
         return 0
     since = datetime.now(UTC).replace(hour=0, minute=0, second=0, microsecond=0)
     return (
@@ -200,7 +198,7 @@ async def _outreach_runs_today(db: AsyncSession, *, user: User) -> int:
             .select_from(ToolRun)
             .where(
                 ToolRun.user_id == user.id,
-                ToolRun.tool_id.in_(outreach_tool_ids),
+                ToolRun.tool_id.in_(tool_ids),
                 ToolRun.created_at >= since,
             )
         )

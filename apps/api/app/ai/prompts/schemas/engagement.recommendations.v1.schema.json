@@ -1,0 +1,59 @@
+{
+  "$defs": {
+    "_Row": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "title": "Action",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "cadence": {
+          "enum": [
+            "daily",
+            "a few times a week",
+            "weekly",
+            "a few times a month"
+          ],
+          "title": "Cadence",
+          "type": "string"
+        }
+      },
+      "required": [
+        "action",
+        "reason",
+        "cadence"
+      ],
+      "title": "_Row",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "columns": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Columns",
+      "type": "array"
+    },
+    "rows": {
+      "items": {
+        "$ref": "#/$defs/_Row"
+      },
+      "maxItems": 10,
+      "minItems": 3,
+      "title": "Rows",
+      "type": "array"
+    }
+  },
+  "required": [
+    "columns",
+    "rows"
+  ],
+  "title": "_Output",
+  "type": "object"
+}

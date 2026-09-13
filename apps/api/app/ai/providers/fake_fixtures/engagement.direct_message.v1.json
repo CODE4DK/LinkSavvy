@@ -1,0 +1,19 @@
+{
+  "response": {
+    "variants": [
+      {
+        "subject": null,
+        "message": "Hi Jordan -- I lead backend teams and have been working through the same ownership problems you wrote about at Acme Corp. Would love to hear how you're approaching it."
+      },
+      {
+        "subject": "Quick question about on-call ownership",
+        "message": "Hi Jordan, I'm reaching out because we're building a tool that helps teams assign clear service ownership -- I noticed you wrote about this exact gap at Acme Corp. Would you be open to a 15-minute call to see if it'd be useful for your team? No pressure either way."
+      },
+      {
+        "subject": null,
+        "message": "Hi Jordan -- a mutual interest in backend reliability brought me here. I'm looking to build out my network with people tackling ownership and on-call problems, and your recent writing stood out."
+      }
+    ]
+  },
+  "tokens_out": 160
+}

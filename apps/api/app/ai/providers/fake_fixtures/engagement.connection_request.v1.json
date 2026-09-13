@@ -1,0 +1,16 @@
+{
+  "response": {
+    "variants": [
+      {
+        "note": "Hi Jordan -- saw your post on distributed systems reliability at Acme Corp. I lead backend teams too and would love to stay connected."
+      },
+      {
+        "note": "Hi Jordan, your work on incident response at Acme Corp caught my eye. Always glad to connect with people tackling similar reliability problems."
+      },
+      {
+        "note": "Hi Jordan -- I've been following your writing on backend team ownership. Would love to connect and swap notes sometime."
+      }
+    ]
+  },
+  "tokens_out": 90
+}
