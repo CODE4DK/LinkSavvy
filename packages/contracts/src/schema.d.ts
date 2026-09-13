@@ -1575,6 +1575,8 @@ export interface components {
             output: {
                 [key: string]: unknown;
             } | null;
+            /** Context Used */
+            context_used: string[];
             /** Status */
             status: string;
             /** Rating */

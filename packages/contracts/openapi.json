@@ -4515,6 +4515,13 @@
             ],
             "title": "Output"
           },
+          "context_used": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Context Used"
+          },
           "status": {
             "type": "string",
             "title": "Status"
@@ -4564,6 +4571,7 @@
           "id",
           "input",
           "output",
+          "context_used",
           "status",
           "rating",
           "feedback_text",
