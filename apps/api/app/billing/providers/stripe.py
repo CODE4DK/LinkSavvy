@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import json
 import time
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
@@ -125,9 +126,15 @@ class StripeProvider(BillingProvider):
         _verify_stripe_signature(
             headers.get("stripe-signature", ""), body, settings.stripe_webhook_secret
         )
-        import json
-
         payload = json.loads(body)
+        return self.parse_payload(payload)
+
+    def parse_payload(self, payload: dict[str, Any]) -> NormalisedEvent:
+        """The signature-verified half of `parse_webhook`, split out so
+        admin webhook replay (app/admin/subscriptions.py) can re-run
+        processing against a payload already persisted in `webhook_events`
+        without needing (and being unable to reconstruct) a fresh
+        signature."""
         stripe_type = payload["type"]
         event_type = _EVENT_TYPE_MAP.get(stripe_type)
         if event_type is None:

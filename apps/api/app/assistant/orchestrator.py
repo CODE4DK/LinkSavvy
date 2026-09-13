@@ -24,6 +24,7 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.admin.moderation import flag_ai_policy_violation
 from app.ai import gateway
 from app.ai.providers.base import ModelTier
 from app.assistant import policy, reads
@@ -197,11 +198,26 @@ async def _build_reply_context(
     return context, tier
 
 
-def _finalize_reply(
-    parsed: dict[str, Any], *, tool_candidates: list[str]
+async def _finalize_reply(
+    db: AsyncSession,
+    parsed: dict[str, Any],
+    *,
+    user_id: uuid.UUID,
+    conversation_id: uuid.UUID,
+    tool_candidates: list[str],
 ) -> tuple[str, dict[str, Any] | None]:
     reply_text = parsed["reply"]
-    if "action_claim" in policy.check_output(reply_text):
+    violations = policy.check_output(reply_text)
+    if violations:
+        await flag_ai_policy_violation(
+            db,
+            user_id=user_id,
+            target_type="conversation",
+            target_id=str(conversation_id),
+            reason=f"output policy: {', '.join(violations)}",
+            content=reply_text,
+        )
+    if "action_claim" in violations:
         reply_text = _ACTION_CLAIM_FALLBACK
 
     proposed_tool = parsed.get("proposed_tool")
@@ -240,8 +256,12 @@ async def _reply_turn(
     )
     result = await gateway.run("assistant.reply.v1", context, user=user, db=db, tier_override=tier)
     assert result.parsed is not None
-    reply_text, proposed_tool = _finalize_reply(
-        dict(result.parsed), tool_candidates=tool_candidates
+    reply_text, proposed_tool = await _finalize_reply(
+        db,
+        dict(result.parsed),
+        user_id=user.id,
+        conversation_id=conversation.id,
+        tool_candidates=tool_candidates,
     )
 
     return await append_message(
@@ -626,7 +646,13 @@ async def stream_message(
             parsed = json.loads(full_text)
         except json.JSONDecodeError:
             parsed = {"reply": full_text, "proposed_tool": None}
-        reply_text, proposed_tool = _finalize_reply(parsed, tool_candidates=tool_candidates)
+        reply_text, proposed_tool = await _finalize_reply(
+            db,
+            parsed,
+            user_id=user.id,
+            conversation_id=conversation.id,
+            tool_candidates=tool_candidates,
+        )
 
         invocation_id = None
         if correlation_id is not None:

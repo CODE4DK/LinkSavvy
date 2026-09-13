@@ -10,7 +10,7 @@ export interface SidebarProps {
 }
 
 export function Sidebar({ collapsed, onToggleCollapsed, className }: SidebarProps) {
-  const { featureFlags } = useAuth();
+  const { featureFlags, user } = useAuth();
 
   return (
     <nav
@@ -62,6 +62,25 @@ export function Sidebar({ collapsed, onToggleCollapsed, className }: SidebarProp
             </li>
           );
         })}
+        {user?.role === "admin" && (
+          <li>
+            <NavLink
+              to="/admin"
+              title={collapsed ? "Admin" : undefined}
+              className={({ isActive }) =>
+                cn(
+                  "flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                  isActive
+                    ? "bg-primary/10 text-primary"
+                    : "text-fg-muted hover:bg-border/30 hover:text-fg",
+                )
+              }
+            >
+              <span className={cn("truncate", collapsed && "sr-only")}>Admin</span>
+              {collapsed && <span aria-hidden="true">A</span>}
+            </NavLink>
+          </li>
+        )}
       </ul>
     </nav>
   );

@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import { AppShell } from "@/components/layout/AppShell";
 import { RequireAuth } from "./RequireAuth";
+import { RequireAdmin } from "./RequireAdmin";
 import { LoginPage } from "@/pages/auth/LoginPage";
 import { RegisterPage } from "@/pages/auth/RegisterPage";
 import { VerifyEmailPage } from "@/pages/auth/VerifyEmailPage";
@@ -28,6 +29,7 @@ import { NotFoundPage } from "@/pages/NotFoundPage";
 import { OnboardingPage } from "@/pages/onboarding/OnboardingPage";
 import { ProfileConnectCallbackPage } from "@/pages/ProfileConnectCallbackPage";
 import { PlaygroundPage } from "@/pages/dev/PlaygroundPage";
+import { AdminPage } from "@/pages/admin/AdminPage";
 
 export const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
@@ -67,6 +69,10 @@ export const router = createBrowserRouter([
           { path: "/settings", element: <SettingsPage /> },
           { path: "/settings/notifications", element: <NotificationPreferencesPage /> },
           { path: "/dev/playground", element: <PlaygroundPage /> },
+          {
+            element: <RequireAdmin />,
+            children: [{ path: "/admin", element: <AdminPage /> }],
+          },
           { path: "*", element: <NotFoundPage /> },
         ],
       },

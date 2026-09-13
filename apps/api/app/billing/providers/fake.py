@@ -63,3 +63,9 @@ class FakeProvider(BillingProvider):
         if not event_id or event_id not in _QUEUED_EVENTS:
             raise BillingProviderError("no queued fake event matches x-fake-event-id")
         return _QUEUED_EVENTS[event_id]
+
+    def parse_payload(self, payload: dict[str, object]) -> NormalisedEvent:
+        event_id = str(payload.get("provider_event_id", ""))
+        if event_id not in _QUEUED_EVENTS:
+            raise BillingProviderError("no queued fake event matches provider_event_id")
+        return _QUEUED_EVENTS[event_id]

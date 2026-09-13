@@ -4,6 +4,7 @@ import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
 import { MobileDrawer } from "./MobileDrawer";
 import { AssistantSidePanel } from "./AssistantSidePanel";
+import { ImpersonationBanner } from "./ImpersonationBanner";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { PaywallProvider } from "@/lib/paywall-context";
 
@@ -35,21 +36,24 @@ export function AppShell() {
 
   return (
     <PaywallProvider>
-      <div className="flex h-screen overflow-hidden bg-bg">
-        <div className="hidden md:block">
-          <Sidebar collapsed={collapsed} onToggleCollapsed={toggleCollapsed} />
-        </div>
-        <MobileDrawer open={mobileNavOpen} onClose={() => setMobileNavOpen(false)} />
+      <div className="flex h-screen flex-col overflow-hidden bg-bg">
+        <ImpersonationBanner />
+        <div className="flex flex-1 overflow-hidden">
+          <div className="hidden md:block">
+            <Sidebar collapsed={collapsed} onToggleCollapsed={toggleCollapsed} />
+          </div>
+          <MobileDrawer open={mobileNavOpen} onClose={() => setMobileNavOpen(false)} />
 
-        <div className="flex flex-1 flex-col overflow-hidden">
-          <TopBar onOpenMobileNav={() => setMobileNavOpen(true)} />
-          <main className="flex-1 overflow-y-auto p-6">
-            <ErrorBoundary>
-              <Outlet />
-            </ErrorBoundary>
-          </main>
+          <div className="flex flex-1 flex-col overflow-hidden">
+            <TopBar onOpenMobileNav={() => setMobileNavOpen(true)} />
+            <main className="flex-1 overflow-y-auto p-6">
+              <ErrorBoundary>
+                <Outlet />
+              </ErrorBoundary>
+            </main>
+          </div>
+          <AssistantSidePanel />
         </div>
-        <AssistantSidePanel />
       </div>
     </PaywallProvider>
   );

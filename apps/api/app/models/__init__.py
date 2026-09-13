@@ -20,6 +20,7 @@ from app.models.job_description import JobDescription
 from app.models.linkedin_connection import LinkedInConnection
 from app.models.login_attempt import LoginAttempt
 from app.models.message import Message
+from app.models.moderation_flag import ModerationFlag
 from app.models.notification import Notification, NotificationPreference
 from app.models.oauth_identity import OAuthIdentity
 from app.models.oauth_login_state import OAuthLoginState
@@ -65,6 +66,7 @@ __all__ = [
     "LinkedInConnection",
     "LoginAttempt",
     "Message",
+    "ModerationFlag",
     "Notification",
     "NotificationPreference",
     "OAuthIdentity",

@@ -116,6 +116,9 @@ class RazorpayProvider(BillingProvider):
             headers.get("x-razorpay-signature", ""), body, settings.razorpay_webhook_secret
         )
         payload = json.loads(body)
+        return self.parse_payload(payload)
+
+    def parse_payload(self, payload: dict[str, Any]) -> NormalisedEvent:
         razorpay_type = payload["event"]
         event_type = _EVENT_TYPE_MAP.get(razorpay_type)
         if event_type is None:

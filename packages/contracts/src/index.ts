@@ -278,3 +278,32 @@ export type NotificationListResponse = Schemas["NotificationListResponse"];
 export type PreferenceRow = Schemas["PreferenceRow"];
 export type PreferencesResponse = Schemas["PreferencesResponse"];
 export type SetPreferenceRequest = Schemas["SetPreferenceRequest"];
+
+// -- Admin --------------------------------------------------------------
+
+export type AdminUserResponse = Schemas["AdminUserResponse"];
+export type AdminUserSearchResponse = Schemas["AdminUserSearchResponse"];
+export type AdminUserDetailResponse = Schemas["AdminUserDetailResponse"];
+export type AdminSubscriptionSummary = Schemas["AdminSubscriptionSummary"];
+export type AdminToolRunSummary = Schemas["AdminToolRunSummary"];
+export type SuspendUserRequest = Schemas["SuspendUserRequest"];
+export type AdjustPlanRequest = Schemas["AdjustPlanRequest"];
+export type ForcePasswordResetResponse = Schemas["ForcePasswordResetResponse"];
+export type ImpersonateResponse = Schemas["ImpersonateResponse"];
+export type AdminSubscriptionResponse = Schemas["AdminSubscriptionResponse"];
+export type WebhookEventResponse = Schemas["WebhookEventResponse"];
+export type FeatureFlagResponse = Schemas["FeatureFlagResponse"];
+export type SetFlagGlobalRequest = Schemas["SetFlagGlobalRequest"];
+export type SetFlagRolloutRequest = Schemas["SetFlagRolloutRequest"];
+export type SetFlagUserOverrideRequest = Schemas["SetFlagUserOverrideRequest"];
+export type CostByDayResponse = Schemas["CostByDayResponse"];
+export type CostByDimensionResponse = Schemas["CostByDimensionResponse"];
+export type OutcomeRatesResponse = Schemas["OutcomeRatesResponse"];
+export type SlowPromptResponse = Schemas["SlowPromptResponse"];
+export type AiOpsOverviewResponse = Schemas["AiOpsOverviewResponse"];
+export type AiInvocationResponse = Schemas["AiInvocationResponse"];
+export type ModerationFlagResponse = Schemas["ModerationFlagResponse"];
+export type ReviewFlagRequest = Schemas["ReviewFlagRequest"];
+export type QueueDepthResponse = Schemas["QueueDepthResponse"];
+export type JobResponse = Schemas["JobResponse"];
+export type PlatformHealthResponse = Schemas["PlatformHealthResponse"];

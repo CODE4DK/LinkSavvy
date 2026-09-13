@@ -99,3 +99,13 @@ class BillingProvider(ABC):
     def parse_webhook(self, *, headers: dict[str, str], body: bytes) -> NormalisedEvent:
         """Verifies the payload's signature (raising `BillingProviderError`
         if it doesn't check out) and reduces it to a `NormalisedEvent`."""
+
+    @abstractmethod
+    def parse_payload(self, payload: dict[str, Any]) -> NormalisedEvent:
+        """The signature-verified half of `parse_webhook`: turns an
+        already-decoded payload into a `NormalisedEvent` with no signature
+        check at all. Exists so admin webhook replay
+        (app/admin/subscriptions.py) can re-run processing against a
+        payload already persisted in `webhook_events` -- there is no
+        signature left to re-verify by the time it's sitting in our own
+        database, and re-deriving one is neither possible nor the point."""

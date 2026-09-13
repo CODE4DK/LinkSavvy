@@ -253,6 +253,37 @@ async def process_webhook_event(
     return record
 
 
+async def reprocess_stored_event(db: AsyncSession, *, webhook_event_id: uuid.UUID) -> WebhookEvent:
+    """Admin-triggered replay (app/admin/subscriptions.py): re-runs
+    processing against a payload already sitting in `webhook_events`,
+    using `parse_payload` (no signature check -- there's nothing left to
+    verify against our own stored copy). Intended for an event whose
+    first attempt failed outright; replaying an event that already fully
+    succeeded can duplicate a side effect like a `Payment` row, the same
+    caveat a real provider's own "resend webhook" tooling carries."""
+    record = await db.get(WebhookEvent, webhook_event_id)
+    if record is None:
+        raise ApiError(ErrorCode.NOT_FOUND, "no such webhook event")
+
+    provider = get_provider(record.provider)
+    event = provider.parse_payload(record.payload)
+    record.attempts += 1
+
+    try:
+        await _apply_normalised_event(db, provider_name=record.provider, event=event)
+    except Exception as exc:  # noqa: BLE001 -- recorded on the row, then re-raised
+        record.status = "failed"
+        record.error = str(exc)
+        await db.commit()
+        raise
+
+    record.status = "processed"
+    record.processed_at = datetime.now(UTC)
+    await db.commit()
+    await db.refresh(record)
+    return record
+
+
 async def _apply_normalised_event(
     db: AsyncSession, *, provider_name: str, event: NormalisedEvent
 ) -> None:
