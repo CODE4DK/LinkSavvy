@@ -1,0 +1,38 @@
+{
+  "response": {
+    "columns": ["keyword", "priority", "coverage", "placement"],
+    "rows": [
+      {
+        "keyword": "distributed systems",
+        "priority": "high",
+        "coverage": "present",
+        "placement": "headline"
+      },
+      {
+        "keyword": "Python",
+        "priority": "high",
+        "coverage": "present",
+        "placement": "skills list"
+      },
+      {
+        "keyword": "Kubernetes",
+        "priority": "medium",
+        "coverage": "present",
+        "placement": "most recent experience bullet"
+      },
+      {
+        "keyword": "microservices",
+        "priority": "medium",
+        "coverage": "missing",
+        "placement": "About section"
+      },
+      {
+        "keyword": "API design",
+        "priority": "medium",
+        "coverage": "missing",
+        "placement": "headline"
+      }
+    ]
+  },
+  "tokens_out": 170
+}

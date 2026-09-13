@@ -1,0 +1,33 @@
+{
+  "response": {
+    "sections": [
+      {
+        "heading": "Senior Backend Engineer at Acme Corp",
+        "body": "Leading backend and distributed-systems work at Acme Corp, focused on reliability and performance at scale. Redesigned the caching layer, led a major architecture migration, and grew the engineering team through hands-on mentoring.",
+        "bullets": [
+          {
+            "text": "Cut API latency by 40% by redesigning the caching layer",
+            "flagged": false,
+            "flag_reason": null
+          },
+          {
+            "text": "Led migration of monolith to microservices for a 12-engineer team",
+            "flagged": false,
+            "flag_reason": null
+          },
+          {
+            "text": "Mentored 3 junior engineers to promotion",
+            "flagged": false,
+            "flag_reason": null
+          },
+          {
+            "text": "Improved on-call reliability for the distributed systems this role owns",
+            "flagged": true,
+            "flag_reason": "Would be stronger with a specific metric, like an incident-count or uptime reduction, if you have one."
+          }
+        ]
+      }
+    ]
+  },
+  "tokens_out": 190
+}

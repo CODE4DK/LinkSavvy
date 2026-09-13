@@ -15,8 +15,40 @@
     "body_sha256": "064db24061bf02c656a90769bf3639b6212b27bafc8700ad38174fd3983bc58b",
     "version": 1
   },
+  "profile.about_generator.v1": {
+    "body_sha256": "9b82f6dcdbdc33cea246302bd2db96506b42a6676fa788442b2690d799b5ad33",
+    "version": 1
+  },
+  "profile.analysis.v1": {
+    "body_sha256": "dbf1d2c1d2270d97b8dba53f2dbb96a226496686df53f407ec52c9326a455631",
+    "version": 1
+  },
+  "profile.completeness_checker.v1": {
+    "body_sha256": "98bd5faf612791868e1718d611651c7157b127898f52ccaafb372546babdb7db",
+    "version": 1
+  },
+  "profile.experience_optimizer.v1": {
+    "body_sha256": "2bbb42988ec5b0a3d536cb18c7d530112973dcd4738c6c41f2a87194a34fbdb2",
+    "version": 1
+  },
   "profile.headline.v1": {
     "body_sha256": "fae8b144dfcb8cd89e59ab46dec0e1cf8bc5a8ee3976c246b027602792d01824",
+    "version": 1
+  },
+  "profile.headline_optimizer.v1": {
+    "body_sha256": "dccfebc747323a7dbc2f14ffe03186171bfd5245b0ce3d2c3a660a3f836e96d5",
+    "version": 1
+  },
+  "profile.keyword_optimizer.v1": {
+    "body_sha256": "33a6b118f025dbbd42765e3f140c160493afbf24350f3408c440938612e3c0f4",
+    "version": 1
+  },
+  "profile.skills_analyzer.v1": {
+    "body_sha256": "bd6e9a0dc1bd2ff7c6221ca02a1e875e5ed0ead27c38c9ef1e0c3387818dd82c",
+    "version": 1
+  },
+  "test.echo.v1": {
+    "body_sha256": "adc5c017be8563bc345282ae7081e31297d8f3774c9f4c3baee5209c177ef4d7",
     "version": 1
   },
   "text.summarise.v1": {

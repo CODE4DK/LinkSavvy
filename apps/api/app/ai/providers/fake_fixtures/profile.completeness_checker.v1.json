@@ -1,0 +1,20 @@
+{
+  "response": {
+    "summary": "This profile has strong core sections but is missing a few pieces the completeness engine weighs, most notably a second listed role.",
+    "findings": [
+      {
+        "title": "Add a second work experience",
+        "severity": "warning",
+        "description": "The completeness engine flagged that fewer than two roles are listed, which limits how much career history recruiters can see.",
+        "recommendation": "Add at least one earlier role, even briefly, so your experience section shows progression over time."
+      },
+      {
+        "title": "Round out the remaining gaps the engine found",
+        "severity": "info",
+        "description": "The gaps listed above call out the specific sections still holding your score back.",
+        "recommendation": "Work through each gap in order of severity, starting with anything marked critical."
+      }
+    ]
+  },
+  "tokens_out": 140
+}

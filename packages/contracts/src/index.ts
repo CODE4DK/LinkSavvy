@@ -68,6 +68,17 @@ export type DashboardRunAuditState = Schemas["DashboardRunAuditState"];
 export type DashboardScoreHistory = Schemas["DashboardScoreHistory"];
 export type DashboardResponse = Schemas["DashboardResponse"];
 
+export type ToolSummary = Schemas["ToolSummary"];
+export type ToolRunRequest = Schemas["ToolRunRequest"];
+export type ToolRunResponse = Schemas["ToolRunResponse"];
+export type ToolRunSummary = Schemas["ToolRunSummary"];
+export type QuotaInfo = Schemas["QuotaInfo"];
+export type RegenerateRequest = Schemas["RegenerateRequest"];
+export type RateRequest = Schemas["RateRequest"];
+export type RateResponse = Schemas["RateResponse"];
+export type SaveAssetRequest = Schemas["SaveAssetRequest"];
+export type AssetResponse = Schemas["AssetResponse"];
+
 /** The `{"error": {code, message, details}}` envelope every API error uses. */
 export interface ApiErrorEnvelope {
   error: {
@@ -103,3 +114,24 @@ export type PlaygroundStreamFrame =
       latency_ms?: number;
       fallback_used?: boolean;
     };
+
+/**
+ * One SSE frame from `POST /api/v1/tools/{id}/run?stream=true` -- the same
+ * shape as `PlaygroundStreamFrame`'s meta/delta/error/done frames, plus a
+ * final `tool_run` frame (sent only after a successful `done`) carrying
+ * the persisted run's id, the context keys it used, and quota -- the same
+ * information the non-streaming `ToolRunResponse` returns in one shot.
+ */
+export type ToolRunStreamFrame =
+  | { type: "meta"; correlation_id: string; model: string; provider: string; cached: boolean }
+  | { type: "delta"; text: string }
+  | { type: "error"; code: string; message: string }
+  | {
+      type: "done";
+      tokens_in: number;
+      tokens_out: number;
+      cost_minor: number;
+      latency_ms?: number;
+      fallback_used?: boolean;
+    }
+  | { type: "tool_run"; run_id: string; context_used: string[]; quota: QuotaInfo };

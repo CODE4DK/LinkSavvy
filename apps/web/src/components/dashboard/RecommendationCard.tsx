@@ -42,7 +42,13 @@ export function RecommendationCard({ recommendation }: RecommendationCardProps) 
       </div>
       <p className="text-sm text-fg-muted">{recommendation.why}</p>
       <div className="mt-2 flex items-center gap-2">
-        <Link to={recommendation.action_route}>
+        <Link
+          to={
+            recommendation.action_tool_id
+              ? `${recommendation.action_route}?why=${encodeURIComponent(recommendation.why)}`
+              : recommendation.action_route
+          }
+        >
           <Button size="sm" variant="secondary">
             {recommendation.action_label}
           </Button>

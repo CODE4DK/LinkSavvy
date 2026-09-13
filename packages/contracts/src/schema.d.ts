@@ -631,6 +631,108 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/tools": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Tools */
+        get: operations["list_tools_api_v1_tools_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tools/{tool_id}/run": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Run Tool */
+        post: operations["run_tool_api_v1_tools__tool_id__run_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tools/{tool_id}/runs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Tool Runs */
+        get: operations["list_tool_runs_api_v1_tools__tool_id__runs_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tools/runs/{run_id}/regenerate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Regenerate Tool Run */
+        post: operations["regenerate_tool_run_api_v1_tools_runs__run_id__regenerate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tools/runs/{run_id}/rate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Rate Tool Run */
+        post: operations["rate_tool_run_api_v1_tools_runs__run_id__rate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tools/runs/{run_id}/save": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Save Tool Run */
+        post: operations["save_tool_run_api_v1_tools_runs__run_id__save_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -652,6 +754,28 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AssetResponse */
+        AssetResponse: {
+            /** Id */
+            id: string;
+            /** Type */
+            type: string;
+            /** Title */
+            title: string;
+            /** Body */
+            body: string;
+            /** Body Format */
+            body_format: string;
+            /** Source Tool Run Id */
+            source_tool_run_id: string | null;
+            /** Folder Id */
+            folder_id: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
         /** AuditCategoryResultResponse */
         AuditCategoryResultResponse: {
             /** Category */
@@ -920,6 +1044,11 @@ export interface components {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
+        /**
+         * Hub
+         * @enum {string}
+         */
+        Hub: "profile" | "content" | "engagement" | "career" | "growth";
         /** Identity */
         Identity: {
             /** Full Name */
@@ -1176,6 +1305,34 @@ export interface components {
             start?: components["schemas"]["DatePart"] | null;
             end?: components["schemas"]["DatePart"] | null;
         };
+        /** QuotaInfo */
+        QuotaInfo: {
+            /** Metric */
+            metric: string;
+            /** Used */
+            used: number;
+            /** Limit */
+            limit: number;
+        };
+        /** RateRequest */
+        RateRequest: {
+            /**
+             * Rating
+             * @enum {string}
+             */
+            rating: "up" | "down";
+            /** Feedback Text */
+            feedback_text?: string | null;
+        };
+        /** RateResponse */
+        RateResponse: {
+            /** Run Id */
+            run_id: string;
+            /** Rating */
+            rating: string;
+            /** Feedback Text */
+            feedback_text: string | null;
+        };
         /** RecommendationListResponse */
         RecommendationListResponse: {
             /** Items */
@@ -1230,6 +1387,11 @@ export interface components {
             /** Expires In */
             expires_in: number;
         };
+        /** RegenerateRequest */
+        RegenerateRequest: {
+            /** Nudge */
+            nudge?: string | null;
+        };
         /** RegisterRequest */
         RegisterRequest: {
             /**
@@ -1256,6 +1418,15 @@ export interface components {
             token: string;
             /** New Password */
             new_password: string;
+        };
+        /** SaveAssetRequest */
+        SaveAssetRequest: {
+            /** Title */
+            title: string;
+            /** Body */
+            body: string;
+            /** Folder Id */
+            folder_id?: string | null;
         };
         /** ScoreHistoryPoint */
         ScoreHistoryPoint: {
@@ -1369,6 +1540,96 @@ export interface components {
             draft: components["schemas"]["ProfileSnapshot"];
             /** Available Fields */
             available_fields: string[];
+        };
+        /** ToolRunRequest */
+        ToolRunRequest: {
+            /** Input */
+            input: {
+                [key: string]: unknown;
+            };
+        };
+        /** ToolRunResponse */
+        ToolRunResponse: {
+            /** Run Id */
+            run_id: string;
+            /** Output */
+            output: {
+                [key: string]: unknown;
+            };
+            /** Context Used */
+            context_used: string[];
+            quota: components["schemas"]["QuotaInfo"];
+        };
+        /**
+         * ToolRunSummary
+         * @description One row of `GET /api/v1/tools/{id}/runs`.
+         */
+        ToolRunSummary: {
+            /** Id */
+            id: string;
+            /** Input */
+            input: {
+                [key: string]: unknown;
+            };
+            /** Output */
+            output: {
+                [key: string]: unknown;
+            } | null;
+            /** Context Used */
+            context_used: string[];
+            /** Status */
+            status: string;
+            /** Rating */
+            rating: string | null;
+            /** Feedback Text */
+            feedback_text: string | null;
+            /** Parent Run Id */
+            parent_run_id: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /**
+         * ToolSummary
+         * @description One row of `GET /api/v1/tools` -- everything the web app needs to
+         *     render a tool card and, on selection, a fully working form and
+         *     result view with no tool-specific frontend code.
+         */
+        ToolSummary: {
+            /** Id */
+            id: string;
+            /** Hub */
+            hub: string;
+            /** Name */
+            name: string;
+            /** Short Description */
+            short_description: string;
+            /** Input Schema */
+            input_schema: {
+                [key: string]: unknown;
+            };
+            /** Output Schema */
+            output_schema: {
+                [key: string]: unknown;
+            };
+            /** Required Context */
+            required_context: string[];
+            /** Optional Context */
+            optional_context: string[];
+            /** Min Plan */
+            min_plan: string;
+            /** Quota Metric */
+            quota_metric: string;
+            /** Result Renderer */
+            result_renderer: string;
+            /** Save As */
+            save_as: string | null;
+            /** Free Daily Cap */
+            free_daily_cap: number | null;
+            /** Supports Streaming */
+            supports_streaming: boolean;
         };
         /** UpdateProfileRequest */
         UpdateProfileRequest: {
@@ -2570,6 +2831,213 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DashboardResponse"];
+                };
+            };
+        };
+    };
+    list_tools_api_v1_tools_get: {
+        parameters: {
+            query?: {
+                hub?: components["schemas"]["Hub"] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ToolSummary"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    run_tool_api_v1_tools__tool_id__run_post: {
+        parameters: {
+            query?: {
+                stream?: boolean;
+            };
+            header?: never;
+            path: {
+                tool_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ToolRunRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_tool_runs_api_v1_tools__tool_id__runs_get: {
+        parameters: {
+            query?: {
+                cursor?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                tool_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ToolRunSummary"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    regenerate_tool_run_api_v1_tools_runs__run_id__regenerate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegenerateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ToolRunResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    rate_tool_run_api_v1_tools_runs__run_id__rate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RateResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    save_tool_run_api_v1_tools_runs__run_id__save_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveAssetRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

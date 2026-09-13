@@ -1,0 +1,37 @@
+{
+  "response": {
+    "variants": [
+      {
+        "text": "Senior Backend Engineer | Distributed Systems at Scale @ Acme Corp",
+        "rationale": "Leads with seniority and the exact specialty named in the current headline, matching the Acme Corp role.",
+        "keywords": ["backend engineer", "distributed systems", "Acme Corp"],
+        "audience": "recruiters"
+      },
+      {
+        "text": "Building resilient distributed systems at Acme Corp | Python, Kubernetes",
+        "rationale": "Impact-oriented phrasing that surfaces the two most concrete skills backed by the experience bullets.",
+        "keywords": ["distributed systems", "Python", "Kubernetes"],
+        "audience": "hiring managers in the target role"
+      },
+      {
+        "text": "Senior Backend Engineer turning complex systems into reliable APIs",
+        "rationale": "A benefit-led framing that reads well to a non-technical hiring manager without inventing anything new.",
+        "keywords": ["backend engineer", "APIs", "systems design"],
+        "audience": "hiring managers in the target role"
+      },
+      {
+        "text": "Distributed Systems Engineer | 40% latency reduction, led microservices migration",
+        "rationale": "Surfaces the two concrete achievements from the Acme Corp bullets to signal impact.",
+        "keywords": ["distributed systems", "microservices", "performance"],
+        "audience": "recruiters"
+      },
+      {
+        "text": "Senior Backend Engineer @ Acme Corp | Mentoring engineers, scaling APIs",
+        "rationale": "Highlights the mentoring achievement alongside the core specialty, appealing to teams that value leadership.",
+        "keywords": ["mentoring", "backend engineer", "Acme Corp"],
+        "audience": "potential clients"
+      }
+    ]
+  },
+  "tokens_out": 180
+}

@@ -1,0 +1,46 @@
+{
+  "$defs": {
+    "_Variant": {
+      "additionalProperties": false,
+      "properties": {
+        "hook": {
+          "title": "Hook",
+          "type": "string"
+        },
+        "body": {
+          "maxLength": 2600,
+          "title": "Body",
+          "type": "string"
+        },
+        "cta": {
+          "title": "Cta",
+          "type": "string"
+        }
+      },
+      "required": [
+        "hook",
+        "body",
+        "cta"
+      ],
+      "title": "_Variant",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "variants": {
+      "items": {
+        "$ref": "#/$defs/_Variant"
+      },
+      "maxItems": 3,
+      "minItems": 3,
+      "title": "Variants",
+      "type": "array"
+    }
+  },
+  "required": [
+    "variants"
+  ],
+  "title": "_Output",
+  "type": "object"
+}
