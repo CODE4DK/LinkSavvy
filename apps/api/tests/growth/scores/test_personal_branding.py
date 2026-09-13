@@ -8,7 +8,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.ai import gateway
 from app.growth.schema import GrowthScoreStatus
-from app.growth.scores import personal_branding as personal_branding_module
 from app.growth.scores.personal_branding import get_personal_branding_score
 from app.models.user import User
 from app.profiles.schema import ProfileSource
@@ -94,7 +93,7 @@ async def test_drops_a_component_with_blank_evidence(
             }
         )
 
-    monkeypatch.setattr(personal_branding_module.gateway, "run", _fake_run)
+    monkeypatch.setattr(gateway, "run", _fake_run)
 
     score = await get_personal_branding_score(db_session, user=user)
 
@@ -125,7 +124,7 @@ async def test_skipped_when_every_component_lacks_evidence(
             }
         )
 
-    monkeypatch.setattr(personal_branding_module.gateway, "run", _fake_run)
+    monkeypatch.setattr(gateway, "run", _fake_run)
 
     score = await get_personal_branding_score(db_session, user=user)
 

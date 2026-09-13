@@ -1,0 +1,12 @@
+{
+  "response": {
+    "reply": "Happy to help you grow your LinkedIn presence. What's the main goal you're working toward right now -- a promotion, a role change, more visibility in your field, or something else?",
+    "phase": "interviewing",
+    "interview_complete": false,
+    "questions_asked": 1,
+    "score_movement": "not_enough_history",
+    "working_plan": null,
+    "proposed_tool_id": null
+  },
+  "tokens_out": 90
+}

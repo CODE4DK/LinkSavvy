@@ -107,6 +107,10 @@
     "body_sha256": "ab870463e1608eb7e51558859f40da5b3a05c004426e4856892397f8c7f2724b",
     "version": 1
   },
+  "growth.coach.v1": {
+    "body_sha256": "26cbb6399ed06f04b00a24ab9f55ee68aa6392c7705cac34012b3ce2ff1ca509",
+    "version": 1
+  },
   "growth.personal_branding.v1": {
     "body_sha256": "519319ef5df7e713a3f48f71f990b2373792f8f44f23d6a4692a21ae55169a18",
     "version": 1

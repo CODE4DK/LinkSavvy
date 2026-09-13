@@ -13,14 +13,20 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.deps import get_current_user, get_db
 from app.errors import ApiError, ErrorCode
+from app.growth import coach as coach_service
 from app.growth import goals as goals_service
 from app.growth.schema import GrowthScore
 from app.growth.service import get_growth_scores
 from app.growth.weekly_plan import get_current_plan, set_item_completed
+from app.models.coach_message import CoachMessage
+from app.models.coach_session import CoachSession
 from app.models.growth_goal import GrowthGoal
 from app.models.user import User
 from app.models.weekly_plan import WeeklyPlan
 from app.schemas.growth import (
+    CoachMessageCreate,
+    CoachMessageResponse,
+    CoachSessionResponse,
     GrowthGoalCreate,
     GrowthGoalResponse,
     GrowthScoreResponse,
@@ -71,6 +77,26 @@ def _goal_to_response(goal: GrowthGoal) -> GrowthGoalResponse:
         started_at=goal.started_at,
         status=goal.status,  # type: ignore[arg-type]
         baseline_scores=goal.baseline_scores,
+    )
+
+
+def _message_to_response(message: CoachMessage) -> CoachMessageResponse:
+    return CoachMessageResponse(
+        id=str(message.id),
+        role=message.role,  # type: ignore[arg-type]
+        content=message.content,
+        metadata=message.metadata_,
+        created_at=message.created_at,
+    )
+
+
+async def _session_to_response(db: AsyncSession, session: CoachSession) -> CoachSessionResponse:
+    messages = await coach_service.list_messages(db, session_id=session.id)
+    return CoachSessionResponse(
+        id=str(session.id),
+        goal_id=str(session.goal_id) if session.goal_id else None,
+        started_at=session.started_at,
+        messages=[_message_to_response(m) for m in messages],
     )
 
 
@@ -149,3 +175,23 @@ async def start_goal_endpoint(
         baseline_scores=baseline_scores,
     )
     return _goal_to_response(goal)
+
+
+@router.get("/coach/session", response_model=CoachSessionResponse)
+async def get_coach_session_endpoint(
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> CoachSessionResponse:
+    session = await coach_service.get_or_create_session(db, user=user)
+    return await _session_to_response(db, session)
+
+
+@router.post("/coach/messages", response_model=CoachMessageResponse)
+async def send_coach_message_endpoint(
+    payload: CoachMessageCreate,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> CoachMessageResponse:
+    session = await coach_service.get_or_create_session(db, user=user)
+    reply = await coach_service.send_message(db, user=user, session=session, text=payload.text)
+    return _message_to_response(reply)

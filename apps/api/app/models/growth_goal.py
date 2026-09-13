@@ -35,3 +35,7 @@ class GrowthGoal(PrimaryKeyMixin, TimestampMixin, SoftDeleteMixin, Base):
     started_at: Mapped[datetime] = mapped_column(UTCDateTime(), nullable=False)
     status: Mapped[str] = mapped_column(GrowthGoalStatus, nullable=False, default="active")
     baseline_scores: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False)
+    # The AI Growth Coach's working plan for this goal -- phases, what's
+    # been covered, what's next. Nullable: a goal can exist before the
+    # coach has ever produced one (or if the coach hub hasn't been used).
+    coach_state: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)

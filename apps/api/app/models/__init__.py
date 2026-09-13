@@ -6,6 +6,8 @@ from app.models.asset import Asset, AssetFolder
 from app.models.audit import Audit, AuditCategoryResult, AuditFinding
 from app.models.audit_log import AuditLog
 from app.models.base import Base
+from app.models.coach_message import CoachMessage
+from app.models.coach_session import CoachSession
 from app.models.content_plan import ContentPlan
 from app.models.content_sample import ContentSample
 from app.models.email_verification import EmailVerification
@@ -42,6 +44,8 @@ __all__ = [
     "AuditFinding",
     "AuditLog",
     "Base",
+    "CoachMessage",
+    "CoachSession",
     "ContentPlan",
     "ContentSample",
     "EmailVerification",
