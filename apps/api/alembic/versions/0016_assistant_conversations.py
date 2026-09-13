@@ -50,9 +50,7 @@ def upgrade() -> None:
         sa.Column("context_snapshot", sa.JSON(), nullable=True),
         sa.Column("message_count", sa.Integer(), nullable=False, server_default="0"),
         sa.Column("last_message_at", sa.DateTime(timezone=True), nullable=True),
-        sa.Column(
-            "is_archived", sa.Boolean(), nullable=False, server_default=sa.false()
-        ),
+        sa.Column("is_archived", sa.Boolean(), nullable=False, server_default=sa.false()),
         sa.Column("asset_id", app.db_types.UUIDBinary(length=16), nullable=True),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=_NOW, nullable=False),
         sa.Column("updated_at", sa.DateTime(timezone=True), server_default=_NOW, nullable=False),
