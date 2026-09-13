@@ -1,0 +1,18 @@
+{
+  "type": "object",
+  "properties": {
+    "reply": { "type": "string" },
+    "proposed_tool": {
+      "type": ["object", "null"],
+      "properties": {
+        "tool_id": { "type": "string" },
+        "reasoning": { "type": "string" },
+        "prefilled_input": { "type": "object" }
+      },
+      "required": ["tool_id", "reasoning", "prefilled_input"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["reply", "proposed_tool"],
+  "additionalProperties": false
+}

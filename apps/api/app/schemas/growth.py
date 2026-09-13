@@ -91,31 +91,6 @@ class GrowthGoalResponse(BaseModel):
     baseline_scores: dict[str, Any]
 
 
-class CoachMessageCreate(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    text: str = Field(min_length=1, max_length=4000)
-
-
-class CoachMessageResponse(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    id: str
-    role: Literal["user", "assistant"]
-    content: str
-    metadata: dict[str, Any]
-    created_at: datetime
-
-
-class CoachSessionResponse(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    id: str
-    goal_id: str | None
-    started_at: datetime
-    messages: list[CoachMessageResponse]
-
-
 class ScoreHistoryPointResponse(BaseModel):
     model_config = ConfigDict(extra="forbid")
 

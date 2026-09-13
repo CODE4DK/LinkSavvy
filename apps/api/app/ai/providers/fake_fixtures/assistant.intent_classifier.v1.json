@@ -1,0 +1,10 @@
+{
+  "response": {
+    "intent": "explain",
+    "tool_candidates": [],
+    "confidence": 0.8,
+    "needs_context": [],
+    "policy_category": null
+  },
+  "tokens_out": 40
+}
