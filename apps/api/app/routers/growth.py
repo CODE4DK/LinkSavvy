@@ -7,14 +7,16 @@ for the domain logic.
 from __future__ import annotations
 
 import uuid
+from datetime import UTC, date, datetime, timedelta
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.deps import get_current_user, get_db
 from app.errors import ApiError, ErrorCode
 from app.growth import coach as coach_service
 from app.growth import goals as goals_service
+from app.growth import history as history_service
 from app.growth.schema import GrowthScore
 from app.growth.service import get_growth_scores
 from app.growth.weekly_plan import get_current_plan, set_item_completed
@@ -24,17 +26,25 @@ from app.models.growth_goal import GrowthGoal
 from app.models.user import User
 from app.models.weekly_plan import WeeklyPlan
 from app.schemas.growth import (
+    BeforeAfterProfileEditResponse,
+    BeforeAfterResponse,
+    BeforeAfterToolRunResponse,
     CoachMessageCreate,
     CoachMessageResponse,
     CoachSessionResponse,
     GrowthGoalCreate,
     GrowthGoalResponse,
+    GrowthScoreHistoryResponse,
     GrowthScoreResponse,
     GrowthScoresResponse,
     ScoreComponentResponse,
+    ScoreDeltaResponse,
+    ScoreHistoryPointResponse,
     WeeklyPlanItemUpdate,
     WeeklyPlanResponse,
 )
+
+_DEFAULT_HISTORY_MONTHS = 6
 
 router = APIRouter(prefix="/api/v1/growth", tags=["growth"])
 
@@ -195,3 +205,43 @@ async def send_coach_message_endpoint(
     session = await coach_service.get_or_create_session(db, user=user)
     reply = await coach_service.send_message(db, user=user, session=session, text=payload.text)
     return _message_to_response(reply)
+
+
+@router.get("/scores/history", response_model=GrowthScoreHistoryResponse)
+async def get_score_history_endpoint(
+    months: int = Query(default=_DEFAULT_HISTORY_MONTHS, ge=1, le=24),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> GrowthScoreHistoryResponse:
+    since = datetime.now(UTC).date() - timedelta(days=months * 30)
+    history = await history_service.get_score_history(db, user_id=user.id, since=since)
+    return GrowthScoreHistoryResponse(
+        **{
+            score_type: [
+                ScoreHistoryPointResponse(snapshot_date=row.snapshot_date, value=row.value)
+                for row in rows
+            ]
+            for score_type, rows in history.items()
+        }
+    )
+
+
+@router.get("/before-after", response_model=BeforeAfterResponse)
+async def get_before_after_endpoint(
+    from_date: date = Query(...),
+    to_date: date = Query(...),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> BeforeAfterResponse:
+    if from_date > to_date:
+        raise ApiError(ErrorCode.VALIDATION_FAILED, "from_date must not be after to_date.")
+    result = await history_service.get_before_after(
+        db, user_id=user.id, from_date=from_date, to_date=to_date
+    )
+    return BeforeAfterResponse(
+        from_date=result["from_date"],
+        to_date=result["to_date"],
+        score_deltas=[ScoreDeltaResponse(**d) for d in result["score_deltas"]],
+        tool_runs=[BeforeAfterToolRunResponse(**r) for r in result["tool_runs"]],
+        profile_edits=[BeforeAfterProfileEditResponse(**e) for e in result["profile_edits"]],
+    )

@@ -13,6 +13,7 @@ from app.models.content_sample import ContentSample
 from app.models.email_verification import EmailVerification
 from app.models.feature_flag import FeatureFlag, UserFeatureFlag
 from app.models.growth_goal import GrowthGoal
+from app.models.growth_score_snapshot import GrowthScoreSnapshot
 from app.models.job import Job
 from app.models.job_description import JobDescription
 from app.models.linkedin_connection import LinkedInConnection
@@ -51,6 +52,7 @@ __all__ = [
     "EmailVerification",
     "FeatureFlag",
     "GrowthGoal",
+    "GrowthScoreSnapshot",
     "Job",
     "JobDescription",
     "LinkedInConnection",

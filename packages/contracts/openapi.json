@@ -3448,6 +3448,330 @@
         }
       }
     },
+    "/api/v1/growth/scores": {
+      "get": {
+        "tags": [
+          "growth"
+        ],
+        "summary": "Get Scores Endpoint",
+        "operationId": "get_scores_endpoint_api_v1_growth_scores_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GrowthScoresResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/growth/plan": {
+      "get": {
+        "tags": [
+          "growth"
+        ],
+        "summary": "Get Current Plan Endpoint",
+        "operationId": "get_current_plan_endpoint_api_v1_growth_plan_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeeklyPlanResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/growth/plan/{plan_id}/items/{item_index}": {
+      "patch": {
+        "tags": [
+          "growth"
+        ],
+        "summary": "Update Plan Item Endpoint",
+        "operationId": "update_plan_item_endpoint_api_v1_growth_plan__plan_id__items__item_index__patch",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          },
+          {
+            "name": "item_index",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Item Index"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WeeklyPlanItemUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeeklyPlanResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/growth/goal": {
+      "get": {
+        "tags": [
+          "growth"
+        ],
+        "summary": "Get Active Goal Endpoint",
+        "operationId": "get_active_goal_endpoint_api_v1_growth_goal_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GrowthGoalResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "growth"
+        ],
+        "summary": "Start Goal Endpoint",
+        "operationId": "start_goal_endpoint_api_v1_growth_goal_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GrowthGoalCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GrowthGoalResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/growth/coach/session": {
+      "get": {
+        "tags": [
+          "growth"
+        ],
+        "summary": "Get Coach Session Endpoint",
+        "operationId": "get_coach_session_endpoint_api_v1_growth_coach_session_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoachSessionResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/growth/coach/messages": {
+      "post": {
+        "tags": [
+          "growth"
+        ],
+        "summary": "Send Coach Message Endpoint",
+        "operationId": "send_coach_message_endpoint_api_v1_growth_coach_messages_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CoachMessageCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CoachMessageResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/growth/scores/history": {
+      "get": {
+        "tags": [
+          "growth"
+        ],
+        "summary": "Get Score History Endpoint",
+        "operationId": "get_score_history_endpoint_api_v1_growth_scores_history_get",
+        "parameters": [
+          {
+            "name": "months",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 24,
+              "minimum": 1,
+              "default": 6,
+              "title": "Months"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GrowthScoreHistoryResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/growth/before-after": {
+      "get": {
+        "tags": [
+          "growth"
+        ],
+        "summary": "Get Before After Endpoint",
+        "operationId": "get_before_after_endpoint_api_v1_growth_before_after_get",
+        "parameters": [
+          {
+            "name": "from_date",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "From Date"
+            }
+          },
+          {
+            "name": "to_date",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "To Date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BeforeAfterResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "summary": "Health",
@@ -3810,6 +4134,101 @@
         ],
         "title": "AuditRunResponse"
       },
+      "BeforeAfterProfileEditResponse": {
+        "properties": {
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "version",
+          "source",
+          "created_at"
+        ],
+        "title": "BeforeAfterProfileEditResponse"
+      },
+      "BeforeAfterResponse": {
+        "properties": {
+          "from_date": {
+            "type": "string",
+            "format": "date",
+            "title": "From Date"
+          },
+          "to_date": {
+            "type": "string",
+            "format": "date",
+            "title": "To Date"
+          },
+          "score_deltas": {
+            "items": {
+              "$ref": "#/components/schemas/ScoreDeltaResponse"
+            },
+            "type": "array",
+            "title": "Score Deltas"
+          },
+          "tool_runs": {
+            "items": {
+              "$ref": "#/components/schemas/BeforeAfterToolRunResponse"
+            },
+            "type": "array",
+            "title": "Tool Runs"
+          },
+          "profile_edits": {
+            "items": {
+              "$ref": "#/components/schemas/BeforeAfterProfileEditResponse"
+            },
+            "type": "array",
+            "title": "Profile Edits"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "from_date",
+          "to_date",
+          "score_deltas",
+          "tool_runs",
+          "profile_edits"
+        ],
+        "title": "BeforeAfterResponse"
+      },
+      "BeforeAfterToolRunResponse": {
+        "properties": {
+          "tool_id": {
+            "type": "string",
+            "title": "Tool Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "tool_id",
+          "status",
+          "created_at"
+        ],
+        "title": "BeforeAfterToolRunResponse"
+      },
       "Body_create_upload_import_api_v1_profile_imports_upload_post": {
         "properties": {
           "file": {
@@ -4117,6 +4536,102 @@
           "new_password"
         ],
         "title": "ChangePasswordRequest"
+      },
+      "CoachMessageCreate": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Text"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "title": "CoachMessageCreate"
+      },
+      "CoachMessageResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "assistant"
+            ],
+            "title": "Role"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content"
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metadata"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "role",
+          "content",
+          "metadata",
+          "created_at"
+        ],
+        "title": "CoachMessageResponse"
+      },
+      "CoachSessionResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "goal_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Goal Id"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Started At"
+          },
+          "messages": {
+            "items": {
+              "$ref": "#/components/schemas/CoachMessageResponse"
+            },
+            "type": "array",
+            "title": "Messages"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "goal_id",
+          "started_at",
+          "messages"
+        ],
+        "title": "CoachSessionResponse"
       },
       "CommitImportRequest": {
         "properties": {
@@ -5177,6 +5692,235 @@
           "cost_per_user_per_day_minor"
         ],
         "title": "GatewayMetricsResponse"
+      },
+      "GrowthGoalCreate": {
+        "properties": {
+          "goal_type": {
+            "type": "string",
+            "title": "Goal Type"
+          },
+          "target_role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Role"
+          },
+          "target_description": {
+            "type": "string",
+            "title": "Target Description",
+            "default": ""
+          },
+          "horizon_weeks": {
+            "type": "integer",
+            "maximum": 104.0,
+            "minimum": 1.0,
+            "title": "Horizon Weeks"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "goal_type",
+          "horizon_weeks"
+        ],
+        "title": "GrowthGoalCreate"
+      },
+      "GrowthGoalResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "goal_type": {
+            "type": "string",
+            "title": "Goal Type"
+          },
+          "target_role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Role"
+          },
+          "target_description": {
+            "type": "string",
+            "title": "Target Description"
+          },
+          "horizon_weeks": {
+            "type": "integer",
+            "title": "Horizon Weeks"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Started At"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "completed",
+              "abandoned"
+            ],
+            "title": "Status"
+          },
+          "baseline_scores": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Baseline Scores"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "goal_type",
+          "target_role",
+          "target_description",
+          "horizon_weeks",
+          "started_at",
+          "status",
+          "baseline_scores"
+        ],
+        "title": "GrowthGoalResponse"
+      },
+      "GrowthScoreHistoryResponse": {
+        "properties": {
+          "health": {
+            "items": {
+              "$ref": "#/components/schemas/ScoreHistoryPointResponse"
+            },
+            "type": "array",
+            "title": "Health"
+          },
+          "visibility": {
+            "items": {
+              "$ref": "#/components/schemas/ScoreHistoryPointResponse"
+            },
+            "type": "array",
+            "title": "Visibility"
+          },
+          "consistency": {
+            "items": {
+              "$ref": "#/components/schemas/ScoreHistoryPointResponse"
+            },
+            "type": "array",
+            "title": "Consistency"
+          },
+          "personal_branding": {
+            "items": {
+              "$ref": "#/components/schemas/ScoreHistoryPointResponse"
+            },
+            "type": "array",
+            "title": "Personal Branding"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "health",
+          "visibility",
+          "consistency",
+          "personal_branding"
+        ],
+        "title": "GrowthScoreHistoryResponse"
+      },
+      "GrowthScoreResponse": {
+        "properties": {
+          "score_type": {
+            "type": "string",
+            "title": "Score Type"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "components": {
+            "items": {
+              "$ref": "#/components/schemas/ScoreComponentResponse"
+            },
+            "type": "array",
+            "title": "Components"
+          },
+          "computed_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Computed At"
+          },
+          "scoring_version": {
+            "type": "string",
+            "title": "Scoring Version"
+          },
+          "needed": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Needed"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "score_type",
+          "value",
+          "status",
+          "components",
+          "computed_at",
+          "scoring_version",
+          "needed"
+        ],
+        "title": "GrowthScoreResponse"
+      },
+      "GrowthScoresResponse": {
+        "properties": {
+          "health": {
+            "$ref": "#/components/schemas/GrowthScoreResponse"
+          },
+          "visibility": {
+            "$ref": "#/components/schemas/GrowthScoreResponse"
+          },
+          "consistency": {
+            "$ref": "#/components/schemas/GrowthScoreResponse"
+          },
+          "personal_branding": {
+            "$ref": "#/components/schemas/GrowthScoreResponse"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "health",
+          "visibility",
+          "consistency",
+          "personal_branding"
+        ],
+        "title": "GrowthScoresResponse"
       },
       "HTTPValidationError": {
         "properties": {
@@ -7509,6 +8253,93 @@
         ],
         "title": "SaveCarouselRequest"
       },
+      "ScoreComponentResponse": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "weight": {
+            "type": "integer",
+            "title": "Weight"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "evidence": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Evidence"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "weight",
+          "value",
+          "evidence"
+        ],
+        "title": "ScoreComponentResponse"
+      },
+      "ScoreDeltaResponse": {
+        "properties": {
+          "score_type": {
+            "type": "string",
+            "title": "Score Type"
+          },
+          "from_value": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "From Value"
+          },
+          "to_value": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "To Value"
+          },
+          "delta": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delta"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "score_type",
+          "from_value",
+          "to_value",
+          "delta"
+        ],
+        "title": "ScoreDeltaResponse"
+      },
       "ScoreHistoryPoint": {
         "properties": {
           "audit_id": {
@@ -7593,6 +8424,26 @@
           "visibility"
         ],
         "title": "ScoreHistoryPoint"
+      },
+      "ScoreHistoryPointResponse": {
+        "properties": {
+          "snapshot_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Snapshot Date"
+          },
+          "value": {
+            "type": "integer",
+            "title": "Value"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "snapshot_date",
+          "value"
+        ],
+        "title": "ScoreHistoryPointResponse"
       },
       "ScoreHistoryResponse": {
         "properties": {
@@ -8336,6 +9187,133 @@
           "texts"
         ],
         "title": "VoiceSamplesRequest"
+      },
+      "WeeklyPlanItemResponse": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "why_now": {
+            "type": "string",
+            "title": "Why Now"
+          },
+          "tool_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Id"
+          },
+          "estimated_minutes": {
+            "type": "integer",
+            "title": "Estimated Minutes"
+          },
+          "expected_impact": {
+            "type": "integer",
+            "title": "Expected Impact"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "completed": {
+            "type": "boolean",
+            "title": "Completed"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title",
+          "why_now",
+          "tool_id",
+          "estimated_minutes",
+          "expected_impact",
+          "category",
+          "completed"
+        ],
+        "title": "WeeklyPlanItemResponse"
+      },
+      "WeeklyPlanItemUpdate": {
+        "properties": {
+          "completed": {
+            "type": "boolean",
+            "title": "Completed"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "completed"
+        ],
+        "title": "WeeklyPlanItemUpdate"
+      },
+      "WeeklyPlanResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "week_start": {
+            "type": "string",
+            "format": "date",
+            "title": "Week Start"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Generated At"
+          },
+          "focus": {
+            "type": "string",
+            "title": "Focus"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/WeeklyPlanItemResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "completed_count": {
+            "type": "integer",
+            "title": "Completed Count"
+          },
+          "reflection": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reflection"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "week_start",
+          "generated_at",
+          "focus",
+          "items",
+          "status",
+          "completed_count",
+          "reflection"
+        ],
+        "title": "WeeklyPlanResponse"
       }
     }
   }

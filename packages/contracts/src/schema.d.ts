@@ -1252,6 +1252,143 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/growth/scores": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Scores Endpoint */
+        get: operations["get_scores_endpoint_api_v1_growth_scores_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/growth/plan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Current Plan Endpoint */
+        get: operations["get_current_plan_endpoint_api_v1_growth_plan_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/growth/plan/{plan_id}/items/{item_index}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Plan Item Endpoint */
+        patch: operations["update_plan_item_endpoint_api_v1_growth_plan__plan_id__items__item_index__patch"];
+        trace?: never;
+    };
+    "/api/v1/growth/goal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Active Goal Endpoint */
+        get: operations["get_active_goal_endpoint_api_v1_growth_goal_get"];
+        put?: never;
+        /** Start Goal Endpoint */
+        post: operations["start_goal_endpoint_api_v1_growth_goal_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/growth/coach/session": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Coach Session Endpoint */
+        get: operations["get_coach_session_endpoint_api_v1_growth_coach_session_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/growth/coach/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Send Coach Message Endpoint */
+        post: operations["send_coach_message_endpoint_api_v1_growth_coach_messages_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/growth/scores/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Score History Endpoint */
+        get: operations["get_score_history_endpoint_api_v1_growth_scores_history_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/growth/before-after": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Before After Endpoint */
+        get: operations["get_before_after_endpoint_api_v1_growth_before_after_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -1383,6 +1520,49 @@ export interface components {
              */
             audit_status: "queued";
         };
+        /** BeforeAfterProfileEditResponse */
+        BeforeAfterProfileEditResponse: {
+            /** Version */
+            version: number;
+            /** Source */
+            source: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** BeforeAfterResponse */
+        BeforeAfterResponse: {
+            /**
+             * From Date
+             * Format: date
+             */
+            from_date: string;
+            /**
+             * To Date
+             * Format: date
+             */
+            to_date: string;
+            /** Score Deltas */
+            score_deltas: components["schemas"]["ScoreDeltaResponse"][];
+            /** Tool Runs */
+            tool_runs: components["schemas"]["BeforeAfterToolRunResponse"][];
+            /** Profile Edits */
+            profile_edits: components["schemas"]["BeforeAfterProfileEditResponse"][];
+        };
+        /** BeforeAfterToolRunResponse */
+        BeforeAfterToolRunResponse: {
+            /** Tool Id */
+            tool_id: string;
+            /** Status */
+            status: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
         /** Body_create_upload_import_api_v1_profile_imports_upload_post */
         Body_create_upload_import_api_v1_profile_imports_upload_post: {
             /** File */
@@ -1499,6 +1679,46 @@ export interface components {
             current_password: string;
             /** New Password */
             new_password: string;
+        };
+        /** CoachMessageCreate */
+        CoachMessageCreate: {
+            /** Text */
+            text: string;
+        };
+        /** CoachMessageResponse */
+        CoachMessageResponse: {
+            /** Id */
+            id: string;
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "user" | "assistant";
+            /** Content */
+            content: string;
+            /** Metadata */
+            metadata: {
+                [key: string]: unknown;
+            };
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** CoachSessionResponse */
+        CoachSessionResponse: {
+            /** Id */
+            id: string;
+            /** Goal Id */
+            goal_id: string | null;
+            /**
+             * Started At
+             * Format: date-time
+             */
+            started_at: string;
+            /** Messages */
+            messages: components["schemas"]["CoachMessageResponse"][];
         };
         /** CommitImportRequest */
         CommitImportRequest: {
@@ -1801,6 +2021,87 @@ export interface components {
             cost_per_user_per_day_minor: {
                 [key: string]: number;
             };
+        };
+        /** GrowthGoalCreate */
+        GrowthGoalCreate: {
+            /** Goal Type */
+            goal_type: string;
+            /** Target Role */
+            target_role?: string | null;
+            /**
+             * Target Description
+             * @default
+             */
+            target_description: string;
+            /** Horizon Weeks */
+            horizon_weeks: number;
+        };
+        /** GrowthGoalResponse */
+        GrowthGoalResponse: {
+            /** Id */
+            id: string;
+            /** Goal Type */
+            goal_type: string;
+            /** Target Role */
+            target_role: string | null;
+            /** Target Description */
+            target_description: string;
+            /** Horizon Weeks */
+            horizon_weeks: number;
+            /**
+             * Started At
+             * Format: date-time
+             */
+            started_at: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "active" | "completed" | "abandoned";
+            /** Baseline Scores */
+            baseline_scores: {
+                [key: string]: unknown;
+            };
+        };
+        /** GrowthScoreHistoryResponse */
+        GrowthScoreHistoryResponse: {
+            /** Health */
+            health: components["schemas"]["ScoreHistoryPointResponse"][];
+            /** Visibility */
+            visibility: components["schemas"]["ScoreHistoryPointResponse"][];
+            /** Consistency */
+            consistency: components["schemas"]["ScoreHistoryPointResponse"][];
+            /** Personal Branding */
+            personal_branding: components["schemas"]["ScoreHistoryPointResponse"][];
+        };
+        /** GrowthScoreResponse */
+        GrowthScoreResponse: {
+            /** Score Type */
+            score_type: string;
+            /** Value */
+            value: number | null;
+            /** Status */
+            status: string;
+            /** Components */
+            components: components["schemas"]["ScoreComponentResponse"][];
+            /**
+             * Computed At
+             * Format: date-time
+             */
+            computed_at: string;
+            /** Scoring Version */
+            scoring_version: string;
+            /** Needed */
+            needed: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /** GrowthScoresResponse */
+        GrowthScoresResponse: {
+            health: components["schemas"]["GrowthScoreResponse"];
+            visibility: components["schemas"]["GrowthScoreResponse"];
+            consistency: components["schemas"]["GrowthScoreResponse"];
+            personal_branding: components["schemas"]["GrowthScoreResponse"];
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -2516,6 +2817,30 @@ export interface components {
             title: string;
             data: components["schemas"]["CarouselData"];
         };
+        /** ScoreComponentResponse */
+        ScoreComponentResponse: {
+            /** Name */
+            name: string;
+            /** Weight */
+            weight: number;
+            /** Value */
+            value: number | null;
+            /** Evidence */
+            evidence: {
+                [key: string]: unknown;
+            };
+        };
+        /** ScoreDeltaResponse */
+        ScoreDeltaResponse: {
+            /** Score Type */
+            score_type: string;
+            /** From Value */
+            from_value: number | null;
+            /** To Value */
+            to_value: number | null;
+            /** Delta */
+            delta: number | null;
+        };
         /** ScoreHistoryPoint */
         ScoreHistoryPoint: {
             /** Audit Id */
@@ -2537,6 +2862,16 @@ export interface components {
             career: number | null;
             /** Visibility */
             visibility: number | null;
+        };
+        /** ScoreHistoryPointResponse */
+        ScoreHistoryPointResponse: {
+            /**
+             * Snapshot Date
+             * Format: date
+             */
+            snapshot_date: string;
+            /** Value */
+            value: number;
         };
         /** ScoreHistoryResponse */
         ScoreHistoryResponse: {
@@ -2800,6 +3135,55 @@ export interface components {
         VoiceSamplesRequest: {
             /** Texts */
             texts: string[];
+        };
+        /** WeeklyPlanItemResponse */
+        WeeklyPlanItemResponse: {
+            /** Title */
+            title: string;
+            /** Why Now */
+            why_now: string;
+            /** Tool Id */
+            tool_id: string | null;
+            /** Estimated Minutes */
+            estimated_minutes: number;
+            /** Expected Impact */
+            expected_impact: number;
+            /** Category */
+            category: string;
+            /** Completed */
+            completed: boolean;
+        };
+        /** WeeklyPlanItemUpdate */
+        WeeklyPlanItemUpdate: {
+            /** Completed */
+            completed: boolean;
+        };
+        /** WeeklyPlanResponse */
+        WeeklyPlanResponse: {
+            /** Id */
+            id: string;
+            /**
+             * Week Start
+             * Format: date
+             */
+            week_start: string;
+            /**
+             * Generated At
+             * Format: date-time
+             */
+            generated_at: string;
+            /** Focus */
+            focus: string;
+            /** Items */
+            items: components["schemas"]["WeeklyPlanItemResponse"][];
+            /** Status */
+            status: string;
+            /** Completed Count */
+            completed_count: number;
+            /** Reflection */
+            reflection: {
+                [key: string]: unknown;
+            } | null;
         };
     };
     responses: never;
@@ -5339,6 +5723,251 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ResumeMatchResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_scores_endpoint_api_v1_growth_scores_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GrowthScoresResponse"];
+                };
+            };
+        };
+    };
+    get_current_plan_endpoint_api_v1_growth_plan_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WeeklyPlanResponse"];
+                };
+            };
+        };
+    };
+    update_plan_item_endpoint_api_v1_growth_plan__plan_id__items__item_index__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plan_id: string;
+                item_index: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WeeklyPlanItemUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WeeklyPlanResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_active_goal_endpoint_api_v1_growth_goal_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GrowthGoalResponse"];
+                };
+            };
+        };
+    };
+    start_goal_endpoint_api_v1_growth_goal_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GrowthGoalCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GrowthGoalResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_coach_session_endpoint_api_v1_growth_coach_session_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CoachSessionResponse"];
+                };
+            };
+        };
+    };
+    send_coach_message_endpoint_api_v1_growth_coach_messages_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CoachMessageCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CoachMessageResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_score_history_endpoint_api_v1_growth_scores_history_get: {
+        parameters: {
+            query?: {
+                months?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GrowthScoreHistoryResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_before_after_endpoint_api_v1_growth_before_after_get: {
+        parameters: {
+            query: {
+                from_date: string;
+                to_date: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BeforeAfterResponse"];
                 };
             };
             /** @description Validation Error */

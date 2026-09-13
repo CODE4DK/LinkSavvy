@@ -17,6 +17,7 @@ import { Calendar } from "@/content/Calendar";
 import { EngagementHubPage } from "@/pages/hubs/EngagementHubPage";
 import { CareerHubPage } from "@/pages/hubs/CareerHubPage";
 import { GrowthHubPage } from "@/pages/hubs/GrowthHubPage";
+import { GrowthCoachPage } from "@/pages/hubs/GrowthCoachPage";
 import { WorkspaceHubPage } from "@/pages/hubs/WorkspaceHubPage";
 import { SettingsPage } from "@/pages/SettingsPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
@@ -53,6 +54,8 @@ export const router = createBrowserRouter([
           { path: "/career", element: <CareerHubPage /> },
           { path: "/career/:toolId", element: <CareerHubPage /> },
           { path: "/growth", element: <GrowthHubPage /> },
+          { path: "/growth/coach", element: <GrowthCoachPage /> },
+          { path: "/growth/:toolId", element: <GrowthHubPage /> },
           { path: "/workspace", element: <WorkspaceHubPage /> },
           { path: "/settings", element: <SettingsPage /> },
           { path: "/dev/playground", element: <PlaygroundPage /> },

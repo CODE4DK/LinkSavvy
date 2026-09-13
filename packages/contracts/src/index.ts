@@ -193,3 +193,23 @@ export type ToolRunStreamFrame =
       quota: QuotaInfo;
       warning?: string | null;
     };
+
+// -- Growth Hub -------------------------------------------------------
+
+export type ScoreComponentResponse = Schemas["ScoreComponentResponse"];
+export type GrowthScoreResponse = Schemas["GrowthScoreResponse"];
+export type GrowthScoresResponse = Schemas["GrowthScoresResponse"];
+export type WeeklyPlanItemResponse = Schemas["WeeklyPlanItemResponse"];
+export type WeeklyPlanResponse = Schemas["WeeklyPlanResponse"];
+export type WeeklyPlanItemUpdate = Schemas["WeeklyPlanItemUpdate"];
+export type GrowthGoalCreate = Schemas["GrowthGoalCreate"];
+export type GrowthGoalResponse = Schemas["GrowthGoalResponse"];
+export type CoachMessageCreate = Schemas["CoachMessageCreate"];
+export type CoachMessageResponse = Schemas["CoachMessageResponse"];
+export type CoachSessionResponse = Schemas["CoachSessionResponse"];
+export type GrowthScoreHistoryPoint = Schemas["ScoreHistoryPointResponse"];
+export type GrowthScoreHistoryResponse = Schemas["GrowthScoreHistoryResponse"];
+export type ScoreDeltaResponse = Schemas["ScoreDeltaResponse"];
+export type BeforeAfterToolRunResponse = Schemas["BeforeAfterToolRunResponse"];
+export type BeforeAfterProfileEditResponse = Schemas["BeforeAfterProfileEditResponse"];
+export type BeforeAfterResponse = Schemas["BeforeAfterResponse"];

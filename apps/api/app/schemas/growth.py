@@ -114,3 +114,54 @@ class CoachSessionResponse(BaseModel):
     goal_id: str | None
     started_at: datetime
     messages: list[CoachMessageResponse]
+
+
+class ScoreHistoryPointResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    snapshot_date: date
+    value: int
+
+
+class GrowthScoreHistoryResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    health: list[ScoreHistoryPointResponse]
+    visibility: list[ScoreHistoryPointResponse]
+    consistency: list[ScoreHistoryPointResponse]
+    personal_branding: list[ScoreHistoryPointResponse]
+
+
+class ScoreDeltaResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    score_type: str
+    from_value: int | None
+    to_value: int | None
+    delta: int | None
+
+
+class BeforeAfterToolRunResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    tool_id: str
+    status: str
+    created_at: datetime
+
+
+class BeforeAfterProfileEditResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    version: int
+    source: str
+    created_at: datetime
+
+
+class BeforeAfterResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    from_date: date
+    to_date: date
+    score_deltas: list[ScoreDeltaResponse]
+    tool_runs: list[BeforeAfterToolRunResponse]
+    profile_edits: list[BeforeAfterProfileEditResponse]
