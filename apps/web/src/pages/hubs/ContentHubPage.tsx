@@ -118,6 +118,9 @@ function ToolDetail({ toolId }: { toolId: string }) {
         onSendToCarouselBuilder={(output) =>
           navigate("/content/carousel/new", { state: { fromToolOutput: output } })
         }
+        onSendIdeasToCalendar={(rows) =>
+          navigate("/content/calendar", { state: { ideaRows: rows } })
+        }
       />
     </div>
   );

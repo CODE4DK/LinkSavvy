@@ -887,6 +887,145 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/content-plans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Plans Endpoint */
+        get: operations["list_plans_endpoint_api_v1_content_plans_get"];
+        put?: never;
+        /** Create Plan Endpoint */
+        post: operations["create_plan_endpoint_api_v1_content_plans_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/content-plans/consistency": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Consistency Endpoint */
+        get: operations["consistency_endpoint_api_v1_content_plans_consistency_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/content-plans/{plan_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Plan Endpoint */
+        get: operations["get_plan_endpoint_api_v1_content_plans__plan_id__get"];
+        put?: never;
+        post?: never;
+        /** Delete Plan Endpoint */
+        delete: operations["delete_plan_endpoint_api_v1_content_plans__plan_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Plan Endpoint */
+        patch: operations["update_plan_endpoint_api_v1_content_plans__plan_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/content-plans/{plan_id}/reschedule": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reschedule Plan Endpoint */
+        post: operations["reschedule_plan_endpoint_api_v1_content_plans__plan_id__reschedule_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/content-plans/{plan_id}/reminder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Set Reminder Endpoint */
+        post: operations["set_reminder_endpoint_api_v1_content_plans__plan_id__reminder_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/content-plans/{plan_id}/mark-posted": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mark Posted Endpoint */
+        post: operations["mark_posted_endpoint_api_v1_content_plans__plan_id__mark_posted_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/content-plans/recurring-slots": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Recurring Slots Endpoint */
+        post: operations["recurring_slots_endpoint_api_v1_content_plans_recurring_slots_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/content-plans/bulk-schedule": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Bulk Schedule Endpoint */
+        post: operations["bulk_schedule_endpoint_api_v1_content_plans_bulk_schedule_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -1028,6 +1167,29 @@ export interface components {
             /** File */
             file: string;
         };
+        /** BulkScheduleRequest */
+        BulkScheduleRequest: {
+            cadence: components["schemas"]["Cadence"];
+            /** Plan Ids */
+            plan_ids: string[];
+        };
+        /** Cadence */
+        Cadence: {
+            /**
+             * Days Of Week
+             * @description 0=Monday ... 6=Sunday
+             */
+            days_of_week: number[];
+            /** Time */
+            time?: string | null;
+            /**
+             * Start Date
+             * Format: date
+             */
+            start_date: string;
+            /** Weeks */
+            weeks: number;
+        };
         /** CarouselClosing */
         CarouselClosing: {
             /**
@@ -1110,6 +1272,120 @@ export interface components {
         /** CommitImportRequest */
         CommitImportRequest: {
             payload: components["schemas"]["ProfileSnapshot"];
+        };
+        /** ConsistencyWeek */
+        ConsistencyWeek: {
+            /**
+             * Week Start
+             * Format: date
+             */
+            week_start: string;
+            /** Posted Count */
+            posted_count: number;
+        };
+        /** ContentPlanCreate */
+        ContentPlanCreate: {
+            /** Asset Id */
+            asset_id?: string | null;
+            /**
+             * Title
+             * @default
+             */
+            title: string;
+            /**
+             * Body Preview
+             * @default
+             */
+            body_preview: string;
+            /**
+             * Content Type
+             * @default post
+             */
+            content_type: string;
+            /**
+             * Status
+             * @default idea
+             * @enum {string}
+             */
+            status: "idea" | "drafted" | "ready" | "scheduled" | "posted" | "skipped";
+            /**
+             * Planned For
+             * Format: date
+             */
+            planned_for: string;
+            /** Planned Time */
+            planned_time?: string | null;
+            /** Tags */
+            tags?: string[];
+            /**
+             * Notes
+             * @default
+             */
+            notes: string;
+        };
+        /** ContentPlanResponse */
+        ContentPlanResponse: {
+            /** Id */
+            id: string;
+            /** Asset Id */
+            asset_id: string | null;
+            /** Title */
+            title: string;
+            /** Body Preview */
+            body_preview: string;
+            /** Content Type */
+            content_type: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "idea" | "drafted" | "ready" | "scheduled" | "posted" | "skipped";
+            /**
+             * Planned For
+             * Format: date
+             */
+            planned_for: string;
+            /** Planned Time */
+            planned_time: string | null;
+            /** Posted At */
+            posted_at: string | null;
+            /** Reminder At */
+            reminder_at: string | null;
+            /** Recurrence Rule */
+            recurrence_rule: string | null;
+            /** Tags */
+            tags: string[];
+            /** Performance */
+            performance: {
+                [key: string]: number | string;
+            };
+            /** Notes */
+            notes: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** ContentPlanUpdate */
+        ContentPlanUpdate: {
+            /** Title */
+            title?: string | null;
+            /** Body Preview */
+            body_preview?: string | null;
+            /** Content Type */
+            content_type?: string | null;
+            /** Status */
+            status?: ("idea" | "drafted" | "ready" | "scheduled" | "posted" | "skipped") | null;
+            /** Tags */
+            tags?: string[] | null;
+            /** Notes */
+            notes?: string | null;
         };
         /** CreateAssetRequest */
         CreateAssetRequest: {
@@ -1408,6 +1684,14 @@ export interface components {
             expires_in: number;
             user: components["schemas"]["UserPublic"];
         };
+        /** MarkContentPlanPostedRequest */
+        MarkContentPlanPostedRequest: {
+            /** Linkedin Url */
+            linkedin_url?: string | null;
+            /** Posted At */
+            posted_at?: string | null;
+            performance?: components["schemas"]["PerformanceNumbers"] | null;
+        };
         /** MarkPostedRequest */
         MarkPostedRequest: {
             /** Linkedin Url */
@@ -1434,6 +1718,19 @@ export interface components {
             followers?: number | null;
             /** Recommendations Received */
             recommendations_received?: number | null;
+        };
+        /** PerformanceNumbers */
+        PerformanceNumbers: {
+            /** Impressions */
+            impressions?: number | null;
+            /** Reactions */
+            reactions?: number | null;
+            /** Comments */
+            comments?: number | null;
+            /** Reposts */
+            reposts?: number | null;
+            /** Profile Views */
+            profile_views?: number | null;
         };
         /** PlaygroundPromptSummary */
         PlaygroundPromptSummary: {
@@ -1619,6 +1916,10 @@ export interface components {
              */
             status: "open" | "in_progress" | "done" | "dismissed";
         };
+        /** RecurringSlotsRequest */
+        RecurringSlotsRequest: {
+            cadence: components["schemas"]["Cadence"];
+        };
         /** RefreshResponse */
         RefreshResponse: {
             /** Access Token */
@@ -1647,6 +1948,21 @@ export interface components {
             password: string;
             /** Full Name */
             full_name: string;
+        };
+        /** ReminderRequest */
+        ReminderRequest: {
+            /** Reminder At */
+            reminder_at?: string | null;
+        };
+        /** RescheduleRequest */
+        RescheduleRequest: {
+            /**
+             * Planned For
+             * Format: date
+             */
+            planned_for: string;
+            /** Planned Time */
+            planned_time?: string | null;
         };
         /** ResendVerificationRequest */
         ResendVerificationRequest: {
@@ -3619,6 +3935,357 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_plans_endpoint_api_v1_content_plans_get: {
+        parameters: {
+            query: {
+                start: string;
+                end: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContentPlanResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_plan_endpoint_api_v1_content_plans_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ContentPlanCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContentPlanResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    consistency_endpoint_api_v1_content_plans_consistency_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsistencyWeek"][];
+                };
+            };
+        };
+    };
+    get_plan_endpoint_api_v1_content_plans__plan_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContentPlanResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_plan_endpoint_api_v1_content_plans__plan_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_plan_endpoint_api_v1_content_plans__plan_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ContentPlanUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContentPlanResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reschedule_plan_endpoint_api_v1_content_plans__plan_id__reschedule_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RescheduleRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContentPlanResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_reminder_endpoint_api_v1_content_plans__plan_id__reminder_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReminderRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContentPlanResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    mark_posted_endpoint_api_v1_content_plans__plan_id__mark_posted_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                plan_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MarkContentPlanPostedRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContentPlanResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    recurring_slots_endpoint_api_v1_content_plans_recurring_slots_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RecurringSlotsRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContentPlanResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    bulk_schedule_endpoint_api_v1_content_plans_bulk_schedule_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BulkScheduleRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContentPlanResponse"][];
                 };
             };
             /** @description Validation Error */

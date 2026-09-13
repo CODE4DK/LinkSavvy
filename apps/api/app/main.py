@@ -5,11 +5,15 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.ai.prompts.loader import get_registry
 from app.audit import job_handler  # noqa: F401 -- registers the "audit" job handler
+from app.content import (  # noqa: F401 -- registers the "content_reminder" job handler
+    calendar_reminder_job,
+)
 from app.errors import ApiError, api_error_handler
 from app.routers import (
     auth,
     carousels,
     content_assets,
+    content_plans,
     content_voice,
     internal,
     jobs,
@@ -55,6 +59,7 @@ app.include_router(tools.router)
 app.include_router(content_voice.router)
 app.include_router(content_assets.router)
 app.include_router(carousels.router)
+app.include_router(content_plans.router)
 
 
 @app.get("/health")

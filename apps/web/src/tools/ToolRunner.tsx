@@ -42,6 +42,25 @@ import {
 
 const PLAN_RANK: Record<string, number> = { free: 0, pro: 1 };
 
+function isIdeaRows(output: unknown): boolean {
+  if (typeof output !== "object" || output === null) return false;
+  const rows = (output as { rows?: unknown }).rows;
+  return (
+    Array.isArray(rows) &&
+    rows.length > 0 &&
+    rows.every(
+      (row) =>
+        typeof row === "object" &&
+        row !== null &&
+        typeof (row as { title?: unknown }).title === "string",
+    )
+  );
+}
+
+function ideaRowsOf(output: unknown): Record<string, unknown>[] {
+  return (output as { rows: Record<string, unknown>[] }).rows ?? [];
+}
+
 function lastUsedKey(toolId: string): string {
   return `linksavvy:tool-runner:last-input:${toolId}`;
 }
@@ -96,6 +115,12 @@ export interface ToolRunnerProps {
    * text -- the builder needs the real structure, not a flattened
    * string. */
   onSendToCarouselBuilder?: (output: unknown) => void;
+  /** When provided, and the result is a `table` of rows that each carry
+   * a `title` (the shape `content.ideas_generator` and any future
+   * ideas-shaped tool produces), a result gets a "Send ideas to
+   * calendar" action handing every row to the caller at once, so ideas
+   * can go straight onto the calendar without a manual copy per idea. */
+  onSendIdeasToCalendar?: (rows: Record<string, unknown>[]) => void;
 }
 
 export function ToolRunner({
@@ -104,6 +129,7 @@ export function ToolRunner({
   onApplyToProfile,
   onSendToComposer,
   onSendToCarouselBuilder,
+  onSendIdeasToCalendar,
 }: ToolRunnerProps) {
   const { user } = useAuth();
   const { push: pushToast } = useToast();
@@ -617,6 +643,18 @@ export function ToolRunner({
                     Open in Carousel Builder
                   </Button>
                 )}
+
+                {onSendIdeasToCalendar &&
+                  tool.result_renderer === "table" &&
+                  isIdeaRows(output) && (
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => onSendIdeasToCalendar(ideaRowsOf(output))}
+                    >
+                      Send ideas to calendar
+                    </Button>
+                  )}
 
                 {contextUsed.length > 0 && (
                   <details className="text-sm">
