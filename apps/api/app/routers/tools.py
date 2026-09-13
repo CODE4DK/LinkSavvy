@@ -77,8 +77,10 @@ async def run_tool(
         )
         return StreamingResponse(_sse_events(frames), media_type="text/event-stream")
 
-    run, quota = await service.run_tool(db, user=user, tool_id=tool_id, raw_input=payload.input)
-    return to_tool_run_response(run, quota=quota)
+    run, quota, warning = await service.run_tool(
+        db, user=user, tool_id=tool_id, raw_input=payload.input
+    )
+    return to_tool_run_response(run, quota=quota, warning=warning)
 
 
 @router.get("/{tool_id}/runs", response_model=list[ToolRunSummary])
@@ -101,8 +103,10 @@ async def regenerate_tool_run(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> ToolRunResponse:
-    run, quota = await service.regenerate_run(db, user=user, run_id=run_id, nudge=payload.nudge)
-    return to_tool_run_response(run, quota=quota)
+    run, quota, warning = await service.regenerate_run(
+        db, user=user, run_id=run_id, nudge=payload.nudge
+    )
+    return to_tool_run_response(run, quota=quota, warning=warning)
 
 
 @router.post("/runs/{run_id}/rate", response_model=RateResponse)

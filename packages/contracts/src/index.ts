@@ -182,4 +182,5 @@ export type ToolRunStreamFrame =
       run_id: string;
       context_used: string[];
       quota: QuotaInfo;
+      warning?: string | null;
     };

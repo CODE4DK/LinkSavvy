@@ -28,6 +28,7 @@ class ToolSummary(BaseModel):
     save_as: str | None
     free_daily_cap: int | None
     supports_streaming: bool
+    counts_as_outreach: bool
 
 
 class ToolRunRequest(BaseModel):
@@ -51,6 +52,7 @@ class ToolRunResponse(BaseModel):
     output: dict[str, Any]
     context_used: list[str]
     quota: QuotaInfo
+    warning: str | None = None
 
 
 class ToolRunSummary(BaseModel):

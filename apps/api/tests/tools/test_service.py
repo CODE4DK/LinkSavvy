@@ -153,7 +153,7 @@ async def test_run_tool_persists_a_succeeded_run(
     _patch_gateway_success(monkeypatch)
     user = await _get_user(db_session, registered_user["email"])
 
-    run, quota = await service.run_tool(
+    run, quota, _ = await service.run_tool(
         db_session,
         user=user,
         tool_id="fixture.tool",
@@ -279,7 +279,7 @@ async def test_regenerate_run_creates_a_child_run_with_the_nudge(
     _patch_gateway_success(monkeypatch)
     user = await _get_user(db_session, registered_user["email"])
 
-    parent, _ = await service.run_tool(
+    parent, _, _ = await service.run_tool(
         db_session, user=user, tool_id="fixture.tool", raw_input={"user_supplied_text": "hi"}
     )
 
@@ -307,7 +307,7 @@ async def test_regenerate_run_creates_a_child_run_with_the_nudge(
 
     monkeypatch.setattr(gateway, "run", _fake_run)
 
-    child, _ = await service.regenerate_run(
+    child, _, _ = await service.regenerate_run(
         db_session, user=user, run_id=parent.id, nudge="make it shorter"
     )
 
@@ -346,7 +346,7 @@ async def test_rate_run_stores_rating_and_feedback(
     _build_registry(tmp_path, monkeypatch)
     _patch_gateway_success(monkeypatch)
     user = await _get_user(db_session, registered_user["email"])
-    run, _ = await service.run_tool(
+    run, _, _ = await service.run_tool(
         db_session, user=user, tool_id="fixture.tool", raw_input={"user_supplied_text": "hi"}
     )
 
@@ -367,7 +367,7 @@ async def test_save_run_as_asset_creates_an_asset(
     _build_registry(tmp_path, monkeypatch)
     _patch_gateway_success(monkeypatch)
     user = await _get_user(db_session, registered_user["email"])
-    run, _ = await service.run_tool(
+    run, _, _ = await service.run_tool(
         db_session, user=user, tool_id="fixture.tool", raw_input={"user_supplied_text": "hi"}
     )
 
@@ -389,7 +389,7 @@ async def test_save_run_as_asset_rejects_a_tool_with_no_save_as(
     _build_registry(tmp_path, monkeypatch, save_as="None")
     _patch_gateway_success(monkeypatch)
     user = await _get_user(db_session, registered_user["email"])
-    run, _ = await service.run_tool(
+    run, _, _ = await service.run_tool(
         db_session, user=user, tool_id="fixture.tool", raw_input={"user_supplied_text": "hi"}
     )
 

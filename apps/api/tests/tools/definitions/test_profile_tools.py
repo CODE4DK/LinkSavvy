@@ -55,7 +55,7 @@ def assert_never_fabricates(output: dict[str, object]) -> None:
 
 
 async def test_profile_analysis_golden(db_session: AsyncSession, rich_profile_user: User) -> None:
-    run, quota = await service.run_tool(
+    run, quota, _ = await service.run_tool(
         db_session, user=rich_profile_user, tool_id="profile.analysis", raw_input={}
     )
     assert run.status == "succeeded"
@@ -78,7 +78,7 @@ async def test_profile_analysis_requires_a_snapshot(
 
 
 async def test_headline_optimizer_golden(db_session: AsyncSession, rich_profile_user: User) -> None:
-    run, _ = await service.run_tool(
+    run, _, _ = await service.run_tool(
         db_session,
         user=rich_profile_user,
         tool_id="profile.headline_optimizer",
@@ -99,7 +99,7 @@ async def test_headline_optimizer_golden(db_session: AsyncSession, rich_profile_
 async def test_headline_optimizer_works_without_a_target_role(
     db_session: AsyncSession, rich_profile_user: User
 ) -> None:
-    run, _ = await service.run_tool(
+    run, _, _ = await service.run_tool(
         db_session,
         user=rich_profile_user,
         tool_id="profile.headline_optimizer",
@@ -110,7 +110,7 @@ async def test_headline_optimizer_works_without_a_target_role(
 
 
 async def test_about_generator_golden(db_session: AsyncSession, rich_profile_user: User) -> None:
-    run, _ = await service.run_tool(
+    run, _, _ = await service.run_tool(
         db_session,
         user=rich_profile_user,
         tool_id="profile.about_generator",
@@ -128,7 +128,7 @@ async def test_about_generator_golden(db_session: AsyncSession, rich_profile_use
 async def test_experience_optimizer_golden(
     db_session: AsyncSession, rich_profile_user: User
 ) -> None:
-    run, _ = await service.run_tool(
+    run, _, _ = await service.run_tool(
         db_session,
         user=rich_profile_user,
         tool_id="profile.experience_optimizer",
@@ -147,7 +147,7 @@ async def test_experience_optimizer_golden(
 
 
 async def test_skills_analyzer_golden(db_session: AsyncSession, rich_profile_user: User) -> None:
-    run, _ = await service.run_tool(
+    run, _, _ = await service.run_tool(
         db_session, user=rich_profile_user, tool_id="profile.skills_analyzer", raw_input={}
     )
     assert run.status == "succeeded"
@@ -160,7 +160,7 @@ async def test_skills_analyzer_golden(db_session: AsyncSession, rich_profile_use
 
 
 async def test_keyword_optimizer_golden(db_session: AsyncSession, rich_profile_user: User) -> None:
-    run, _ = await service.run_tool(
+    run, _, _ = await service.run_tool(
         db_session, user=rich_profile_user, tool_id="profile.keyword_optimizer", raw_input={}
     )
     assert run.status == "succeeded"
@@ -175,7 +175,7 @@ async def test_keyword_optimizer_golden(db_session: AsyncSession, rich_profile_u
 async def test_completeness_checker_golden(
     db_session: AsyncSession, rich_profile_user: User
 ) -> None:
-    run, _ = await service.run_tool(
+    run, _, _ = await service.run_tool(
         db_session,
         user=rich_profile_user,
         tool_id="profile.completeness_checker",

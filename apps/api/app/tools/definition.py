@@ -86,3 +86,15 @@ class ToolDefinition:
     # `assemble()` labels its own blocks; merged in after assembly, exempt
     # from token-budget trimming since it's small and never optional.
     precompute: Callable[[User, AsyncSession], Awaitable[dict[str, str]]] | None = None
+    # Runs after a successful gateway call, before the run is persisted --
+    # for annotations that aren't expressible as JSON Schema constraints
+    # on the output model itself (e.g. Engagement Hub's personalisation/
+    # spam-tone checks, see app/engagement/guardrails.py). Takes the
+    # validated output dict and the tool's raw input dict, returns the
+    # dict to persist; never re-validated against `output_schema`.
+    postprocess: Callable[[dict[str, object], dict[str, object]], dict[str, object]] | None = None
+    # Marks a tool as outreach (a message meant for one specific person)
+    # for two purposes: it counts toward the cross-tool daily soft cap
+    # (app/engagement/guardrails.py's OUTREACH_DAILY_SOFT_CAP), and the
+    # frontend gates its Copy button behind a review confirmation.
+    counts_as_outreach: bool = False
