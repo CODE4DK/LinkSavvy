@@ -3,6 +3,7 @@
 from app.models.ai_cache import AICache
 from app.models.ai_invocation import AIInvocation
 from app.models.asset import Asset, AssetFolder
+from app.models.asset_version import AssetVersion
 from app.models.audit import Audit, AuditCategoryResult, AuditFinding
 from app.models.audit_log import AuditLog
 from app.models.base import Base
@@ -40,6 +41,7 @@ __all__ = [
     "AIInvocation",
     "Asset",
     "AssetFolder",
+    "AssetVersion",
     "Audit",
     "AuditCategoryResult",
     "AuditFinding",

@@ -28,6 +28,8 @@ from app.routers import (
 )
 from app.routers.audits import audits_router, recommendations_router, scores_router
 from app.routers.dashboard import router as dashboard_router
+from app.routers.workspace import folders_router as asset_folders_router
+from app.routers.workspace import router as workspace_router
 from app.settings import settings
 from app.tools.registry import get_registry as get_tool_registry
 
@@ -67,6 +69,8 @@ app.include_router(carousels.router)
 app.include_router(content_plans.router)
 app.include_router(career.router)
 app.include_router(growth.router)
+app.include_router(workspace_router)
+app.include_router(asset_folders_router)
 
 
 @app.get("/health")
