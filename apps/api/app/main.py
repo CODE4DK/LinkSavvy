@@ -15,6 +15,7 @@ from app.growth import (
 from app.routers import (
     assistant,
     auth,
+    billing,
     career,
     carousels,
     content_assets,
@@ -73,6 +74,7 @@ app.include_router(growth.router)
 app.include_router(workspace_router)
 app.include_router(asset_folders_router)
 app.include_router(assistant.router)
+app.include_router(billing.router)
 
 
 @app.get("/health")

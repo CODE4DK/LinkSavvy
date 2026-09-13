@@ -128,6 +128,24 @@ def _fake_ai_providers(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
     registry._build_provider.cache_clear()
 
 
+@pytest.fixture(autouse=True)
+def _fake_billing_providers(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
+    """Every test gets `FakeProvider` in place of a real Stripe/Razorpay
+    call (see app/billing/providers/fake.py and .../registry.py) — the
+    billing equivalent of `_fake_ai_providers` above, for the same reason:
+    zero network calls from the test suite, without every test needing to
+    remember to patch it itself."""
+    from app.billing.providers import registry
+    from app.billing.providers.fake import FakeProvider, clear_queue
+
+    registry._build.cache_clear()
+    monkeypatch.setitem(registry._PROVIDER_CLASSES, "stripe", FakeProvider)
+    monkeypatch.setitem(registry._PROVIDER_CLASSES, "razorpay", FakeProvider)
+    yield
+    clear_queue()
+    registry._build.cache_clear()
+
+
 @pytest.fixture
 def sent_emails(monkeypatch: pytest.MonkeyPatch) -> list[dict[str, str]]:
     """Captures verification/reset emails instead of sending them."""

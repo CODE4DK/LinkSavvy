@@ -26,6 +26,28 @@ export function getAccessToken(): string | null {
   return accessToken;
 }
 
+// A single subscriber, registered by PaywallProvider (see
+// lib/paywall-context.tsx) at the app root. This is deliberately a plain
+// module-level callback rather than a second import of the paywall
+// context here — every hub page and hook already calls apiFetch/streamSSE
+// directly (not routed through one shared data layer), so this is the one
+// place a 402 anywhere in the app can be turned into "show the contextual
+// paywall" without every call site remembering to check `error.code`
+// itself. The original ApiError is still thrown afterwards so a caller
+// that wants its own fallback UI (a disabled button, an inline notice)
+// still gets the chance to render one.
+let quotaExceededHandler: ((error: ApiError) => void) | null = null;
+
+export function setQuotaExceededHandler(handler: ((error: ApiError) => void) | null): void {
+  quotaExceededHandler = handler;
+}
+
+function reportIfQuotaExceeded(error: ApiError): void {
+  if (error.code === "QUOTA_EXCEEDED") {
+    quotaExceededHandler?.(error);
+  }
+}
+
 interface RequestOptions {
   method?: "GET" | "POST" | "DELETE" | "PATCH" | "PUT";
   body?: unknown;
@@ -55,14 +77,16 @@ export async function apiFetch<T>(path: string, options: RequestOptions = {}): P
   const payload = await response.json().catch(() => null);
 
   if (!response.ok) {
-    if (payload && typeof payload === "object" && "error" in payload) {
-      throw new ApiError(response.status, (payload as ApiErrorEnvelope).error);
-    }
-    throw new ApiError(response.status, {
-      code: "INTERNAL",
-      message: "Something went wrong. Please try again.",
-      details: {},
-    });
+    const error =
+      payload && typeof payload === "object" && "error" in payload
+        ? new ApiError(response.status, (payload as ApiErrorEnvelope).error)
+        : new ApiError(response.status, {
+            code: "INTERNAL",
+            message: "Something went wrong. Please try again.",
+            details: {},
+          });
+    reportIfQuotaExceeded(error);
+    throw error;
   }
 
   return payload as T;
@@ -97,14 +121,16 @@ export async function streamSSE<T>(
 
   if (!response.ok || !response.body) {
     const payload = await response.json().catch(() => null);
-    if (payload && typeof payload === "object" && "error" in payload) {
-      throw new ApiError(response.status, (payload as ApiErrorEnvelope).error);
-    }
-    throw new ApiError(response.status, {
-      code: "INTERNAL",
-      message: "Something went wrong. Please try again.",
-      details: {},
-    });
+    const error =
+      payload && typeof payload === "object" && "error" in payload
+        ? new ApiError(response.status, (payload as ApiErrorEnvelope).error)
+        : new ApiError(response.status, {
+            code: "INTERNAL",
+            message: "Something went wrong. Please try again.",
+            details: {},
+          });
+    reportIfQuotaExceeded(error);
+    throw error;
   }
 
   const reader = response.body.getReader();

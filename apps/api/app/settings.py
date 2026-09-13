@@ -69,6 +69,41 @@ class Settings(BaseSettings):
     gemini_api_key: str | None = None
     ai_cache_default_ttl_seconds: int = 3600
 
+    # Billing (Phase 10). Optional so the app still boots without them; a
+    # provider adapter raises BILLING_PROVIDER_ERROR the first time it's
+    # actually called without its keys configured. Region routing (see
+    # app/billing/providers/registry.py) picks Stripe or Razorpay per
+    # user; both sets of keys are only needed once you actually sell into
+    # both regions.
+    stripe_api_key: str | None = None
+    stripe_webhook_secret: str | None = None
+    stripe_price_ids: dict[str, str] = Field(default_factory=dict)  # "pro:month" -> price id
+    razorpay_key_id: str | None = None
+    razorpay_key_secret: str | None = None
+    razorpay_webhook_secret: str | None = None
+    razorpay_plan_ids: dict[str, str] = Field(default_factory=dict)
+    billing_checkout_success_path: str = "/billing/checkout-return?status=success"
+    billing_checkout_cancel_path: str = "/billing/checkout-return?status=cancelled"
+    # India billing country routes to Razorpay; everyone else to Stripe.
+    razorpay_billing_countries: frozenset[str] = frozenset({"IN"})
+    # How many days a `past_due` subscription keeps full access before
+    # entitlements are restricted to the free plan (see
+    # app/billing/entitlements.py::apply_entitlements).
+    past_due_grace_period_days: int = 7
+
+    # Notifications (Phase 10).
+    email_provider: Literal["console", "resend", "ses"] = "console"
+    resend_api_key: str | None = None
+    ses_region: str | None = None
+    unsubscribe_secret: str = "dev-unsubscribe-secret-change-in-production"
+
+    # Privacy (Phase 10). How long a soft-deleted account's PII is kept
+    # before the scheduled purge job hard-deletes it -- see
+    # app/privacy/purge_scheduler.py and docs/privacy.md.
+    account_hard_delete_after_days: int = 30
+    ai_invocation_payload_retention_days: int = 90
+    log_retention_days: int = 30
+
 
 @lru_cache
 def get_settings() -> Settings:

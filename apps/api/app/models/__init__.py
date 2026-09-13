@@ -22,6 +22,7 @@ from app.models.message import Message
 from app.models.oauth_identity import OAuthIdentity
 from app.models.oauth_login_state import OAuthLoginState
 from app.models.password_reset import PasswordReset
+from app.models.payment import Payment
 from app.models.plan_limit import PlanLimit
 from app.models.profile_import import ProfileImportBlob, ProfileImportRow
 from app.models.profile_snapshot import ProfileSnapshotRow
@@ -30,10 +31,12 @@ from app.models.refresh_token import RefreshToken
 from app.models.resume import Resume
 from app.models.resume_match import ResumeMatch
 from app.models.score_history import ScoreHistory
+from app.models.subscription import Subscription
 from app.models.tool_run import ToolRun
 from app.models.usage_counter import UsageCounter
 from app.models.user import User
 from app.models.voice_profile import VoiceProfile
+from app.models.webhook_event import WebhookEvent
 from app.models.weekly_plan import WeeklyPlan
 
 __all__ = [
@@ -62,6 +65,7 @@ __all__ = [
     "OAuthIdentity",
     "OAuthLoginState",
     "PasswordReset",
+    "Payment",
     "PlanLimit",
     "ProfileImportBlob",
     "ProfileImportRow",
@@ -71,10 +75,12 @@ __all__ = [
     "Resume",
     "ResumeMatch",
     "ScoreHistory",
+    "Subscription",
     "ToolRun",
     "UsageCounter",
     "User",
     "UserFeatureFlag",
     "VoiceProfile",
+    "WebhookEvent",
     "WeeklyPlan",
 ]

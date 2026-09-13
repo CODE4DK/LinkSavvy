@@ -135,7 +135,10 @@ export interface ApiErrorEnvelope {
       | "QUOTA_EXCEEDED"
       | "AI_OUTPUT_INVALID"
       | "AI_POLICY_BLOCKED"
-      | "AI_PROVIDER_UNAVAILABLE";
+      | "AI_PROVIDER_UNAVAILABLE"
+      | "WEBHOOK_SIGNATURE_INVALID"
+      | "BILLING_PROVIDER_ERROR"
+      | "NO_ACTIVE_SUBSCRIPTION";
     message: string;
     details: Record<string, unknown>;
   };
@@ -255,3 +258,15 @@ export type AssistantStreamFrame =
       quota_warning: string | null;
     }
   | { type: "error"; code: string; message: string };
+
+// -- Billing --------------------------------------------------------------
+
+export type CheckoutRequest = Schemas["CheckoutRequest"];
+export type CheckoutResponse = Schemas["CheckoutResponse"];
+export type PortalResponse = Schemas["PortalResponse"];
+export type SubscriptionResponse = Schemas["SubscriptionResponse"];
+export type CancelSubscriptionRequest = Schemas["CancelSubscriptionRequest"];
+export type ChangePlanRequest = Schemas["ChangePlanRequest"];
+export type PaymentResponse = Schemas["PaymentResponse"];
+export type PlanLimitResponse = Schemas["PlanLimitResponse"];
+export type PricingResponse = Schemas["PricingResponse"];

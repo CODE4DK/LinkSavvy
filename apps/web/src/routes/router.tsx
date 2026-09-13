@@ -19,6 +19,9 @@ import { CareerHubPage } from "@/pages/hubs/CareerHubPage";
 import { GrowthHubPage } from "@/pages/hubs/GrowthHubPage";
 import { GrowthCoachPage } from "@/pages/hubs/GrowthCoachPage";
 import { WorkspaceHubPage } from "@/pages/hubs/WorkspaceHubPage";
+import { PricingPage } from "@/pages/billing/PricingPage";
+import { BillingManagePage } from "@/pages/billing/BillingManagePage";
+import { CheckoutReturnPage } from "@/pages/billing/CheckoutReturnPage";
 import { SettingsPage } from "@/pages/SettingsPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { OnboardingPage } from "@/pages/onboarding/OnboardingPage";
@@ -57,6 +60,9 @@ export const router = createBrowserRouter([
           { path: "/growth/coach", element: <GrowthCoachPage /> },
           { path: "/growth/:toolId", element: <GrowthHubPage /> },
           { path: "/workspace", element: <WorkspaceHubPage /> },
+          { path: "/billing/pricing", element: <PricingPage /> },
+          { path: "/billing/manage", element: <BillingManagePage /> },
+          { path: "/billing/checkout-return", element: <CheckoutReturnPage /> },
           { path: "/settings", element: <SettingsPage /> },
           { path: "/dev/playground", element: <PlaygroundPage /> },
           { path: "*", element: <NotFoundPage /> },
