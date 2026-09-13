@@ -255,12 +255,29 @@ async def _serialize_recent_assets(*, user: User, db: AsyncSession, **_: Any) ->
     return "\n".join(f"- [{asset.type}] {asset.title}" for asset in assets)
 
 
-async def _serialize_voice_profile(**_: Any) -> str | None:
-    # No voice-profile source exists yet -- that's a later phase's
-    # feature, built from a corpus of the user's own writing. Always
-    # unavailable rather than guessed, same as Phase 4's
-    # career.resume_presence before the Career Hub added resume upload.
-    return None
+def _join_or(items: list[str] | None, fallback: str) -> str:
+    return ", ".join(items) if items else fallback
+
+
+async def _serialize_voice_profile(*, user: User, db: AsyncSession, **_: Any) -> str | None:
+    from app.content.voice_service import get_active_descriptor
+
+    voice = await get_active_descriptor(db, user=user)
+    descriptor = voice.descriptor
+    provenance = (
+        "(this is a neutral default -- the user hasn't set up their voice yet)"
+        if voice.source == "default"
+        else f"(derived from {voice.sample_count} of the user's own posts)"
+    )
+    lines = [
+        provenance,
+        "Tone: " + _join_or(descriptor.get("tone_adjectives"), "unspecified"),
+        "Recurring themes: " + _join_or(descriptor.get("recurring_themes"), "none yet"),
+        "Signature structures: " + _join_or(descriptor.get("signature_structures"), "none yet"),
+        "Vocabulary preferences: " + _join_or(descriptor.get("vocabulary_preferences"), "none yet"),
+        "Never does: " + _join_or(descriptor.get("never_does"), "nothing specific noted"),
+    ]
+    return "\n".join(lines)
 
 
 def _make_extra_serializer(key: ContextKey) -> Serializer:

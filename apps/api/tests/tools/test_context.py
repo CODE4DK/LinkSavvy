@@ -184,7 +184,7 @@ async def test_assemble_includes_latest_audit_findings(db_session: AsyncSession)
     assert "audit_latest_findings" in context
 
 
-async def test_voice_profile_is_always_unavailable_for_now(db_session: AsyncSession) -> None:
+async def test_voice_profile_falls_back_to_the_neutral_default(db_session: AsyncSession) -> None:
     user = await _create_user(db_session)
     context, included = await assemble(
         user=user,
@@ -193,5 +193,24 @@ async def test_voice_profile_is_always_unavailable_for_now(db_session: AsyncSess
         optional=[ContextKey.VOICE_PROFILE],
         token_budget=10_000,
     )
-    assert included == []
-    assert context == {}
+    assert included == [ContextKey.VOICE_PROFILE]
+    assert "clear" in context["voice_profile"]
+    assert "neutral default" in context["voice_profile"]
+
+
+async def test_voice_profile_reflects_a_derived_descriptor(db_session: AsyncSession) -> None:
+    from app.content.voice_service import MIN_SAMPLES, submit_voice_samples
+
+    user = await _create_user(db_session)
+    texts = [f"Sample post number {i} about distributed systems." for i in range(MIN_SAMPLES)]
+    await submit_voice_samples(db_session, user=user, texts=texts, source="paste")
+
+    context, included = await assemble(
+        user=user,
+        db=db_session,
+        required=[],
+        optional=[ContextKey.VOICE_PROFILE],
+        token_budget=10_000,
+    )
+    assert included == [ContextKey.VOICE_PROFILE]
+    assert "direct" in context["voice_profile"]

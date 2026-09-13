@@ -11,6 +11,10 @@
     "body_sha256": "d6b0ef138ed50a704ad6da0f6cd3094705df071045ff0e3e831e563b2db2d4af",
     "version": 1
   },
+  "content.voice_profile.v1": {
+    "body_sha256": "cab7e431a0ac77d1fe0dd6f60cd9705409c3f58e7502c7be6a2c080a77b97417",
+    "version": 1
+  },
   "meta.classify_intent.v1": {
     "body_sha256": "064db24061bf02c656a90769bf3639b6212b27bafc8700ad38174fd3983bc58b",
     "version": 1

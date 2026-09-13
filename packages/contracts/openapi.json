@@ -1838,6 +1838,109 @@
         }
       }
     },
+    "/api/v1/content/voice": {
+      "get": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Get Voice Profile",
+        "operationId": "get_voice_profile_api_v1_content_voice_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VoiceDescriptorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/content/voice/samples": {
+      "post": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Submit Pasted Samples",
+        "operationId": "submit_pasted_samples_api_v1_content_voice_samples_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VoiceSamplesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VoiceDescriptorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/content/voice/samples/upload": {
+      "post": {
+        "tags": [
+          "content"
+        ],
+        "summary": "Submit Uploaded Samples",
+        "operationId": "submit_uploaded_samples_api_v1_content_voice_samples_upload_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_submit_uploaded_samples_api_v1_content_voice_samples_upload_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VoiceDescriptorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "summary": "Health",
@@ -2187,6 +2290,20 @@
           "file"
         ],
         "title": "Body_create_upload_import_api_v1_profile_imports_upload_post"
+      },
+      "Body_submit_uploaded_samples_api_v1_content_voice_samples_upload_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_submit_uploaded_samples_api_v1_content_voice_samples_upload_post"
       },
       "Certification": {
         "properties": {
@@ -4840,6 +4957,89 @@
           "token"
         ],
         "title": "VerifyEmailRequest"
+      },
+      "VoiceDescriptorResponse": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "enum": [
+              "supplied",
+              "derived",
+              "default"
+            ],
+            "title": "Source"
+          },
+          "sample_count": {
+            "type": "integer",
+            "title": "Sample Count"
+          },
+          "tone_adjectives": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tone Adjectives"
+          },
+          "recurring_themes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Recurring Themes"
+          },
+          "signature_structures": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Signature Structures"
+          },
+          "vocabulary_preferences": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Vocabulary Preferences"
+          },
+          "never_does": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Never Does"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source",
+          "sample_count",
+          "tone_adjectives",
+          "recurring_themes",
+          "signature_structures",
+          "vocabulary_preferences",
+          "never_does"
+        ],
+        "title": "VoiceDescriptorResponse"
+      },
+      "VoiceSamplesRequest": {
+        "properties": {
+          "texts": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "minItems": 5,
+            "title": "Texts"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "texts"
+        ],
+        "title": "VoiceSamplesRequest"
       }
     }
   }

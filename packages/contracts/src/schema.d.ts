@@ -733,6 +733,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/content/voice": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Voice Profile */
+        get: operations["get_voice_profile_api_v1_content_voice_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/content/voice/samples": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Submit Pasted Samples */
+        post: operations["submit_pasted_samples_api_v1_content_voice_samples_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/content/voice/samples/upload": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Submit Uploaded Samples */
+        post: operations["submit_uploaded_samples_api_v1_content_voice_samples_upload_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -857,6 +908,11 @@ export interface components {
         };
         /** Body_create_upload_import_api_v1_profile_imports_upload_post */
         Body_create_upload_import_api_v1_profile_imports_upload_post: {
+            /** File */
+            file: string;
+        };
+        /** Body_submit_uploaded_samples_api_v1_content_voice_samples_upload_post */
+        Body_submit_uploaded_samples_api_v1_content_voice_samples_upload_post: {
             /** File */
             file: string;
         };
@@ -1683,6 +1739,31 @@ export interface components {
         VerifyEmailRequest: {
             /** Token */
             token: string;
+        };
+        /** VoiceDescriptorResponse */
+        VoiceDescriptorResponse: {
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "supplied" | "derived" | "default";
+            /** Sample Count */
+            sample_count: number;
+            /** Tone Adjectives */
+            tone_adjectives: string[];
+            /** Recurring Themes */
+            recurring_themes: string[];
+            /** Signature Structures */
+            signature_structures: string[];
+            /** Vocabulary Preferences */
+            vocabulary_preferences: string[];
+            /** Never Does */
+            never_does: string[];
+        };
+        /** VoiceSamplesRequest */
+        VoiceSamplesRequest: {
+            /** Texts */
+            texts: string[];
         };
     };
     responses: never;
@@ -3029,6 +3110,92 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AssetResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_voice_profile_api_v1_content_voice_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VoiceDescriptorResponse"];
+                };
+            };
+        };
+    };
+    submit_pasted_samples_api_v1_content_voice_samples_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VoiceSamplesRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VoiceDescriptorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    submit_uploaded_samples_api_v1_content_voice_samples_upload_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_submit_uploaded_samples_api_v1_content_voice_samples_upload_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VoiceDescriptorResponse"];
                 };
             };
             /** @description Validation Error */

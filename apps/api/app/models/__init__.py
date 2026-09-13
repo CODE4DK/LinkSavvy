@@ -6,6 +6,7 @@ from app.models.asset import Asset, AssetFolder
 from app.models.audit import Audit, AuditCategoryResult, AuditFinding
 from app.models.audit_log import AuditLog
 from app.models.base import Base
+from app.models.content_sample import ContentSample
 from app.models.email_verification import EmailVerification
 from app.models.feature_flag import FeatureFlag, UserFeatureFlag
 from app.models.job import Job
@@ -23,6 +24,7 @@ from app.models.score_history import ScoreHistory
 from app.models.tool_run import ToolRun
 from app.models.usage_counter import UsageCounter
 from app.models.user import User
+from app.models.voice_profile import VoiceProfile
 
 __all__ = [
     "AICache",
@@ -34,6 +36,7 @@ __all__ = [
     "AuditFinding",
     "AuditLog",
     "Base",
+    "ContentSample",
     "EmailVerification",
     "FeatureFlag",
     "Job",
@@ -53,4 +56,5 @@ __all__ = [
     "UsageCounter",
     "User",
     "UserFeatureFlag",
+    "VoiceProfile",
 ]

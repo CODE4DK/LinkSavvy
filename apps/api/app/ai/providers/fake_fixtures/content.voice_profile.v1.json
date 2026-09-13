@@ -1,0 +1,10 @@
+{
+  "response": {
+    "tone_adjectives": ["direct", "warm", "confident", "practical"],
+    "recurring_themes": ["distributed systems", "mentoring engineers"],
+    "signature_structures": ["opens with a short personal anecdote", "ends with a one-line takeaway"],
+    "vocabulary_preferences": ["says \"team\" rather than \"resources\"", "avoids corporate jargon"],
+    "never_does": ["never uses emoji", "never writes in third person"]
+  },
+  "tokens_out": 120
+}

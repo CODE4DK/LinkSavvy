@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.ai.prompts.loader import get_registry
 from app.audit import job_handler  # noqa: F401 -- registers the "audit" job handler
 from app.errors import ApiError, api_error_handler
-from app.routers import auth, internal, jobs, me, profile, tools
+from app.routers import auth, content_voice, internal, jobs, me, profile, tools
 from app.routers.audits import audits_router, recommendations_router, scores_router
 from app.routers.dashboard import router as dashboard_router
 from app.settings import settings
@@ -42,6 +42,7 @@ app.include_router(scores_router)
 app.include_router(recommendations_router)
 app.include_router(dashboard_router)
 app.include_router(tools.router)
+app.include_router(content_voice.router)
 
 
 @app.get("/health")

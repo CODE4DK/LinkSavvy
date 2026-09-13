@@ -54,13 +54,15 @@ export type JobStatusResponse = Schemas["JobStatusResponse"];
 export type AuditRunRequest = Schemas["AuditRunRequest"];
 export type AuditRunResponse = Schemas["AuditRunResponse"];
 export type AuditFindingResponse = Schemas["AuditFindingResponse"];
-export type AuditCategoryResultResponse = Schemas["AuditCategoryResultResponse"];
+export type AuditCategoryResultResponse =
+  Schemas["AuditCategoryResultResponse"];
 export type AuditDetailResponse = Schemas["AuditDetailResponse"];
 export type ScoreHistoryPoint = Schemas["ScoreHistoryPoint"];
 export type ScoreHistoryResponse = Schemas["ScoreHistoryResponse"];
 export type RecommendationResponse = Schemas["RecommendationResponse"];
 export type RecommendationListResponse = Schemas["RecommendationListResponse"];
-export type RecommendationUpdateRequest = Schemas["RecommendationUpdateRequest"];
+export type RecommendationUpdateRequest =
+  Schemas["RecommendationUpdateRequest"];
 
 export type DashboardUser = Schemas["DashboardUser"];
 export type DashboardHealthScore = Schemas["DashboardHealthScore"];
@@ -78,6 +80,9 @@ export type RateRequest = Schemas["RateRequest"];
 export type RateResponse = Schemas["RateResponse"];
 export type SaveAssetRequest = Schemas["SaveAssetRequest"];
 export type AssetResponse = Schemas["AssetResponse"];
+
+export type VoiceSamplesRequest = Schemas["VoiceSamplesRequest"];
+export type VoiceDescriptorResponse = Schemas["VoiceDescriptorResponse"];
 
 /** The `{"error": {code, message, details}}` envelope every API error uses. */
 export interface ApiErrorEnvelope {
@@ -103,7 +108,13 @@ export interface ApiErrorEnvelope {
 
 /** One SSE frame from POST /internal/playground/stream. */
 export type PlaygroundStreamFrame =
-  | { type: "meta"; correlation_id: string; model: string; provider: string; cached: boolean }
+  | {
+      type: "meta";
+      correlation_id: string;
+      model: string;
+      provider: string;
+      cached: boolean;
+    }
   | { type: "delta"; text: string }
   | { type: "error"; code: string; message: string }
   | {
@@ -123,7 +134,13 @@ export type PlaygroundStreamFrame =
  * information the non-streaming `ToolRunResponse` returns in one shot.
  */
 export type ToolRunStreamFrame =
-  | { type: "meta"; correlation_id: string; model: string; provider: string; cached: boolean }
+  | {
+      type: "meta";
+      correlation_id: string;
+      model: string;
+      provider: string;
+      cached: boolean;
+    }
   | { type: "delta"; text: string }
   | { type: "error"; code: string; message: string }
   | {
@@ -134,4 +151,9 @@ export type ToolRunStreamFrame =
       latency_ms?: number;
       fallback_used?: boolean;
     }
-  | { type: "tool_run"; run_id: string; context_used: string[]; quota: QuotaInfo };
+  | {
+      type: "tool_run";
+      run_id: string;
+      context_used: string[];
+      quota: QuotaInfo;
+    };
