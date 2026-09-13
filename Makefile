@@ -38,3 +38,9 @@ contracts:
 # session needs it running.
 worker:
 	cd $(API_DIR) && uv run python -m app.jobs.worker
+
+# Polls for users whose local time is Monday 06:00 and enqueues their
+# weekly_plan.generate job -- see docs/adr/0009. Requires `worker` to
+# also be running to actually process what it enqueues.
+weekly-scheduler:
+	cd $(API_DIR) && uv run python -m app.growth.weekly_plan_scheduler

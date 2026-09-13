@@ -9,6 +9,9 @@ from app.content import (  # noqa: F401 -- registers the "content_reminder" job 
     calendar_reminder_job,
 )
 from app.errors import ApiError, api_error_handler
+from app.growth import (
+    weekly_plan_job,  # noqa: F401 -- registers the "weekly_plan.generate" job handler
+)
 from app.routers import (
     auth,
     career,
@@ -16,6 +19,7 @@ from app.routers import (
     content_assets,
     content_plans,
     content_voice,
+    growth,
     internal,
     jobs,
     me,
@@ -62,6 +66,7 @@ app.include_router(content_assets.router)
 app.include_router(carousels.router)
 app.include_router(content_plans.router)
 app.include_router(career.router)
+app.include_router(growth.router)
 
 
 @app.get("/health")

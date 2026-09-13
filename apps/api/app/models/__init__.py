@@ -10,6 +10,7 @@ from app.models.content_plan import ContentPlan
 from app.models.content_sample import ContentSample
 from app.models.email_verification import EmailVerification
 from app.models.feature_flag import FeatureFlag, UserFeatureFlag
+from app.models.growth_goal import GrowthGoal
 from app.models.job import Job
 from app.models.job_description import JobDescription
 from app.models.linkedin_connection import LinkedInConnection
@@ -29,6 +30,7 @@ from app.models.tool_run import ToolRun
 from app.models.usage_counter import UsageCounter
 from app.models.user import User
 from app.models.voice_profile import VoiceProfile
+from app.models.weekly_plan import WeeklyPlan
 
 __all__ = [
     "AICache",
@@ -44,6 +46,7 @@ __all__ = [
     "ContentSample",
     "EmailVerification",
     "FeatureFlag",
+    "GrowthGoal",
     "Job",
     "JobDescription",
     "LinkedInConnection",
@@ -65,4 +68,5 @@ __all__ = [
     "User",
     "UserFeatureFlag",
     "VoiceProfile",
+    "WeeklyPlan",
 ]
