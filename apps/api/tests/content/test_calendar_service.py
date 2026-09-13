@@ -184,18 +184,14 @@ async def test_consistency_strip_counts_posted_plans_by_week(db_session: AsyncSe
     assert sum(count for _, count in weeks) == 1
 
 
-async def test_set_reminder_enqueues_and_worker_sends_email(
+async def test_set_reminder_enqueues_and_worker_dispatches_notification(
     db_session: AsyncSession,
     db_sessionmaker: async_sessionmaker[AsyncSession],
-    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    sent: list[dict[str, str]] = []
-
-    async def fake_send_email(*, to: str, subject: str, text_body: str, html_body: str) -> None:
-        sent.append({"to": to, "subject": subject})
-
-    monkeypatch.setattr("app.content.calendar_reminder_job.send_email", fake_send_email)
-
+    """The content_reminder job hands off to the shared
+    notifications.dispatch job (Phase 10) rather than sending email
+    itself -- two jobs run, in-app notification plus a console-logged
+    email, both landing on the same user."""
     user = await _create_user(db_session)
     plan = await calendar_service.create_plan(
         db_session,
@@ -207,8 +203,25 @@ async def test_set_reminder_enqueues_and_worker_sends_email(
         db_session, user=user, plan_id=plan.id, reminder_at=reminder_at
     )
 
-    processed = await run_once(worker_id="test-worker", session_factory=db_sessionmaker)
-    assert processed is True
-    assert len(sent) == 1
-    assert sent[0]["to"] == user.email
+    first = await run_once(worker_id="test-worker", session_factory=db_sessionmaker)
+    second = await run_once(worker_id="test-worker", session_factory=db_sessionmaker)
+    assert first is True
+    assert second is True
     assert CONTENT_REMINDER_JOB_TYPE == "content_reminder"
+
+    from app.models.email_log import EmailLog
+    from app.models.notification import Notification
+
+    notification = (
+        await db_session.execute(
+            Notification.__table__.select().where(Notification.user_id == user.id)
+        )
+    ).fetchone()
+    assert notification is not None
+    assert notification.type == "content.reminder"
+
+    log = (
+        await db_session.execute(EmailLog.__table__.select().where(EmailLog.user_id == user.id))
+    ).fetchone()
+    assert log is not None
+    assert log.status == "sent"

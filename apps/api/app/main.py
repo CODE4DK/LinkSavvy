@@ -12,6 +12,10 @@ from app.errors import ApiError, api_error_handler
 from app.growth import (
     weekly_plan_job,  # noqa: F401 -- registers the "weekly_plan.generate" job handler
 )
+from app.notifications import (  # noqa: F401 -- registers the notifications.* job handlers
+    dispatch_job,
+    weekly_digest_job,
+)
 from app.routers import (
     assistant,
     auth,
@@ -25,6 +29,7 @@ from app.routers import (
     internal,
     jobs,
     me,
+    notifications,
     profile,
     tools,
 )
@@ -75,6 +80,7 @@ app.include_router(workspace_router)
 app.include_router(asset_folders_router)
 app.include_router(assistant.router)
 app.include_router(billing.router)
+app.include_router(notifications.router)
 
 
 @app.get("/health")

@@ -22,6 +22,7 @@ import { WorkspaceHubPage } from "@/pages/hubs/WorkspaceHubPage";
 import { PricingPage } from "@/pages/billing/PricingPage";
 import { BillingManagePage } from "@/pages/billing/BillingManagePage";
 import { CheckoutReturnPage } from "@/pages/billing/CheckoutReturnPage";
+import { NotificationPreferencesPage } from "@/pages/NotificationPreferencesPage";
 import { SettingsPage } from "@/pages/SettingsPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { OnboardingPage } from "@/pages/onboarding/OnboardingPage";
@@ -64,6 +65,7 @@ export const router = createBrowserRouter([
           { path: "/billing/manage", element: <BillingManagePage /> },
           { path: "/billing/checkout-return", element: <CheckoutReturnPage /> },
           { path: "/settings", element: <SettingsPage /> },
+          { path: "/settings/notifications", element: <NotificationPreferencesPage /> },
           { path: "/dev/playground", element: <PlaygroundPage /> },
           { path: "*", element: <NotFoundPage /> },
         ],

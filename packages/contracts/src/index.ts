@@ -270,3 +270,11 @@ export type ChangePlanRequest = Schemas["ChangePlanRequest"];
 export type PaymentResponse = Schemas["PaymentResponse"];
 export type PlanLimitResponse = Schemas["PlanLimitResponse"];
 export type PricingResponse = Schemas["PricingResponse"];
+
+// -- Notifications ----------------------------------------------------------
+
+export type NotificationResponse = Schemas["NotificationResponse"];
+export type NotificationListResponse = Schemas["NotificationListResponse"];
+export type PreferenceRow = Schemas["PreferenceRow"];
+export type PreferencesResponse = Schemas["PreferencesResponse"];
+export type SetPreferenceRequest = Schemas["SetPreferenceRequest"];

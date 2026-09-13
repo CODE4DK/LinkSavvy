@@ -1,6 +1,7 @@
 import { ProfileSection } from "./settings/ProfileSection";
 import { ThemeSection } from "./settings/ThemeSection";
 import { BillingSection } from "./settings/BillingSection";
+import { NotificationsSection } from "./settings/NotificationsSection";
 import { SessionsSection } from "./settings/SessionsSection";
 import { ChangePasswordSection } from "./settings/ChangePasswordSection";
 import { DeleteAccountSection } from "./settings/DeleteAccountSection";
@@ -12,6 +13,7 @@ export function SettingsPage() {
       <ProfileSection />
       <ThemeSection />
       <BillingSection />
+      <NotificationsSection />
       <SessionsSection />
       <ChangePasswordSection />
       <DeleteAccountSection />

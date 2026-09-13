@@ -265,5 +265,6 @@ if __name__ == "__main__":
     from app.audit import job_handler  # noqa: F401
     from app.content import calendar_reminder_job  # noqa: F401
     from app.growth import weekly_plan_job  # noqa: F401
+    from app.notifications import dispatch_job, weekly_digest_job  # noqa: F401
 
     asyncio.run(run_worker())

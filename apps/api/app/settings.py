@@ -36,6 +36,11 @@ class Settings(BaseSettings):
 
     frontend_url: str = "http://localhost:5173"
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:5173"])
+    # The API's own publicly-reachable base URL -- needed for links the
+    # server hands out that must work with no SPA involved at all, like a
+    # one-click List-Unsubscribe a mail client POSTs to directly (see
+    # app/notifications/unsubscribe.py).
+    api_public_url: str = "http://localhost:8000"
 
     smtp_host: str = "localhost"
     smtp_port: int = 1025
@@ -91,8 +96,11 @@ class Settings(BaseSettings):
     # app/billing/entitlements.py::apply_entitlements).
     past_due_grace_period_days: int = 7
 
-    # Notifications (Phase 10).
-    email_provider: Literal["console", "resend", "ses"] = "console"
+    # Notifications (Phase 10). "console" logs instead of sending (tests,
+    # first local run); "smtp" reuses the same MailHog sink Phase 01 set
+    # up for verification/reset emails; "resend"/"ses" are real providers
+    # for staging/production.
+    email_provider: Literal["console", "smtp", "resend", "ses"] = "console"
     resend_api_key: str | None = None
     ses_region: str | None = None
     unsubscribe_secret: str = "dev-unsubscribe-secret-change-in-production"

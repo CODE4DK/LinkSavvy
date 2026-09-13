@@ -10,6 +10,7 @@ from app.models.base import Base
 from app.models.content_plan import ContentPlan
 from app.models.content_sample import ContentSample
 from app.models.conversation import Conversation
+from app.models.email_log import EmailLog
 from app.models.email_verification import EmailVerification
 from app.models.feature_flag import FeatureFlag, UserFeatureFlag
 from app.models.growth_goal import GrowthGoal
@@ -19,6 +20,7 @@ from app.models.job_description import JobDescription
 from app.models.linkedin_connection import LinkedInConnection
 from app.models.login_attempt import LoginAttempt
 from app.models.message import Message
+from app.models.notification import Notification, NotificationPreference
 from app.models.oauth_identity import OAuthIdentity
 from app.models.oauth_login_state import OAuthLoginState
 from app.models.password_reset import PasswordReset
@@ -53,6 +55,7 @@ __all__ = [
     "ContentPlan",
     "ContentSample",
     "Conversation",
+    "EmailLog",
     "EmailVerification",
     "FeatureFlag",
     "GrowthGoal",
@@ -62,6 +65,8 @@ __all__ = [
     "LinkedInConnection",
     "LoginAttempt",
     "Message",
+    "Notification",
+    "NotificationPreference",
     "OAuthIdentity",
     "OAuthLoginState",
     "PasswordReset",
