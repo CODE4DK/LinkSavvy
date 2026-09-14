@@ -3,27 +3,27 @@
 Operational procedures for deploying, rolling back, and responding to
 incidents. LinkSavvy has not shipped to production as of Phase 10 — this
 document describes the procedures the containerized apps
-(`apps/api/Dockerfile`, `apps/web/Dockerfile`) and CI are built to
+(`backend/Dockerfile`, `frontend/Dockerfile`) and CI are built to
 support, some of which (marked below) still need a first live run against
 real staging infrastructure once one exists, since this repository's own
 dev sandbox has no Docker daemon or MySQL server to run them against.
 
 ## Containers
 
-- `apps/api/Dockerfile` — multi-stage: a `builder` stage resolves
+- `backend/Dockerfile` — multi-stage: a `builder` stage resolves
   dependencies with `uv` into a virtualenv, the `runtime` stage copies
   only that venv plus source, running as a non-root `app` user. Exposes
   `8000`; its `HEALTHCHECK` polls `/ready` (round-trips the database, not
   just "the process is alive" — see `docs/slo.md`).
-  Build from `apps/api`: `docker build -t linksavvy-api apps/api`.
-- `apps/web/Dockerfile` — multi-stage: `builder` runs the npm workspace
-  install and `vite build`, `runtime` is bare `nginx:1.27-alpine` serving
-  only the built static output. `apps/web/nginx.conf.template` reverse-
-  proxies `/api/` to `${API_UPSTREAM}` (nginx's built-in envsubst-on-
-  startup templating substitutes it — no custom entrypoint script needed)
-  and falls back to `index.html` for client-side routing.
-  Build from the **repo root** (it needs the workspace lockfile and
-  `packages/contracts`): `docker build -t linksavvy-web -f apps/web/Dockerfile .`.
+  Build from `backend`: `docker build -t linksavvy-backend backend`.
+- `frontend/Dockerfile` — multi-stage: `builder` runs `npm install` and
+  `vite build` (the frontend is a self-contained npm project, no
+  workspace), `runtime` is bare `nginx:1.27-alpine` serving only the built
+  static output. `frontend/nginx.conf.template` reverse-proxies `/api/` to
+  `${API_UPSTREAM}` (nginx's built-in envsubst-on-startup templating
+  substitutes it — no custom entrypoint script needed) and falls back to
+  `index.html` for client-side routing.
+  Build from `frontend`: `docker build -t linksavvy-frontend frontend`.
 
 Neither image has been build-tested in this repository's own dev sandbox
 (no Docker daemon available here) — both should be built and smoke-tested
@@ -32,7 +32,7 @@ once a real Docker host is available, before the first real deploy.
 ## Environment configuration
 
 Required environment variables are documented with generation
-instructions in `apps/api/.env.example` — that file is the source of
+instructions in `backend/.env.example` — that file is the source of
 truth for variable names; this section only calls out what differs by
 environment:
 
@@ -44,8 +44,8 @@ environment:
 - `CORS_ORIGINS` — the environment's own frontend origin(s) only.
 - `EMAIL_PROVIDER` — `console`/`smtp` in dev, `resend` or `ses` in
   staging/production (see `app/notifications/email/`).
-- `API_UPSTREAM` (web image only) — the API's internal address for
-  nginx's reverse proxy, e.g. `http://linksavvy-api:8000`.
+- `API_UPSTREAM` (frontend image only) — the API's internal address for
+  nginx's reverse proxy, e.g. `http://linksavvy-backend:8000`.
 
 Secrets (`JWT_SECRET`, `REFRESH_TOKEN_PEPPER`, `ENCRYPTION_KEY`, AI/
 billing provider keys) are injected by the deployment platform's own

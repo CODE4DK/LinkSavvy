@@ -4,7 +4,7 @@
 LinkSavvy must never scrape LinkedIn, parse LinkedIn HTML, drive a headless
 browser against linkedin.com, or store LinkedIn credentials. The only
 network calls permitted to LinkedIn are its official OAuth/API hosts, made
-from apps/api/app/services/linkedin.py.
+from backend/app/services/linkedin.py.
 
 This script fails (non-zero exit) if any scanned source file:
   1. References a linkedin.com host outside that one allowlisted file.
@@ -26,10 +26,9 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 SCAN_DIRS = [
-    REPO_ROOT / "apps" / "api" / "app",
-    REPO_ROOT / "apps" / "api" / "alembic",
-    REPO_ROOT / "apps" / "web" / "src",
-    REPO_ROOT / "packages" / "contracts" / "src",
+    REPO_ROOT / "backend" / "app",
+    REPO_ROOT / "backend" / "alembic",
+    REPO_ROOT / "frontend" / "src",
 ]
 
 SOURCE_SUFFIXES = {".py", ".ts", ".tsx", ".js", ".jsx"}
@@ -37,7 +36,7 @@ SOURCE_SUFFIXES = {".py", ".ts", ".tsx", ".js", ".jsx"}
 # The only file allowed to reference a linkedin.com host: the official
 # OAuth/API client. Nothing else may talk to LinkedIn.
 LINKEDIN_HOST_ALLOWLIST = {
-    REPO_ROOT / "apps" / "api" / "app" / "services" / "linkedin.py",
+    REPO_ROOT / "backend" / "app" / "services" / "linkedin.py",
 }
 
 LINKEDIN_HOST_RE = re.compile(r"[a-z0-9.-]*linkedin\.com", re.IGNORECASE)
@@ -99,7 +98,7 @@ def check_file(path: Path, violations: list[str]) -> None:
     if LINKEDIN_HOST_RE.search(text) and path not in LINKEDIN_HOST_ALLOWLIST:
         violations.append(
             f"{rel}: references a linkedin.com host outside the allowlisted "
-            "OAuth/API client (apps/api/app/services/linkedin.py)"
+            "OAuth/API client (backend/app/services/linkedin.py)"
         )
 
     if BROWSER_AUTOMATION_RE.search(text) and not is_test_file(path):

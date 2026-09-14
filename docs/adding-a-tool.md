@@ -15,20 +15,20 @@ the framework is shaped this way.
 Using `profile.headline_optimizer` as the worked example throughout:
 
 1. **A definition file** —
-   `apps/api/app/tools/definitions/<hub>/<name>.py`. Must define a
+   `backend/app/tools/definitions/<hub>/<name>.py`. Must define a
    module-level `DEFINITION: ToolDefinition` (see below).
 2. **A prompt** —
-   `apps/api/app/ai/prompts/<prompt_id>.prompt.md`, following the same
+   `backend/app/ai/prompts/<prompt_id>.prompt.md`, following the same
    YAML-frontmatter format every other prompt uses (see
    `app/ai/prompts/loader.py`).
 3. **An output schema file** —
-   `apps/api/app/ai/prompts/schemas/<prompt_id>.schema.json`. This
+   `backend/app/ai/prompts/schemas/<prompt_id>.schema.json`. This
    **must** equal `definition.output_schema.model_json_schema()` byte
    for byte — the registry checks this at startup and refuses to boot
    if it doesn't match. Don't hand-write it: generate it from the model
    so it can't drift (see "Generating the schema file" below).
 4. **A fake-provider fixture** —
-   `apps/api/app/ai/providers/fake_fixtures/<prompt_id>.json`, so the
+   `backend/app/ai/providers/fake_fixtures/<prompt_id>.json`, so the
    whole test suite (which never makes a real network call) has
    something to return for your prompt. Shape: `{"response": <your
    schema's shape>, "tokens_out": <int>}`.
@@ -149,7 +149,7 @@ to do themselves, per this codebase's hard compliance rule.
 ## Generating the schema file
 
 Don't hand-write `schemas/<prompt_id>.schema.json`. From
-`apps/api`, with your definition module written:
+`backend`, with your definition module written:
 
 ```bash
 uv run python3 -c "
@@ -181,7 +181,7 @@ commit: `uv run python -m app.ai.prompts.lockfile --write`.
 ## The result renderer contract
 
 `result_renderer` on the definition picks which of six generic frontend
-views (`apps/web/src/tools/renderers.tsx`) shows the output. Your
+views (`frontend/src/tools/renderers.tsx`) shows the output. Your
 prompt's output schema **must** conform to the shape the chosen renderer
 expects — there's no per-tool frontend code to adapt a mismatched shape:
 
@@ -196,7 +196,7 @@ expects — there's no per-tool frontend code to adapt a mismatched shape:
 
 ## Input widgets
 
-`apps/web/src/tools/schema-form.ts` maps a JSON Schema property to a
+`frontend/src/tools/schema-form.ts` maps a JSON Schema property to a
 form widget purely from that field's own schema shape — no tool ever
 needs bespoke form code:
 

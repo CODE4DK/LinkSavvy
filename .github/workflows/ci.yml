@@ -15,12 +15,12 @@ jobs:
       - name: Check for scraping/browser-automation/unofficial LinkedIn access
         run: python3 scripts/check_compliance.py
 
-  api:
-    name: API (lint, typecheck, test)
+  backend:
+    name: Backend (lint, typecheck, test)
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: apps/api
+        working-directory: backend
     steps:
       - uses: actions/checkout@v4
 
@@ -53,9 +53,12 @@ jobs:
       - name: pip-audit (dependency vulnerabilities)
         run: uv run pip-audit
 
-  web:
-    name: Web (lint, typecheck, test)
+  frontend:
+    name: Frontend (lint, typecheck, test)
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
     steps:
       - uses: actions/checkout@v4
 
@@ -64,33 +67,26 @@ jobs:
         with:
           node-version: "22"
           cache: "npm"
-          cache-dependency-path: package-lock.json
+          cache-dependency-path: frontend/package-lock.json
 
-      # npm workspaces: one lockfile and one node_modules at the repo
-      # root, covering apps/web and packages/contracts together.
       - name: Install dependencies
         run: npm ci
 
       - name: Lint
-        working-directory: apps/web
         run: npm run lint
 
       - name: Typecheck
-        working-directory: apps/web
         run: npm run typecheck
 
       - name: Vitest
-        working-directory: apps/web
         run: npm run test -- --run
 
       - name: Build
-        working-directory: apps/web
         run: npm run build
 
       # Fails if the initial-load JS chunk grows past its gzip budget --
       # see docs/performance.md "Bundle budget" and scripts/check-bundle-budget.mjs.
       - name: Bundle budget
-        working-directory: apps/web
         run: npm run check:bundle-budget
 
       # Production dependencies only, and only fails on high/critical --
@@ -107,8 +103,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build API image
-        run: docker build -t linksavvy-api apps/api
+      - name: Build backend image
+        run: docker build -t linksavvy-backend backend
 
-      - name: Build web image
-        run: docker build -t linksavvy-web -f apps/web/Dockerfile .
+      - name: Build frontend image
+        run: docker build -t linksavvy-frontend frontend

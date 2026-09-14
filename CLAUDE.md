@@ -11,15 +11,15 @@ The codebase MUST NOT, under any circumstance:
 
 The ONLY network calls permitted to LinkedIn are to its official OAuth and API hosts, for authentication and for whatever profile fields the official API grants us. Every feature must also work for a user who never connects LinkedIn at all — this is the "parity path": upload, paste, or type. API path and parity path must reach the same capability. If a task seems to require a prohibited action, stop and say so instead of implementing it.
 
-This rule is enforced in CI, not just by convention: `scripts/check_compliance.py` scans every source file under `apps/api/app`, `apps/api/alembic`, `apps/web/src`, and `packages/contracts/src` and fails the build if it finds a `linkedin.com` host reference outside `apps/api/app/services/linkedin.py` (the one allowlisted OAuth/API client), an import of a browser-automation library (selenium/playwright/puppeteer) outside a test file, an import of an HTML-scraping library (BeautifulSoup/bs4/cheerio), or a scraping-shaped declaration (a function, class, or variable named `scrape*`/`crawl*`). Run it locally with `python3 scripts/check_compliance.py`. If it flags something that genuinely needs a new LinkedIn endpoint, extend the OAuth/API client rather than the allowlist.
+This rule is enforced in CI, not just by convention: `scripts/check_compliance.py` scans every source file under `backend/app`, `backend/alembic`, and `frontend/src` and fails the build if it finds a `linkedin.com` host reference outside `backend/app/services/linkedin.py` (the one allowlisted OAuth/API client), an import of a browser-automation library (selenium/playwright/puppeteer) outside a test file, an import of an HTML-scraping library (BeautifulSoup/bs4/cheerio), or a scraping-shaped declaration (a function, class, or variable named `scrape*`/`crawl*`). Run it locally with `python3 scripts/check_compliance.py`. If it flags something that genuinely needs a new LinkedIn endpoint, extend the OAuth/API client rather than the allowlist.
 
 ## Stack
-- Monorepo: `apps/web` (React 18, Vite 5, TypeScript strict), `apps/api` (Python 3.11, FastAPI async), `packages/contracts` (TypeScript types generated from the API's OpenAPI schema).
+- Two plain folders, no monorepo tooling: `backend/` (Python 3.11, FastAPI async) and `frontend/` (React 18, Vite 5, TypeScript strict), each with its own dependency manager and lockfile (`uv`/`uv.lock`, `npm`/`package-lock.json`). Frontend types generated from the backend's OpenAPI schema live at `frontend/src/contracts/` -- a plain folder inside the frontend, not a shared package, since nothing else consumes it.
 - Database: MySQL 9.7, the sole datastore. No Redis, no Celery, no separate vector database. Background jobs use a `jobs` table plus a worker loop. Search uses MySQL FULLTEXT.
 - ORM: SQLAlchemy 2.0 async + Alembic. Every schema change is a migration; no `create_all` outside tests.
 - Validation: Pydantic v2 on the API, Zod on the web. Request and response models are explicit; no bare dicts cross a route boundary.
 - Auth: JWT access token (15 min) in memory + rotating refresh token in an httpOnly, SameSite=Lax, Secure cookie.
-- Local dev: `docker compose up` brings MySQL and MailHog; `make dev` runs both apps.
+- Local dev: no Docker required. A locally installed MySQL (see README.md) plus `make dev` runs both apps (`uvicorn app.main:app --reload` for the backend, `npm run dev` for the frontend). Docker images (`backend/Dockerfile`, `frontend/Dockerfile`) exist for CI/deployment only.
 
 ## Conventions
 - Primary keys: UUIDv7 stored as `BINARY(16)`, exposed as strings. Never expose auto-increment ids.

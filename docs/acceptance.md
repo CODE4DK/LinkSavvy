@@ -26,11 +26,11 @@ scope cut.
 
 | Criterion | Evidence |
 | --- | --- |
-| One aggregate endpoint returns Health Score, category breakdown, recent findings, and run-audit state in a single round trip | `app/routers/dashboard.py`, `apps/web/src/pages/DashboardPage.tsx` |
+| One aggregate endpoint returns Health Score, category breakdown, recent findings, and run-audit state in a single round trip | `app/routers/dashboard.py`, `frontend/src/pages/DashboardPage.tsx` |
 | First-time (no audit yet) empty state is distinct from a populated dashboard | `tests/test_dashboard_router.py::test_dashboard_first_time_empty_state` |
 | Query count doesn't grow with a user's recommendation history (no N+1) | `tests/test_dashboard_router.py::test_dashboard_query_count_does_not_grow_with_recommendation_volume` |
-| p95 latency budget (< 3s) | k6 script `apps/api/loadtest/dashboard_and_tools.js`; not yet run against a live environment — see `docs/performance.md` "Load testing" |
-| Run-audit control reflects cooldown/quota state and polls real per-category progress | `apps/web/src/components/dashboard/RunAuditControl.tsx` |
+| p95 latency budget (< 3s) | k6 script `backend/loadtest/dashboard_and_tools.js`; not yet run against a live environment — see `docs/performance.md` "Load testing" |
+| Run-audit control reflects cooldown/quota state and polls real per-category progress | `frontend/src/components/dashboard/RunAuditControl.tsx` |
 
 ## Profile Hub
 
@@ -40,9 +40,9 @@ scope cut.
 | LinkedIn OAuth connect/sync (API path) | `app/routers/profile.py` (`POST /connect`, `/sync`), `app/profiles/linkedin.py`; `tests/test_linkedin.py` |
 | Parity path: paste and document upload import | `app/profiles/parsers/paste.py`, `app/profiles/parsers/documents.py`; `tests/profiles/test_paste_parser.py`, `tests/profiles/test_documents.py` |
 | Completeness engine | `app/profiles/completeness.py`; `tests/profiles/test_completeness.py` |
-| Onboarding wizard (choose source → import → review → confirm) | `apps/web/src/pages/onboarding/{StepChooseSource,StepImport,StepReview,StepConfirm}.tsx` |
+| Onboarding wizard (choose source → import → review → confirm) | `frontend/src/pages/onboarding/{StepChooseSource,StepImport,StepReview,StepConfirm}.tsx` |
 | Profile Hub tools (headline/about/keyword/experience/skills optimizers, completeness checker) | `app/tools/definitions/profile/*.py`; `tests/tools/definitions/test_profile_tools.py` |
-| Profile Hub page | `apps/web/src/pages/hubs/ProfileHubPage.tsx` |
+| Profile Hub page | `frontend/src/pages/hubs/ProfileHubPage.tsx` |
 
 ## Content Hub
 
@@ -50,10 +50,10 @@ scope cut.
 | --- | --- |
 | Voice profile from pasted/uploaded samples | `app/content/voice_service.py`, `app/routers/content_voice.py`; `tests/content/test_voice_service.py` |
 | Content tools (post generator/rewriter, hook, CTA, hashtag, ideas, repurpose, carousel generator) | `app/tools/definitions/content/*.py`; `tests/tools/definitions/test_content_tools.py` |
-| Composer with LinkedIn-accurate preview | `apps/web/src/content/{Composer,LinkedInPreview}.tsx` (+ `.test.tsx` each) |
-| Carousel builder + PDF/PNG export | `app/content/{carousel_service,carousel_pdf,carousel_png}.py`, `app/routers/carousels.py`; `apps/web/src/content/CarouselBuilder.tsx`; `tests/content/test_carousel_service.py`, `CarouselBuilder.test.tsx` |
-| Content calendar: scheduling, reminders, recurring slots, bulk-schedule, performance tracking | `app/content/{calendar_service,calendar_reminder_job,performance_service}.py`, `app/routers/content_plans.py`; `apps/web/src/content/Calendar.tsx`; `tests/content/test_calendar_service.py`, `Calendar.test.tsx` |
-| Content Hub page | `apps/web/src/pages/hubs/ContentHubPage.tsx` |
+| Composer with LinkedIn-accurate preview | `frontend/src/content/{Composer,LinkedInPreview}.tsx` (+ `.test.tsx` each) |
+| Carousel builder + PDF/PNG export | `app/content/{carousel_service,carousel_pdf,carousel_png}.py`, `app/routers/carousels.py`; `frontend/src/content/CarouselBuilder.tsx`; `tests/content/test_carousel_service.py`, `CarouselBuilder.test.tsx` |
+| Content calendar: scheduling, reminders, recurring slots, bulk-schedule, performance tracking | `app/content/{calendar_service,calendar_reminder_job,performance_service}.py`, `app/routers/content_plans.py`; `frontend/src/content/Calendar.tsx`; `tests/content/test_calendar_service.py`, `Calendar.test.tsx` |
+| Content Hub page | `frontend/src/pages/hubs/ContentHubPage.tsx` |
 
 ## Engagement Hub
 
@@ -62,7 +62,7 @@ scope cut.
 | Surfaced through the generic tools router, no dedicated router needed | `app/routers/tools.py` (`GET /api/v1/tools?hub=engagement`) |
 | Outreach tools (comment/reply generator, connection request, DM, follow-up, thought-leadership comment, recommendations) | `app/tools/definitions/engagement/*.py`; `tests/tools/definitions/test_engagement_tools.py` |
 | Deterministic guardrails: personalization check, spam/flattery/false-urgency detection, character limits, daily outreach soft cap (15) | `app/engagement/guardrails.py`; `tests/engagement/test_guardrails.py` (e.g. `test_spam_tone_check_flags_flattery`, `test_soft_cap_warning_fires_over_cap`) |
-| Engagement Hub page with a "recent outreach" panel | `apps/web/src/pages/hubs/EngagementHubPage.tsx` |
+| Engagement Hub page with a "recent outreach" panel | `frontend/src/pages/hubs/EngagementHubPage.tsx` |
 
 ## Career Hub
 
@@ -73,7 +73,7 @@ scope cut.
 | Job description capture and résumé-vs-JD matching | `app/career/parsers/job_description.py`, `app/career/analysis.py`; `tests/career/test_analysis.py` |
 | ATS compatibility checks | `app/career/ats_checks.py`; `tests/career/test_ats_checks.py` |
 | Career tools (ATS optimizer, cover letter, interview prep, résumé analyzer/builder, JD match, roadmap) | `app/tools/definitions/career/*.py`; `tests/tools/definitions/test_career_tools.py` |
-| Career Hub page + apply-to-profile flow | `apps/web/src/pages/hubs/CareerHubPage.tsx`, `ApplyToProfileModal.tsx` (+ `.test.tsx` each) |
+| Career Hub page + apply-to-profile flow | `frontend/src/pages/hubs/CareerHubPage.tsx`, `ApplyToProfileModal.tsx` (+ `.test.tsx` each) |
 
 ## Growth Hub
 
@@ -84,7 +84,7 @@ scope cut.
 | AI Growth Coach: goal-setting, honest progress-since-last-visit | `app/growth/coach.py`; `tests/growth/test_coach.py::test_progress_since_last_visit_is_honest_about_missing_history` |
 | Networking recommendations tool | `app/tools/definitions/growth/networking_recommendations.py`; `tests/tools/definitions/test_growth_tools.py` |
 | Score history / before-after comparison | `app/growth/history.py`, `app/routers/growth.py` (`/scores/history`, `/before-after`); `tests/growth/test_history.py` |
-| Growth Hub + Growth Coach pages | `apps/web/src/pages/hubs/{GrowthHubPage,GrowthCoachPage}.tsx` (+ `.test.tsx` each) |
+| Growth Hub + Growth Coach pages | `frontend/src/pages/hubs/{GrowthHubPage,GrowthCoachPage}.tsx` (+ `.test.tsx` each) |
 
 ## Workspace Hub
 
@@ -96,7 +96,7 @@ scope cut.
 | Export (ZIP / individual) | `app/workspace/export.py`; `tests/workspace/test_export.py` |
 | Cursor pagination | `app/workspace/cursor.py` |
 | Search latency budget at scale (5,000 assets) | `tests/workspace/test_performance.py` |
-| Workspace Hub page with virtualized rows | `apps/web/src/pages/hubs/WorkspaceHubPage.tsx`, `apps/web/src/workspace/VirtualRows.tsx` (+ `.test.tsx` each) |
+| Workspace Hub page with virtualized rows | `frontend/src/pages/hubs/WorkspaceHubPage.tsx`, `frontend/src/workspace/VirtualRows.tsx` (+ `.test.tsx` each) |
 
 ## AI Assistant
 
@@ -106,7 +106,7 @@ scope cut.
 | Orchestrator: intent classification, tool proposal/confirmation, retry, edit-and-branch, rating, SSE streaming | `app/assistant/orchestrator.py`; `tests/assistant/test_orchestrator.py` (e.g. `test_handle_message_rejects_a_proposed_tool_outside_candidates`, `test_edit_and_branch_creates_a_new_user_message_and_reply`) |
 | Deterministic policy layer refusing automation/scraping/manipulation/impersonation/fabrication, always with a compliant alternative | `app/assistant/policy.py`; `tests/assistant/test_policy.py` (22-case adversarial suite per ADR 0010) |
 | Suggested prompts, summarization, cross-hub reads | `app/assistant/{suggestions,summarize,reads}.py` |
-| Chat UI, conversation list, context panel, tool proposal card | `apps/web/src/assistant/{ChatView,ConversationList,ContextPanel,ToolProposalCard}.tsx` |
+| Chat UI, conversation list, context panel, tool proposal card | `frontend/src/assistant/{ChatView,ConversationList,ContextPanel,ToolProposalCard}.tsx` |
 
 ## Audit engine and Health Score
 
@@ -127,7 +127,7 @@ scope cut.
 | `UsageCounter`-backed quota enforcement per plan | `app/billing/quota.py`; `tests/billing/test_quota.py` |
 | Plan entitlements and period-end sweep | `app/billing/entitlements.py`, `app/billing/period_sweep.py` |
 | Router: pricing, subscription, payments, checkout, portal, cancel, change-plan, webhooks | `app/routers/billing.py`; `tests/test_billing_router.py` |
-| Pricing/checkout/manage pages | `apps/web/src/pages/billing/{PricingPage,CheckoutReturnPage,BillingManagePage}.tsx` |
+| Pricing/checkout/manage pages | `frontend/src/pages/billing/{PricingPage,CheckoutReturnPage,BillingManagePage}.tsx` |
 
 See `docs/adr/0011-billing-architecture.md` for the design decisions
 behind all of the above.
@@ -140,7 +140,7 @@ behind all of the above.
 | Weekly digest composition, honest about no-activity weeks | `app/notifications/weekly_digest.py`; `tests/notifications/test_weekly_digest.py::test_compose_weekly_digest_with_no_activity_has_no_content` |
 | Multi-provider email delivery (console/SMTP/SES/Resend) | `app/notifications/email/{console,smtp,ses,resend}.py` |
 | Async dispatch via the shared job runner (retries apply uniformly) | `app/notifications/dispatch_job.py`; `tests/notifications/test_dispatch_job.py` |
-| Notification bell + preferences UI | `apps/web/src/components/layout/NotificationBell.tsx` (+ `.test.tsx`), `apps/web/src/pages/NotificationPreferencesPage.tsx` |
+| Notification bell + preferences UI | `frontend/src/components/layout/NotificationBell.tsx` (+ `.test.tsx`), `frontend/src/pages/NotificationPreferencesPage.tsx` |
 
 ## Admin panel
 
@@ -153,7 +153,7 @@ behind all of the above.
 | Moderation queue (auto-populated from policy violations, plus manual review) | `app/admin/moderation.py`; `tests/admin/test_moderation.py` |
 | Platform health: job queue depth, dead letters + retry, circuit-breaker state, error rates | `app/admin/platform_health.py`; `tests/admin/test_platform_health.py` |
 | Impersonation is read-only and audited | `app/middleware/impersonation_guard.py` (also see "Security" below) |
-| Admin UI with six tabs | `apps/web/src/pages/admin/AdminPage.tsx` (+ `.test.tsx`), `apps/web/src/pages/admin/tabs/*.tsx`; route guard `apps/web/src/routes/RequireAdmin.test.tsx` |
+| Admin UI with six tabs | `frontend/src/pages/admin/AdminPage.tsx` (+ `.test.tsx`), `frontend/src/pages/admin/tabs/*.tsx`; route guard `frontend/src/routes/RequireAdmin.test.tsx` |
 
 ## Security
 
@@ -182,11 +182,11 @@ behind all of the above.
 
 | Criterion | Evidence |
 | --- | --- |
-| k6 load test: dashboard p95 < 3s, AI tool runs p95 < 10s | `apps/api/loadtest/dashboard_and_tools.js` — script exists and encodes both thresholds; not yet run against a live environment (needs staging, per its own header comment) |
+| k6 load test: dashboard p95 < 3s, AI tool runs p95 < 10s | `backend/loadtest/dashboard_and_tools.js` — script exists and encodes both thresholds; not yet run against a live environment (needs staging, per its own header comment) |
 | Index review from query-pattern analysis, verified against real MySQL | `docs/performance.md` "Index review" — eight new composite indexes (migration `0021_performance_indexes.py`) plus four ORM model/migration parity fixes found the same real-MySQL verification also caught two unrelated pre-existing migration bugs (0012, 0016) that had never been exercised against MySQL before |
 | HTTP caching/ETags | `app/http_cache.py`, wired into `GET /api/v1/tools`; `tests/test_tools_router.py::test_list_tools_supports_conditional_get` |
-| Frontend code splitting | `apps/web/src/routes/router.tsx` (React Router `lazy` per route); verified by `npm run build` producing per-page chunks, see `docs/performance.md` |
-| Bundle budget enforced in CI | `apps/web/scripts/check-bundle-budget.mjs`, wired into `.github/workflows/ci.yml`'s `web` job |
+| Frontend code splitting | `frontend/src/routes/router.tsx` (React Router `lazy` per route); verified by `npm run build` producing per-page chunks, see `docs/performance.md` |
+| Bundle budget enforced in CI | `frontend/scripts/check-bundle-budget.mjs`, wired into `.github/workflows/ci.yml`'s `web` job |
 | Graceful degradation when both AI providers are down | `app/ai/gateway.py::_call_with_fallback` (built in Phase 3), `tests/ai/test_gateway.py::test_both_providers_failing_raises_and_releases_quota` |
 | Structured logs with correlation ids | `app/observability/logging.py`, `app/middleware/correlation_id.py`, `tests/test_observability.py` |
 | Uptime check target (`/ready`) | `app/main.py::ready` (round-trips the database, distinct from the bare liveness `/health`) |
@@ -196,8 +196,8 @@ behind all of the above.
 
 | Criterion | Evidence |
 | --- | --- |
-| Both apps containerized | `apps/api/Dockerfile`, `apps/web/Dockerfile`; built (not yet build-tested locally — no Docker daemon in this dev sandbox) by the `docker` CI job |
-| Staging/production config documented | `docs/runbook.md` "Environment configuration" (references `apps/api/.env.example` as the variable-name source of truth) |
+| Both apps containerized | `backend/Dockerfile`, `frontend/Dockerfile`; built (not yet build-tested locally — no Docker daemon in this dev sandbox) by the `docker` CI job |
+| Staging/production config documented | `docs/runbook.md` "Environment configuration" (references `backend/.env.example` as the variable-name source of truth) |
 | Migrations as an explicit release step with documented rollback | `docs/runbook.md` "Deploying" and "Rollback" |
 | Nightly backup script | `scripts/backup_db.sh` |
 | Restore script, with a **tested** restore | `scripts/restore_db.sh` — script exists and works against a reachable MySQL; the actual drill is logged as **pending** in `docs/runbook.md`'s restore-drill table, since this dev sandbox has no MySQL server to run it against. This is the one acceptance criterion in this document not yet fully met, disclosed rather than hidden. |

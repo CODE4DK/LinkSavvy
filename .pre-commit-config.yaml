@@ -3,38 +3,38 @@ repos:
     rev: v0.16.7
     hooks:
       - id: ruff
-        name: ruff (api)
+        name: ruff (backend)
         args: [--fix]
-        files: ^apps/api/
+        files: ^backend/
 
   - repo: https://github.com/psf/black
     rev: 26.5.1
     hooks:
       - id: black
-        name: black (api)
-        files: ^apps/api/
+        name: black (backend)
+        files: ^backend/
 
   - repo: local
     hooks:
-      - id: mypy-api
-        name: mypy (api)
-        entry: bash -c 'cd apps/api && uv run mypy app scripts tests alembic/env.py'
+      - id: mypy-backend
+        name: mypy (backend)
+        entry: bash -c 'cd backend && uv run mypy app scripts tests alembic/env.py'
         language: system
-        files: ^apps/api/.*\.py$
+        files: ^backend/.*\.py$
         pass_filenames: false
 
-      - id: eslint-web
-        name: eslint (web)
-        entry: bash -c 'cd apps/web && npm run lint'
+      - id: eslint-frontend
+        name: eslint (frontend)
+        entry: bash -c 'cd frontend && npm run lint'
         language: system
-        files: ^apps/web/.*\.(ts|tsx)$
+        files: ^frontend/.*\.(ts|tsx)$
         pass_filenames: false
 
-      - id: prettier-web
-        name: prettier (web)
-        entry: bash -c 'cd apps/web && npx prettier --check .'
+      - id: prettier-frontend
+        name: prettier (frontend)
+        entry: bash -c 'cd frontend && npx prettier --check .'
         language: system
-        files: ^apps/web/.*\.(ts|tsx|css|json)$
+        files: ^frontend/.*\.(ts|tsx|css|json)$
         pass_filenames: false
 
   - repo: https://github.com/pre-commit/pre-commit-hooks

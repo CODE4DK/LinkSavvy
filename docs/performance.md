@@ -2,7 +2,7 @@
 
 ## Load testing
 
-`apps/api/loadtest/dashboard_and_tools.js` is a [k6](https://k6.io) script
+`backend/loadtest/dashboard_and_tools.js` is a [k6](https://k6.io) script
 covering the FRD's two named latency budgets:
 
 - `GET /api/v1/dashboard` — p95 < 3s
@@ -20,9 +20,9 @@ Backend query-latency budgets that *can* run in CI (no live server, no
 network) exist as ordinary pytest assertions instead, seeding realistic
 row counts and asserting on wall-clock time or query count directly:
 
-- `apps/api/tests/workspace/test_performance.py` — Workspace search over
+- `backend/tests/workspace/test_performance.py` — Workspace search over
   5,000 seeded assets stays under its latency budget.
-- `apps/api/tests/test_dashboard_router.py::test_dashboard_query_count_does_not_grow_with_recommendation_volume` —
+- `backend/tests/test_dashboard_router.py::test_dashboard_query_count_does_not_grow_with_recommendation_volume` —
   the dashboard aggregate's query count is constant regardless of how
   much recommendation history a user has (the N+1 query pattern this
   guards against is a much more common p95 killer than raw row count).
@@ -117,12 +117,12 @@ any other read-heavy, rarely-changing endpoint (see
 
 ## Frontend code splitting
 
-`apps/web/src/routes/router.tsx` loads every leaf page through React
+`frontend/src/routes/router.tsx` loads every leaf page through React
 Router's `lazy` route field (`lazy: () => import(...).then(m => ({
 Component: m.PageName }))`) instead of a top-level import, so Vite emits
 one chunk per page instead of one monolithic bundle. Before this change
 every route's code shipped on first load regardless of which page was
-requested; after it, `npm run build` in `apps/web` produces dozens of
+requested; after it, `npm run build` in `frontend` produces dozens of
 small per-page chunks (roughly 0.4 kB to 17 kB each) alongside a single
 shared entry chunk. Layout and guard components (`AppShell`,
 `RequireAuth`, `RequireAdmin`) stay eagerly imported since they're small
@@ -130,7 +130,7 @@ and needed on every route regardless.
 
 ## Bundle budget
 
-`apps/web/scripts/check-bundle-budget.mjs` gzips the built entry chunk
+`frontend/scripts/check-bundle-budget.mjs` gzips the built entry chunk
 and fails if it exceeds 150 kB (current actual size: ~104-107 kB gzip,
 depending on the build — see the script's own output). It deliberately
 only measures the entry chunk, not route chunks: a big page nobody has
@@ -143,7 +143,7 @@ recorded decision — see the script's own comment for the process.
 ## Image optimization
 
 There is currently no user-facing image content in the web app to
-optimize: no `<img>` tag exists anywhere in `apps/web/src`, and the one
+optimize: no `<img>` tag exists anywhere in `frontend/src`, and the one
 avatar field on `User` (`avatar_url`) stores an externally-hosted URL —
 this app never re-hosts or resizes it, consistent with the LinkedIn
 compliance rule against scraping or re-serving LinkedIn-sourced media.

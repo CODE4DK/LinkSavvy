@@ -48,7 +48,7 @@ request can't attach, so CSRF has no purchase there.
 Those two endpoints are protected by a double-submit cookie
 (`app/security/csrf.py`): login sets a non-httpOnly `csrf_token` cookie
 alongside the httpOnly refresh-token cookie, and the frontend echoes it
-back as an `X-CSRF-Token` header (`apps/web/src/lib/api.ts::readCsrfCookie`)
+back as an `X-CSRF-Token` header (`frontend/src/lib/api.ts::readCsrfCookie`)
 on every non-GET request. The check only runs when the CSRF cookie is
 actually present — its absence means there's no cookie session to forge
 in the first place, and that case is left to the endpoint's own "no
@@ -83,7 +83,7 @@ read anything the impersonated user could, but cannot mutate anything,
 verified end-to-end in `tests/test_admin_router.py::test_impersonation_token_is_read_only`.
 Every impersonation session start/end is written to `audit_log`, and the
 frontend shows a persistent banner with a time limit for the duration
-(`apps/web/src/components/layout/ImpersonationBanner.tsx`).
+(`frontend/src/components/layout/ImpersonationBanner.tsx`).
 
 ## Encryption at rest
 
@@ -124,7 +124,7 @@ Three scanners run on every push (`.github/workflows/ci.yml`):
 
 - **bandit** (`uv run bandit -c pyproject.toml -r app`) — static analysis
   for Python security anti-patterns. Configured exceptions live in
-  `apps/api/pyproject.toml`'s `[tool.bandit]` table: `B101` (assert used)
+  `backend/pyproject.toml`'s `[tool.bandit]` table: `B101` (assert used)
   is skipped codebase-wide because every use is an internal invariant the
   type checker can't express, never an input-validation or auth boundary
   (those raise `ApiError`); `B105`/`B106` (hardcoded password string) are

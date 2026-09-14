@@ -20,8 +20,8 @@ failures (not a single blip — see "Alerting" below for why).
 
 | Path | Target | Measured by |
 | --- | --- | --- |
-| Dashboard aggregate (`GET /api/v1/dashboard`) | p95 < 3s | `apps/api/loadtest/dashboard_and_tools.js`, `tests/test_dashboard_router.py::test_dashboard_query_count_does_not_grow_with_recommendation_volume` |
-| AI tool run (`POST /api/v1/tools/{tool_id}/run`) | p95 < 10s | `apps/api/loadtest/dashboard_and_tools.js` |
+| Dashboard aggregate (`GET /api/v1/dashboard`) | p95 < 3s | `backend/loadtest/dashboard_and_tools.js`, `tests/test_dashboard_router.py::test_dashboard_query_count_does_not_grow_with_recommendation_volume` |
+| AI tool run (`POST /api/v1/tools/{tool_id}/run`) | p95 < 10s | `backend/loadtest/dashboard_and_tools.js` |
 | Everything else | No formal SLO yet — tracked informally via the correlation-id-tagged structured logs (see `docs/performance.md`) | — |
 
 ## Error rate

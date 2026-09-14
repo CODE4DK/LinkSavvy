@@ -1,6 +1,6 @@
 # How your Health Score is calculated
 
-Scoring version: **2026.1** (see `apps/api/config/scoring.yaml`, the single
+Scoring version: **2026.1** (see `backend/config/scoring.yaml`, the single
 source of truth this document explains — if the two ever disagree, the
 YAML file is correct and this file is out of date).
 
@@ -102,7 +102,7 @@ the Career Hub adds resume upload.
 ## Where recommendations come from
 
 Every finding an audit raises is looked up in a fixed table
-(`apps/api/app/audit/recommendations.py`) that maps it to a concrete
+(`backend/app/audit/recommendations.py`) that maps it to a concrete
 action, a destination in the app, and an estimated impact in points —
 never generated freeform by AI. Recommendations are ranked by finding
 severity (critical, then important, then opportunity) and, within a tier,
@@ -126,7 +126,7 @@ rather than silently comparing scores computed two different ways.
 
 # The Growth Hub's four scores
 
-The Growth Hub (`apps/api/app/growth/`) shows four scores side by side.
+The Growth Hub (`backend/app/growth/`) shows four scores side by side.
 One of them — Health — is the same Audit Engine score documented above,
 just reshaped for this view. The other three (Visibility, Consistency,
 Personal Branding) are new for the Growth Hub and live in their own
