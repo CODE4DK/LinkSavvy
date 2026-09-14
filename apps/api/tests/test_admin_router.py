@@ -132,3 +132,38 @@ async def test_cannot_impersonate_yourself_via_the_api(
 
     response = await client.post(f"/api/v1/admin/users/{own_id}/impersonate", headers=headers)
     assert response.status_code == 422
+
+
+async def test_platform_health_endpoint_serves_a_response(
+    client: AsyncClient, registered_user: dict[str, str], db_session: AsyncSession
+) -> None:
+    """Regression test: app/admin/platform_health.py's QueueDepth is a
+    slots=True dataclass, which has no __dict__ -- the endpoint used to
+    build its response with vars(depth), which raises TypeError on any
+    slotted dataclass. The service-layer tests in
+    tests/admin/test_platform_health.py call queue_depth() directly and
+    never touch the router, so they never exercised this at all."""
+    await _promote_to_admin(db_session, email=registered_user["email"])
+    headers = await _auth_headers(client, registered_user)
+
+    response = await client.get("/api/v1/admin/platform-health", headers=headers)
+    assert response.status_code == 200
+    body = response.json()
+    assert set(body["queue_depth"].keys()) == {"queued", "leased", "dead", "failed_last_hour"}
+    assert body["dead_jobs"] == []
+
+
+async def test_ai_ops_overview_endpoint_serves_a_response(
+    client: AsyncClient, registered_user: dict[str, str], db_session: AsyncSession
+) -> None:
+    """Regression test: same vars()-on-a-slotted-dataclass bug as
+    test_platform_health_endpoint_serves_a_response, across all five
+    dataclasses this endpoint assembles a response from."""
+    await _promote_to_admin(db_session, email=registered_user["email"])
+    headers = await _auth_headers(client, registered_user)
+
+    response = await client.get("/api/v1/admin/ai-ops/overview", headers=headers)
+    assert response.status_code == 200
+    body = response.json()
+    assert body["cost_by_day"] == []
+    assert body["outcome_rates"]["total"] == 0

@@ -11,7 +11,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, Enum, ForeignKey, Index, Integer, String
+from sqlalchemy import Boolean, Enum, ForeignKey, Index, Integer, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db_types import UTCDateTime, UUIDBinary
@@ -41,6 +41,11 @@ class Subscription(PrimaryKeyMixin, TimestampMixin, Base):
         Index("ix_subscriptions_status_plan_updated", "status", "plan", "updated_at"),
         # app/billing/service.py's webhook-event-to-subscription lookup.
         Index("ix_subscriptions_provider_sub_id", "provider", "provider_subscription_id"),
+        # get_or_create_subscription is a select-then-insert; this is the
+        # actual guarantee against two concurrent first calls for the same
+        # user each inserting their own row (the SELECT alone can't stop
+        # that race -- see app/billing/service.py).
+        UniqueConstraint("user_id", name="uq_subscriptions_user_id"),
         {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"},
     )
 

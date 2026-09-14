@@ -82,6 +82,7 @@ def upgrade() -> None:
         sa.Column("ai_invocation_id", app.db_types.UUIDBinary(length=16), nullable=True),
         sa.Column("parent_message_id", app.db_types.UUIDBinary(length=16), nullable=True),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=_NOW, nullable=False),
+        sa.Column("updated_at", sa.DateTime(timezone=True), server_default=_NOW, nullable=False),
         sa.Column("tokens", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(["conversation_id"], ["conversations.id"], ondelete="CASCADE"),
         sa.ForeignKeyConstraint(["tool_run_id"], ["tool_runs.id"], ondelete="SET NULL"),

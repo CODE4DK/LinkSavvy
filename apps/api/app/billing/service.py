@@ -44,16 +44,32 @@ class NoActiveSubscription(ApiError):
 
 
 async def get_or_create_subscription(db: AsyncSession, *, user: User) -> Subscription:
+    # Captured up front: a rollback below expires every object in the
+    # session, including `user` (a caller-owned dependency, not ours to
+    # refresh) -- touching user.id again afterwards would trigger an
+    # implicit lazy-load that AsyncSession can't do outside a greenlet
+    # context and raises MissingGreenlet.
+    user_id = user.id
     subscription = (
-        await db.execute(select(Subscription).where(Subscription.user_id == user.id))
+        await db.execute(select(Subscription).where(Subscription.user_id == user_id))
     ).scalar_one_or_none()
     if subscription is not None:
         return subscription
 
     provider_name = provider_name_for_billing_country(user.billing_country)
-    subscription = Subscription(user_id=user.id, provider=provider_name, plan="free")
+    subscription = Subscription(user_id=user_id, provider=provider_name, plan="free")
     db.add(subscription)
-    await db.commit()
+    try:
+        await db.commit()
+    except IntegrityError:
+        # Lost a race with a concurrent first call for the same user (the
+        # uq_subscriptions_user_id constraint is the actual guarantee;
+        # the SELECT above only avoids paying for a doomed INSERT on the
+        # common case). The other request's row is the one that exists.
+        await db.rollback()
+        return (
+            await db.execute(select(Subscription).where(Subscription.user_id == user_id))
+        ).scalar_one()
     await db.refresh(subscription)
     return subscription
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from datetime import UTC, datetime, timedelta
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.billing import period_sweep, service
 from app.billing.providers.base import NormalisedEvent, NormalisedEventType
@@ -37,6 +37,52 @@ async def test_get_or_create_subscription_is_idempotent(db_session: AsyncSession
     second = await service.get_or_create_subscription(db_session, user=user)
     assert first.id == second.id
     assert first.provider == "stripe"
+
+
+async def test_get_or_create_subscription_recovers_from_a_concurrent_insert(
+    db_session: AsyncSession,
+    db_sessionmaker: async_sessionmaker[AsyncSession],
+) -> None:
+    """Regression test for a real 500 (sqlalchemy.exc.MultipleResultsFound)
+    this phase's E2E pass hit on a real account: get_or_create_subscription
+    is a select-then-insert with nothing but its own SELECT protecting it,
+    so two concurrent first-ever calls for the same user could each insert
+    their own row.
+
+    True asyncio-concurrency against a single shared in-memory SQLite
+    connection (the shape tests/jobs/test_worker.py uses for its own
+    concurrent-lease test) deadlocks here instead of racing, because this
+    function's path is a multi-statement transaction rather than one
+    atomic UPDATE. So this reproduces the failure mode deterministically
+    instead, by patching this db_session's own commit() -- the one await
+    point between the function's SELECT (already run, found nothing) and
+    its INSERT actually landing -- to run a second, independent session's
+    full get_or_create_subscription call for the same user first. That's
+    exactly "another request's call completes in between", without
+    needing real concurrency. uq_subscriptions_user_id (migration 0022)
+    plus the IntegrityError fallback in the function under test should
+    then make this call resolve to the other session's row instead of
+    raising.
+    """
+    user = await _create_user(db_session, billing_country="US")
+    user_id = user.id
+
+    real_commit = db_session.commit
+    winner_id_box: list[uuid.UUID] = []
+
+    async def _commit_after_a_concurrent_winner() -> None:
+        async with db_sessionmaker() as other_session:
+            other_user = await other_session.get(User, user_id)
+            assert other_user is not None
+            winner = await service.get_or_create_subscription(other_session, user=other_user)
+            winner_id_box.append(winner.id)
+        await real_commit()
+
+    db_session.commit = _commit_after_a_concurrent_winner  # type: ignore[method-assign]
+
+    result = await service.get_or_create_subscription(db_session, user=user)
+
+    assert winner_id_box == [result.id]
 
 
 def _activated_event(*, event_id: str, user_id: uuid.UUID, period_end: datetime) -> NormalisedEvent:

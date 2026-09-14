@@ -25,6 +25,54 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+async function performRefresh(): Promise<boolean> {
+  const maxAttempts = 3;
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      const data = await apiFetch<{ access_token: string; expires_in: number }>(
+        "/api/v1/auth/refresh",
+        { method: "POST", skipAuth: true },
+      );
+      setAccessToken(data.access_token);
+      return true;
+    } catch (error) {
+      // A 429 here means the auth-endpoint rate limiter fired, not that
+      // the refresh-token cookie is invalid -- treating the two the same
+      // used to log a user with a perfectly valid session out. Wait out
+      // the limiter's own suggested backoff and retry a bounded number
+      // of times before actually giving up.
+      if (attempt < maxAttempts && error instanceof ApiError && error.status === 429) {
+        const retryAfter = Number(error.details.retry_after_seconds) || 2;
+        await new Promise((resolve) => setTimeout(resolve, Math.min(retryAfter, 10) * 1000));
+        continue;
+      }
+      setAccessToken(null);
+      return false;
+    }
+  }
+  setAccessToken(null);
+  return false;
+}
+
+// Refresh tokens rotate and are single-use (see app/services/sessions.py):
+// presenting an already-rotated token is treated as theft and burns every
+// session in its family. Two /auth/refresh calls in flight at once for the
+// same tab -- e.g. React StrictMode's dev-only double invocation of this
+// component's mount effect -- would both read the same not-yet-rotated
+// token, and whichever finishes second would trip that reuse check and log
+// the user out of every device. A single module-level in-flight promise
+// makes every caller in this tab share one real request instead.
+let inFlightRefresh: Promise<boolean> | null = null;
+
+function sharedRefresh(): Promise<boolean> {
+  if (!inFlightRefresh) {
+    inFlightRefresh = performRefresh().finally(() => {
+      inFlightRefresh = null;
+    });
+  }
+  return inFlightRefresh;
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<AuthStatus>("loading");
   const [user, setUser] = useState<UserPublic | null>(null);
@@ -36,19 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setFeatureFlags(me.feature_flags);
   }, []);
 
-  const refresh = useCallback(async (): Promise<boolean> => {
-    try {
-      const data = await apiFetch<{ access_token: string; expires_in: number }>(
-        "/api/v1/auth/refresh",
-        { method: "POST", skipAuth: true },
-      );
-      setAccessToken(data.access_token);
-      return true;
-    } catch {
-      setAccessToken(null);
-      return false;
-    }
-  }, []);
+  const refresh = useCallback((): Promise<boolean> => sharedRefresh(), []);
 
   useEffect(() => {
     (async () => {

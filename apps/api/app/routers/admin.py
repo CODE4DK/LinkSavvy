@@ -7,6 +7,7 @@ service-layer functions in app/admin/*.py, which do the actual writing).
 from __future__ import annotations
 
 import uuid
+from dataclasses import asdict
 from datetime import date
 
 from fastapi import APIRouter, Depends, Query
@@ -316,11 +317,11 @@ async def ai_ops_overview_endpoint(
     rates = await ai_ops.outcome_rates(db, days=days)
     slow = await ai_ops.slowest_prompts(db, days=days)
     return AiOpsOverviewResponse(
-        cost_by_day=[CostByDayResponse(**vars(row)) for row in cost_day],
-        cost_by_model=[CostByDimensionResponse(**vars(row)) for row in cost_model],
-        cost_by_prompt=[CostByDimensionResponse(**vars(row)) for row in cost_prompt],
-        outcome_rates=OutcomeRatesResponse(**vars(rates)),
-        slowest_prompts=[SlowPromptResponse(**vars(row)) for row in slow],
+        cost_by_day=[CostByDayResponse(**asdict(row)) for row in cost_day],
+        cost_by_model=[CostByDimensionResponse(**asdict(row)) for row in cost_model],
+        cost_by_prompt=[CostByDimensionResponse(**asdict(row)) for row in cost_prompt],
+        outcome_rates=OutcomeRatesResponse(**asdict(rates)),
+        slowest_prompts=[SlowPromptResponse(**asdict(row)) for row in slow],
     )
 
 
@@ -420,7 +421,7 @@ async def platform_health_endpoint(
     depth = await platform_health.queue_depth(db)
     dead = await platform_health.list_dead_jobs(db)
     return PlatformHealthResponse(
-        queue_depth=QueueDepthResponse(**vars(depth)),
+        queue_depth=QueueDepthResponse(**asdict(depth)),
         dead_jobs=[_job_response(j) for j in dead],
         circuit_breakers=platform_health.provider_circuit_state(),
     )
