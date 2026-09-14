@@ -41,5 +41,17 @@ class CircuitBreaker:
         if count >= self._failure_threshold:
             self._opened_at[provider_name] = time.monotonic()
 
+    def snapshot(self) -> dict[str, dict[str, object]]:
+        """Read-only view for the admin panel's platform health page
+        (app/admin/platform_health.py) -- every provider this process has
+        ever recorded a failure for, and whether it's currently open."""
+        return {
+            provider_name: {
+                "failures": self._failures.get(provider_name, 0),
+                "open": self.is_open(provider_name),
+            }
+            for provider_name in {*self._failures, *self._opened_at}
+        }
+
 
 circuit_breaker = CircuitBreaker()

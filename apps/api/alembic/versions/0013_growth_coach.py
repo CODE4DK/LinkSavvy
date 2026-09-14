@@ -79,8 +79,6 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_index("ix_coach_messages_session_created", table_name="coach_messages")
     op.drop_table("coach_messages")
-    op.drop_index("ix_coach_sessions_user_status", table_name="coach_sessions")
     op.drop_table("coach_sessions")
     op.drop_column("growth_goals", "coach_state")

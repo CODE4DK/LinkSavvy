@@ -12,7 +12,8 @@
     "format:check": "prettier --check .",
     "typecheck": "tsc -b --noEmit",
     "test": "vitest",
-    "generate:contracts": "node scripts/generate-contracts.mjs"
+    "generate:contracts": "node scripts/generate-contracts.mjs",
+    "check:bundle-budget": "node scripts/check-bundle-budget.mjs"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.59.0",

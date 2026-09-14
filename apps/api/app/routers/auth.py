@@ -29,6 +29,7 @@ from app.schemas.auth import (
     VerifyEmailRequest,
 )
 from app.schemas.user import UserPublic
+from app.security.csrf import CSRF_COOKIE_NAME, generate_csrf_token, verify_csrf
 from app.security.jwt import create_access_token
 from app.security.passwords import hash_password, verify_password
 from app.security.tokens import generate_raw_token, hash_ip, hash_token
@@ -64,10 +65,23 @@ def _set_refresh_cookie(response: Response, raw_token: str) -> None:
         max_age=settings.refresh_token_ttl_days * 24 * 3600,
         path=REFRESH_COOKIE_PATH,
     )
+    # Not httpOnly -- the frontend reads it and echoes it back as
+    # X-CSRF-Token on the two endpoints (refresh, logout) that
+    # authenticate from this cookie alone. See app/security/csrf.py.
+    response.set_cookie(
+        key=CSRF_COOKIE_NAME,
+        value=generate_csrf_token(),
+        httponly=False,
+        secure=True,
+        samesite="lax",
+        max_age=settings.refresh_token_ttl_days * 24 * 3600,
+        path=REFRESH_COOKIE_PATH,
+    )
 
 
 def _clear_refresh_cookie(response: Response) -> None:
     response.delete_cookie(key=REFRESH_COOKIE_NAME, path=REFRESH_COOKIE_PATH)
+    response.delete_cookie(key=CSRF_COOKIE_NAME, path=REFRESH_COOKIE_PATH)
 
 
 async def _get_user_by_email(db: AsyncSession, email: str) -> User | None:
@@ -270,7 +284,7 @@ async def login(
     )
 
 
-@router.post("/refresh", response_model=RefreshResponse)
+@router.post("/refresh", response_model=RefreshResponse, dependencies=[Depends(verify_csrf)])
 async def refresh(
     request: Request,
     response: Response,
@@ -305,7 +319,7 @@ async def refresh(
     )
 
 
-@router.post("/logout", response_model=MessageResponse)
+@router.post("/logout", response_model=MessageResponse, dependencies=[Depends(verify_csrf)])
 async def logout(
     request: Request, response: Response, db: AsyncSession = Depends(get_db)
 ) -> MessageResponse:

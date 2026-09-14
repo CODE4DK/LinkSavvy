@@ -59,5 +59,4 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_index("ux_growth_score_snapshots_user_type_date", table_name="growth_score_snapshots")
     op.drop_table("growth_score_snapshots")

@@ -154,6 +154,13 @@ async def patch_asset(
     since None is also a valid target value, hence the `UNSET` sentinel
     default rather than `None` itself."""
     asset = await get_owned_asset(db, user_id=user.id, asset_id=asset_id)
+    if asset.read_only:
+        raise ApiError(
+            ErrorCode.FORBIDDEN,
+            "This asset is read-only because it's beyond your plan's saved-item limit. "
+            "Upgrade to pro to edit it again.",
+            details={"upgrade_required": True},
+        )
 
     edits_content = title is not None or body is not None
     if edits_content:

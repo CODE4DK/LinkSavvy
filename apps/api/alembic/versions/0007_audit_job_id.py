@@ -31,6 +31,9 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_index("ix_audits_job_id", table_name="audits")
+    # The FK constraint must go before the index: MySQL refuses to DROP
+    # INDEX on the index still backing one of the table's own foreign
+    # keys (error 1553).
     op.drop_constraint("fk_audits_job_id_jobs", "audits", type_="foreignkey")
+    op.drop_index("ix_audits_job_id", table_name="audits")
     op.drop_column("audits", "job_id")

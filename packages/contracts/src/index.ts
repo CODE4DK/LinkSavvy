@@ -135,7 +135,10 @@ export interface ApiErrorEnvelope {
       | "QUOTA_EXCEEDED"
       | "AI_OUTPUT_INVALID"
       | "AI_POLICY_BLOCKED"
-      | "AI_PROVIDER_UNAVAILABLE";
+      | "AI_PROVIDER_UNAVAILABLE"
+      | "WEBHOOK_SIGNATURE_INVALID"
+      | "BILLING_PROVIDER_ERROR"
+      | "NO_ACTIVE_SUBSCRIPTION";
     message: string;
     details: Record<string, unknown>;
   };
@@ -255,3 +258,56 @@ export type AssistantStreamFrame =
       quota_warning: string | null;
     }
   | { type: "error"; code: string; message: string };
+
+// -- Billing --------------------------------------------------------------
+
+export type CheckoutRequest = Schemas["CheckoutRequest"];
+export type CheckoutResponse = Schemas["CheckoutResponse"];
+export type PortalResponse = Schemas["PortalResponse"];
+export type SubscriptionResponse = Schemas["SubscriptionResponse"];
+export type CancelSubscriptionRequest = Schemas["CancelSubscriptionRequest"];
+export type ChangePlanRequest = Schemas["ChangePlanRequest"];
+export type PaymentResponse = Schemas["PaymentResponse"];
+export type PlanLimitResponse = Schemas["PlanLimitResponse"];
+export type PricingResponse = Schemas["PricingResponse"];
+
+// -- Notifications ----------------------------------------------------------
+
+export type NotificationResponse = Schemas["NotificationResponse"];
+export type NotificationListResponse = Schemas["NotificationListResponse"];
+export type PreferenceRow = Schemas["PreferenceRow"];
+export type PreferencesResponse = Schemas["PreferencesResponse"];
+export type SetPreferenceRequest = Schemas["SetPreferenceRequest"];
+
+// -- Admin --------------------------------------------------------------
+
+export type AdminUserResponse = Schemas["AdminUserResponse"];
+export type AdminUserSearchResponse = Schemas["AdminUserSearchResponse"];
+export type AdminUserDetailResponse = Schemas["AdminUserDetailResponse"];
+export type AdminSubscriptionSummary = Schemas["AdminSubscriptionSummary"];
+export type AdminToolRunSummary = Schemas["AdminToolRunSummary"];
+export type SuspendUserRequest = Schemas["SuspendUserRequest"];
+export type AdjustPlanRequest = Schemas["AdjustPlanRequest"];
+export type ForcePasswordResetResponse = Schemas["ForcePasswordResetResponse"];
+export type ImpersonateResponse = Schemas["ImpersonateResponse"];
+export type AdminSubscriptionResponse = Schemas["AdminSubscriptionResponse"];
+export type WebhookEventResponse = Schemas["WebhookEventResponse"];
+export type FeatureFlagResponse = Schemas["FeatureFlagResponse"];
+export type SetFlagGlobalRequest = Schemas["SetFlagGlobalRequest"];
+export type SetFlagRolloutRequest = Schemas["SetFlagRolloutRequest"];
+export type SetFlagUserOverrideRequest = Schemas["SetFlagUserOverrideRequest"];
+export type CostByDayResponse = Schemas["CostByDayResponse"];
+export type CostByDimensionResponse = Schemas["CostByDimensionResponse"];
+export type OutcomeRatesResponse = Schemas["OutcomeRatesResponse"];
+export type SlowPromptResponse = Schemas["SlowPromptResponse"];
+export type AiOpsOverviewResponse = Schemas["AiOpsOverviewResponse"];
+export type AiInvocationResponse = Schemas["AiInvocationResponse"];
+export type ModerationFlagResponse = Schemas["ModerationFlagResponse"];
+export type ReviewFlagRequest = Schemas["ReviewFlagRequest"];
+export type QueueDepthResponse = Schemas["QueueDepthResponse"];
+export type JobResponse = Schemas["JobResponse"];
+export type PlatformHealthResponse = Schemas["PlatformHealthResponse"];
+
+// -- Privacy --------------------------------------------------------------
+
+export type ExportJobResponse = Schemas["ExportJobResponse"];

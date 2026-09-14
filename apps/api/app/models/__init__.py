@@ -10,6 +10,8 @@ from app.models.base import Base
 from app.models.content_plan import ContentPlan
 from app.models.content_sample import ContentSample
 from app.models.conversation import Conversation
+from app.models.data_export import DataExport
+from app.models.email_log import EmailLog
 from app.models.email_verification import EmailVerification
 from app.models.feature_flag import FeatureFlag, UserFeatureFlag
 from app.models.growth_goal import GrowthGoal
@@ -19,9 +21,12 @@ from app.models.job_description import JobDescription
 from app.models.linkedin_connection import LinkedInConnection
 from app.models.login_attempt import LoginAttempt
 from app.models.message import Message
+from app.models.moderation_flag import ModerationFlag
+from app.models.notification import Notification, NotificationPreference
 from app.models.oauth_identity import OAuthIdentity
 from app.models.oauth_login_state import OAuthLoginState
 from app.models.password_reset import PasswordReset
+from app.models.payment import Payment
 from app.models.plan_limit import PlanLimit
 from app.models.profile_import import ProfileImportBlob, ProfileImportRow
 from app.models.profile_snapshot import ProfileSnapshotRow
@@ -30,10 +35,12 @@ from app.models.refresh_token import RefreshToken
 from app.models.resume import Resume
 from app.models.resume_match import ResumeMatch
 from app.models.score_history import ScoreHistory
+from app.models.subscription import Subscription
 from app.models.tool_run import ToolRun
 from app.models.usage_counter import UsageCounter
 from app.models.user import User
 from app.models.voice_profile import VoiceProfile
+from app.models.webhook_event import WebhookEvent
 from app.models.weekly_plan import WeeklyPlan
 
 __all__ = [
@@ -50,6 +57,8 @@ __all__ = [
     "ContentPlan",
     "ContentSample",
     "Conversation",
+    "DataExport",
+    "EmailLog",
     "EmailVerification",
     "FeatureFlag",
     "GrowthGoal",
@@ -59,9 +68,13 @@ __all__ = [
     "LinkedInConnection",
     "LoginAttempt",
     "Message",
+    "ModerationFlag",
+    "Notification",
+    "NotificationPreference",
     "OAuthIdentity",
     "OAuthLoginState",
     "PasswordReset",
+    "Payment",
     "PlanLimit",
     "ProfileImportBlob",
     "ProfileImportRow",
@@ -71,10 +84,12 @@ __all__ = [
     "Resume",
     "ResumeMatch",
     "ScoreHistory",
+    "Subscription",
     "ToolRun",
     "UsageCounter",
     "User",
     "UserFeatureFlag",
     "VoiceProfile",
+    "WebhookEvent",
     "WeeklyPlan",
 ]

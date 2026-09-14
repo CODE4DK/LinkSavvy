@@ -36,3 +36,10 @@ class User(PrimaryKeyMixin, TimestampMixin, SoftDeleteMixin, Base):
     plan: Mapped[str] = mapped_column(UserPlan, nullable=False, default="free")
     status: Mapped[str] = mapped_column(UserStatus, nullable=False, default="active")
     last_login_at: Mapped[datetime | None] = mapped_column(UTCDateTime(), nullable=True)
+    # ISO 3166-1 alpha-2, set at signup (billing address / declared
+    # country) and never changed by a later edit -- app/billing/providers
+    # /registry.py reads it once, at first-checkout time, to route the
+    # subscription to Stripe or Razorpay; changing it after a subscription
+    # exists would orphan the provider-side record, so the UI does not
+    # expose an edit path for it once billing has started.
+    billing_country: Mapped[str | None] = mapped_column(String(2), nullable=True)

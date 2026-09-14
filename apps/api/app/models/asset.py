@@ -83,3 +83,8 @@ class Asset(PrimaryKeyMixin, TimestampMixin, SoftDeleteMixin, Base):
     folder_id: Mapped[uuid.UUID | None] = mapped_column(
         UUIDBinary, ForeignKey("asset_folders.id", ondelete="SET NULL"), nullable=True
     )
+    # Set by app.billing.entitlements when a downgrade puts this asset
+    # over the free plan's storage cap -- never deleted, just frozen.
+    # Cleared the moment the user is pro again, regardless of which asset
+    # caused the overflow at the time.
+    read_only: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)

@@ -97,9 +97,11 @@ def upgrade() -> None:
         unique=False,
     )
 
-    op.drop_index("ix_coach_messages_session_created", table_name="coach_messages")
+    # No separate drop_index calls: MySQL refuses to DROP INDEX on an
+    # index InnoDB is using to support one of the table's own foreign key
+    # constraints (error 1553), and it's unnecessary anyway -- dropping
+    # the table removes its indexes with it.
     op.drop_table("coach_messages")
-    op.drop_index("ix_coach_sessions_user_status", table_name="coach_sessions")
     op.drop_table("coach_sessions")
 
 
@@ -147,7 +149,5 @@ def downgrade() -> None:
         unique=False,
     )
 
-    op.drop_index("ix_messages_conversation_created", table_name="messages")
     op.drop_table("messages")
-    op.drop_index("ix_conversations_user_updated", table_name="conversations")
     op.drop_table("conversations")

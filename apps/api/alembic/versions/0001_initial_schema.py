@@ -263,16 +263,11 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.drop_table("oauth_login_states")
-    op.drop_index("ix_login_attempts_ip_hash", table_name="login_attempts")
-    op.drop_index("ix_login_attempts_email_normalized", table_name="login_attempts")
     op.drop_table("login_attempts")
-    op.drop_index("ix_audit_log_actor_user_id", table_name="audit_log")
     op.drop_table("audit_log")
     op.drop_table("user_feature_flags")
     op.drop_table("password_resets")
     op.drop_table("email_verifications")
-    op.drop_index("ix_refresh_tokens_user_id", table_name="refresh_tokens")
-    op.drop_index("ix_refresh_tokens_family_id", table_name="refresh_tokens")
     op.drop_table("refresh_tokens")
     op.drop_table("oauth_identities")
     op.drop_table("feature_flags")

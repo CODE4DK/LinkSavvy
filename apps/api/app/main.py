@@ -1,20 +1,36 @@
 from __future__ import annotations
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.ai.prompts.loader import get_registry
 from app.audit import job_handler  # noqa: F401 -- registers the "audit" job handler
 from app.content import (  # noqa: F401 -- registers the "content_reminder" job handler
     calendar_reminder_job,
 )
+from app.db import engine
 from app.errors import ApiError, api_error_handler
 from app.growth import (
     weekly_plan_job,  # noqa: F401 -- registers the "weekly_plan.generate" job handler
 )
+from app.middleware.correlation_id import CorrelationIdMiddleware
+from app.middleware.impersonation_guard import ImpersonationGuardMiddleware
+from app.middleware.rate_limit import RateLimitMiddleware
+from app.middleware.security_headers import SecurityHeadersMiddleware
+from app.notifications import (  # noqa: F401 -- registers the notifications.* job handlers
+    dispatch_job,
+    weekly_digest_job,
+)
+from app.observability.logging import configure_logging
+from app.privacy import export_job  # noqa: F401 -- registers the "privacy.export" job handler
 from app.routers import (
+    admin,
     assistant,
     auth,
+    billing,
     career,
     carousels,
     content_assets,
@@ -24,6 +40,7 @@ from app.routers import (
     internal,
     jobs,
     me,
+    notifications,
     profile,
     tools,
 )
@@ -33,6 +50,8 @@ from app.routers.workspace import folders_router as asset_folders_router
 from app.routers.workspace import router as workspace_router
 from app.settings import settings
 from app.tools.registry import get_registry as get_tool_registry
+
+configure_logging()
 
 # Fails application startup loudly if any .prompt.md file is malformed,
 # rather than failing the first request that happens to use it.
@@ -51,6 +70,18 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+# Runs after CORS (Starlette applies middleware in reverse registration
+# order) so a blocked impersonation write still gets its CORS headers.
+app.add_middleware(ImpersonationGuardMiddleware)
+app.add_middleware(RateLimitMiddleware)
+app.add_middleware(SecurityHeadersMiddleware)
+# Added last, so it's the outermost of all user middleware (Starlette
+# builds the stack from `add_middleware` calls in reverse, so the last
+# one added wraps every other one) -- see
+# app/middleware/correlation_id.py. That means every other middleware's
+# own log lines, and the response header, are covered too, not just the
+# route handler's.
+app.add_middleware(CorrelationIdMiddleware)
 
 app.add_exception_handler(ApiError, api_error_handler)
 
@@ -73,8 +104,24 @@ app.include_router(growth.router)
 app.include_router(workspace_router)
 app.include_router(asset_folders_router)
 app.include_router(assistant.router)
+app.include_router(billing.router)
+app.include_router(notifications.router)
+app.include_router(admin.router)
 
 
 @app.get("/health")
 async def health() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@app.get("/ready")
+async def ready() -> Response:
+    """Liveness (`/health`) just confirms the process is up; this confirms
+    it can actually serve traffic, by round-tripping the database -- what
+    an uptime check and a deploy's readiness gate should both hit instead."""
+    try:
+        async with engine.connect() as conn:
+            await conn.execute(text("SELECT 1"))
+    except SQLAlchemyError:
+        return JSONResponse(status_code=503, content={"status": "unavailable"})
+    return JSONResponse(status_code=200, content={"status": "ready"})

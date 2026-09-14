@@ -78,5 +78,5 @@ def render_slide_png(layout: SlideLayout) -> bytes:
     )
 
     buffer = io.BytesIO()
-    image.save(buffer, format="PNG")
+    image.save(buffer, format="PNG", optimize=True)
     return buffer.getvalue()

@@ -76,7 +76,5 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_index("ix_content_samples_user", table_name="content_samples")
     op.drop_table("content_samples")
-    op.drop_index("ix_voice_profiles_user_active", table_name="voice_profiles")
     op.drop_table("voice_profiles")

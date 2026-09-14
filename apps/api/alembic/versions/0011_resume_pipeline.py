@@ -110,9 +110,6 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_index("ix_resume_matches_resume_jd", table_name="resume_matches")
     op.drop_table("resume_matches")
-    op.drop_index("ix_job_descriptions_user", table_name="job_descriptions")
     op.drop_table("job_descriptions")
-    op.drop_index("ix_resumes_user_active", table_name="resumes")
     op.drop_table("resumes")

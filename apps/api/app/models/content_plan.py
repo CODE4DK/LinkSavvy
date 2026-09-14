@@ -11,7 +11,7 @@ import uuid
 from datetime import date, datetime, time
 from typing import Any
 
-from sqlalchemy import Date, Enum, ForeignKey, String, Text, Time
+from sqlalchemy import Date, Enum, ForeignKey, Index, String, Text, Time
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.types import JSON
 
@@ -25,7 +25,13 @@ ContentPlanStatus = Enum(
 
 class ContentPlan(PrimaryKeyMixin, TimestampMixin, SoftDeleteMixin, Base):
     __tablename__ = "content_plans"
-    __table_args__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"}
+    __table_args__ = (
+        # The calendar view's date-range query for one user.
+        Index("ix_content_plans_user_planned_for", "user_id", "planned_for"),
+        # content_history's "what have I posted before" lookup.
+        Index("ix_content_plans_user_status", "user_id", "status"),
+        {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"},
+    )
 
     user_id: Mapped[uuid.UUID] = mapped_column(
         UUIDBinary, ForeignKey("users.id", ondelete="CASCADE"), nullable=False

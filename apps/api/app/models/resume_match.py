@@ -9,7 +9,7 @@ from __future__ import annotations
 import uuid
 from typing import Any
 
-from sqlalchemy import ForeignKey, Integer
+from sqlalchemy import ForeignKey, Index, Integer
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.types import JSON
 
@@ -19,7 +19,10 @@ from app.models.base import Base, PrimaryKeyMixin, SoftDeleteMixin, TimestampMix
 
 class ResumeMatch(PrimaryKeyMixin, TimestampMixin, SoftDeleteMixin, Base):
     __tablename__ = "resume_matches"
-    __table_args__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"}
+    __table_args__ = (
+        Index("ix_resume_matches_user_created", "user_id", "created_at"),
+        {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"},
+    )
 
     user_id: Mapped[uuid.UUID] = mapped_column(
         UUIDBinary, ForeignKey("users.id", ondelete="CASCADE"), nullable=False

@@ -2,6 +2,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider } from "react-router-dom";
 import { queryClient } from "@/lib/query-client";
 import { AuthProvider } from "@/lib/auth-context";
+import { ImpersonationProvider } from "@/lib/impersonation-context";
 import { AssistantProvider } from "@/lib/assistant-context";
 import { ThemeProvider } from "@/lib/theme-context";
 import { ToastProvider } from "@/lib/toast-context";
@@ -16,9 +17,11 @@ export function App() {
         <ThemeProvider>
           <ToastProvider>
             <AuthProvider>
-              <AssistantProvider>
-                <RouterProvider router={router} />
-              </AssistantProvider>
+              <ImpersonationProvider>
+                <AssistantProvider>
+                  <RouterProvider router={router} />
+                </AssistantProvider>
+              </ImpersonationProvider>
             </AuthProvider>
             <ToastViewport />
           </ToastProvider>

@@ -1,5 +1,6 @@
 import { ThemeToggle } from "./ThemeToggle";
 import { UserMenu } from "./UserMenu";
+import { NotificationBell } from "./NotificationBell";
 import { useAssistant } from "@/lib/assistant-context";
 
 export interface TopBarProps {
@@ -38,6 +39,7 @@ export function TopBar({ onOpenMobileNav }: TopBarProps) {
       >
         💬
       </button>
+      <NotificationBell />
       <ThemeToggle />
       <UserMenu />
     </header>

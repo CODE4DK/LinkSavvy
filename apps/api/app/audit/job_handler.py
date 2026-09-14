@@ -16,10 +16,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.audit.orchestrator import run_audit
 from app.content.content_history import resolve_content_history
 from app.db import SessionFactory
+from app.jobs.queue import enqueue
 from app.jobs.registry import register_handler, register_progress_calculator
 from app.models.audit import Audit, AuditCategoryResult
 from app.models.job import Job
 from app.models.user import User
+from app.notifications.dispatch_job import DISPATCH_JOB_TYPE
 from app.profiles.service import get_active_snapshot
 
 _CATEGORY_COUNT = 5
@@ -54,6 +56,19 @@ async def run_audit_job(
         job_id=job.id,
         session_factory=session_factory,
     )
+    if audit.status == "completed":
+        score_text = f" — overall score {audit.overall_score}" if audit.overall_score else ""
+        await enqueue(
+            db,
+            job_type=DISPATCH_JOB_TYPE,
+            payload={
+                "type": "audit.completed",
+                "title": "Your audit is ready",
+                "body": f"Your LinkedIn audit has finished{score_text}.",
+                "action_route": "/dashboard",
+            },
+            user_id=user.id,
+        )
     return {
         "audit_id": str(audit.id),
         "status": audit.status,

@@ -1,5 +1,7 @@
 from httpx import AsyncClient
 
+from tests.conftest import csrf_headers
+
 
 async def test_forgot_password_is_generic_for_unknown_email(
     client: AsyncClient, sent_emails: list[dict[str, str]]
@@ -26,7 +28,7 @@ async def test_reset_password_with_valid_token_then_forces_relogin(
     assert reset_response.status_code == 200
 
     # Old sessions were revoked by the reset.
-    refresh_response = await client.post("/api/v1/auth/refresh")
+    refresh_response = await client.post("/api/v1/auth/refresh", headers=csrf_headers(client))
     assert refresh_response.status_code == 401
 
     # Old password no longer works; new one does.

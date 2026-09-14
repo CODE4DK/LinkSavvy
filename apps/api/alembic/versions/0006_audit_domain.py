@@ -182,12 +182,8 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_index("ix_score_history_user_recorded", table_name="score_history")
     op.drop_table("score_history")
-    op.drop_index("ix_recommendations_user_status", table_name="recommendations")
     op.drop_table("recommendations")
-    op.drop_index("ix_audit_findings_audit_category", table_name="audit_findings")
     op.drop_table("audit_findings")
     op.drop_table("audit_category_results")
-    op.drop_index("ix_audits_user_created", table_name="audits")
     op.drop_table("audits")
