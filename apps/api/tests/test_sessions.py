@@ -1,5 +1,7 @@
 from httpx import AsyncClient
 
+from tests.conftest import csrf_headers
+
 
 async def _access_token(client: AsyncClient, creds: dict[str, str]) -> str:
     login = await client.post("/api/v1/auth/login", json=creds)
@@ -36,7 +38,7 @@ async def test_delete_session_revokes_it(
     )
     assert delete_response.status_code == 200
 
-    refresh_response = await client.post("/api/v1/auth/refresh")
+    refresh_response = await client.post("/api/v1/auth/refresh", headers=csrf_headers(client))
     assert refresh_response.status_code == 401
 
 
@@ -49,5 +51,5 @@ async def test_logout_all_revokes_every_session(
     )
     assert response.status_code == 200
 
-    refresh_response = await client.post("/api/v1/auth/refresh")
+    refresh_response = await client.post("/api/v1/auth/refresh", headers=csrf_headers(client))
     assert refresh_response.status_code == 401

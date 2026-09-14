@@ -48,6 +48,18 @@ function reportIfQuotaExceeded(error: ApiError): void {
   }
 }
 
+// Reads the non-httpOnly csrf_token cookie the backend sets alongside
+// the refresh-token cookie (see app/security/csrf.py) and echoes it back
+// as a header on the two endpoints that authenticate purely from a
+// cookie -- /auth/refresh and /auth/logout -- so a cross-site request
+// forgery attempt (which can't read this cookie, only resend it) fails
+// the double-submit check even where SameSite alone might not apply.
+function readCsrfCookie(): string | null {
+  const match = document.cookie.match(/(?:^|; )csrf_token=([^;]*)/);
+  const value = match?.[1];
+  return value !== undefined ? decodeURIComponent(value) : null;
+}
+
 interface RequestOptions {
   method?: "GET" | "POST" | "DELETE" | "PATCH" | "PUT";
   body?: unknown;
@@ -62,6 +74,13 @@ export async function apiFetch<T>(path: string, options: RequestOptions = {}): P
   // browser only does that correctly if we leave the header unset.
   if (options.body !== undefined && !isFormData) headers["Content-Type"] = "application/json";
   if (accessToken && !options.skipAuth) headers.Authorization = `Bearer ${accessToken}`;
+  // Harmless to attach on every mutating request -- the backend only
+  // actually checks it on the two cookie-only-authenticated endpoints,
+  // and every other endpoint ignores an unrecognised header.
+  if ((options.method ?? "GET") !== "GET") {
+    const csrfToken = readCsrfCookie();
+    if (csrfToken) headers["X-CSRF-Token"] = csrfToken;
+  }
 
   const response = await fetch(`${API_BASE_URL}${path}`, {
     method: options.method ?? "GET",

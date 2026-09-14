@@ -47,6 +47,12 @@ jobs:
       - name: Pytest
         run: uv run pytest -q
 
+      - name: Bandit (static security analysis)
+        run: uv run bandit -c pyproject.toml -r app
+
+      - name: pip-audit (dependency vulnerabilities)
+        run: uv run pip-audit
+
   web:
     name: Web (lint, typecheck, test)
     runs-on: ubuntu-latest
@@ -76,3 +82,11 @@ jobs:
       - name: Vitest
         working-directory: apps/web
         run: npm run test -- --run
+
+      # Production dependencies only, and only fails on high/critical --
+      # see docs/security.md "CI security scanning" for the currently
+      # accepted moderate-severity findings (a react-router advisory
+      # needing a major-version bump, and dev-only vite/vitest tooling
+      # advisories with no production exposure) and their remediation plan.
+      - name: npm audit (production dependencies)
+        run: npm audit --omit=dev --audit-level=high

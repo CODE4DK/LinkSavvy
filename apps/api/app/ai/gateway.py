@@ -227,7 +227,9 @@ async def _call_with_retry(
         except TimeoutError as exc:
             last_exc = exc
         if attempt < MAX_RETRIES - 1:
-            backoff = BASE_BACKOFF_SECONDS * (2**attempt) + random.uniform(0, BASE_BACKOFF_SECONDS)
+            backoff = BASE_BACKOFF_SECONDS * (2**attempt) + random.uniform(  # nosec B311
+                0, BASE_BACKOFF_SECONDS
+            )
             await asyncio.sleep(backoff)
     assert last_exc is not None
     raise last_exc

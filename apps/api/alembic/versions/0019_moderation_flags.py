@@ -34,7 +34,8 @@ def upgrade() -> None:
         sa.Column("id", app.db_types.UUIDBinary(length=16), nullable=False),
         sa.Column("user_id", app.db_types.UUIDBinary(length=16), nullable=False),
         sa.Column(
-            "source", sa.Enum("ai_policy", "user_report", name="moderation_flag_source"),
+            "source",
+            sa.Enum("ai_policy", "user_report", name="moderation_flag_source"),
             nullable=False,
         ),
         sa.Column("target_type", sa.String(length=64), nullable=False),

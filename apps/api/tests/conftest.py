@@ -146,6 +146,21 @@ def _fake_billing_providers(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
     registry._build.cache_clear()
 
 
+@pytest.fixture(autouse=True)
+def _reset_rate_limits() -> None:
+    """Rate-limit buckets (see app/middleware/rate_limit.py) are
+    module-level, per-process state that persists for the life of the
+    test run -- without this, the hundreds of tests that call
+    /auth/register or /auth/login would eventually exhaust the "auth"
+    bucket and start getting spurious 429s, the same class of problem
+    `_fake_ai_providers`/`_fake_billing_providers` solve for their own
+    module-level state."""
+    from app.middleware.rate_limit import _ip_limiters, _user_limiters
+
+    for limiter in [*_ip_limiters.values(), *_user_limiters.values()]:
+        limiter.reset()
+
+
 @pytest.fixture
 def sent_emails(monkeypatch: pytest.MonkeyPatch) -> list[dict[str, str]]:
     """Captures verification/reset emails instead of sending them."""
@@ -160,3 +175,13 @@ def sent_emails(monkeypatch: pytest.MonkeyPatch) -> list[dict[str, str]]:
     monkeypatch.setattr("app.routers.auth.send_verification_email", fake_verification)
     monkeypatch.setattr("app.routers.auth.send_password_reset_email", fake_reset)
     return captured
+
+
+def csrf_headers(client: AsyncClient) -> dict[str, str]:
+    """The header a real browser would echo back from the non-httpOnly
+    `csrf_token` cookie (see app/security/csrf.py) for `/auth/refresh`
+    and `/auth/logout` -- httpx's cookie jar stores the cookie for us
+    automatically after login, but doesn't promote it to a header on its
+    own, so any test calling one of those two endpoints needs this."""
+    token = client.cookies.get("csrf_token")
+    return {"X-CSRF-Token": token} if token else {}
