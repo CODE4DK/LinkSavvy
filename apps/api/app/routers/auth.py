@@ -65,9 +65,24 @@ def _set_refresh_cookie(response: Response, raw_token: str) -> None:
         max_age=settings.refresh_token_ttl_days * 24 * 3600,
         path=REFRESH_COOKIE_PATH,
     )
-    # Not httpOnly -- the frontend reads it and echoes it back as
-    # X-CSRF-Token on the two endpoints (refresh, logout) that
+    # Not httpOnly -- the frontend reads it via document.cookie and echoes
+    # it back as X-CSRF-Token on the two endpoints (refresh, logout) that
     # authenticate from this cookie alone. See app/security/csrf.py.
+    #
+    # Path="/" (not REFRESH_COOKIE_PATH) is deliberate and load-bearing:
+    # a cookie's Path also scopes which pages' `document.cookie` can see
+    # it, not just which request URLs carry it. The frontend needs to
+    # read this cookie from every route in the SPA (the dashboard, a hub
+    # page, settings -- none of which live under /api/v1/auth), not just
+    # from a page literally rooted at the API path. Scoping it to
+    # REFRESH_COOKIE_PATH like the refresh token itself silently broke
+    # every refresh after the very first page load: the initial login
+    # response's Set-Cookie still landed, but no later page could read it
+    # back out, so every full page reload sent /auth/refresh with no
+    # X-CSRF-Token and got a 403. The path restriction the refresh token
+    # needs (never sent to non-auth endpoints) doesn't apply here --
+    # verify_csrf only ever inspects this cookie on the two endpoints
+    # that already require it, so nothing is lost by broadening it.
     response.set_cookie(
         key=CSRF_COOKIE_NAME,
         value=generate_csrf_token(),
@@ -75,13 +90,13 @@ def _set_refresh_cookie(response: Response, raw_token: str) -> None:
         secure=True,
         samesite="lax",
         max_age=settings.refresh_token_ttl_days * 24 * 3600,
-        path=REFRESH_COOKIE_PATH,
+        path="/",
     )
 
 
 def _clear_refresh_cookie(response: Response) -> None:
     response.delete_cookie(key=REFRESH_COOKIE_NAME, path=REFRESH_COOKIE_PATH)
-    response.delete_cookie(key=CSRF_COOKIE_NAME, path=REFRESH_COOKIE_PATH)
+    response.delete_cookie(key=CSRF_COOKIE_NAME, path="/")
 
 
 async def _get_user_by_email(db: AsyncSession, email: str) -> User | None:
