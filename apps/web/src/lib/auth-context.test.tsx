@@ -45,7 +45,7 @@ function rateLimited(): InstanceType<typeof ApiError> {
 
 function invalidRefreshToken(): InstanceType<typeof ApiError> {
   return new ApiError(401, {
-    code: "UNAUTHORIZED",
+    code: "INVALID_CREDENTIALS",
     message: "Invalid or expired refresh token.",
     details: {},
   });
@@ -89,8 +89,8 @@ describe("AuthProvider mount-time refresh", () => {
         timeout: 3000,
       });
       expect(mockedApiFetch).toHaveBeenCalledTimes(3);
-      expect(mockedApiFetch.mock.calls[0][0]).toBe("/api/v1/auth/refresh");
-      expect(mockedApiFetch.mock.calls[1][0]).toBe("/api/v1/auth/refresh");
+      expect(mockedApiFetch.mock.calls[0]?.[0]).toBe("/api/v1/auth/refresh");
+      expect(mockedApiFetch.mock.calls[1]?.[0]).toBe("/api/v1/auth/refresh");
     },
     5000,
   );
