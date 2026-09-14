@@ -100,3 +100,15 @@ jobs:
       # advisories with no production exposure) and their remediation plan.
       - name: npm audit (production dependencies)
         run: npm audit --omit=dev --audit-level=high
+
+  docker:
+    name: Docker image builds
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build API image
+        run: docker build -t linksavvy-api apps/api
+
+      - name: Build web image
+        run: docker build -t linksavvy-web -f apps/web/Dockerfile .
