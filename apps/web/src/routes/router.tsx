@@ -2,78 +2,203 @@ import { createBrowserRouter } from "react-router-dom";
 import { AppShell } from "@/components/layout/AppShell";
 import { RequireAuth } from "./RequireAuth";
 import { RequireAdmin } from "./RequireAdmin";
-import { LoginPage } from "@/pages/auth/LoginPage";
-import { RegisterPage } from "@/pages/auth/RegisterPage";
-import { VerifyEmailPage } from "@/pages/auth/VerifyEmailPage";
-import { ForgotPasswordPage } from "@/pages/auth/ForgotPasswordPage";
-import { ResetPasswordPage } from "@/pages/auth/ResetPasswordPage";
-import { DashboardPage } from "@/pages/DashboardPage";
-import { AssistantPage } from "@/pages/AssistantPage";
-import { ProfileHubPage } from "@/pages/hubs/ProfileHubPage";
-import { ContentHubPage } from "@/pages/hubs/ContentHubPage";
-import { VoiceProfilePage } from "@/content/VoiceProfilePage";
-import { Composer } from "@/content/Composer";
-import { CarouselBuilder } from "@/content/CarouselBuilder";
-import { Calendar } from "@/content/Calendar";
-import { EngagementHubPage } from "@/pages/hubs/EngagementHubPage";
-import { CareerHubPage } from "@/pages/hubs/CareerHubPage";
-import { GrowthHubPage } from "@/pages/hubs/GrowthHubPage";
-import { GrowthCoachPage } from "@/pages/hubs/GrowthCoachPage";
-import { WorkspaceHubPage } from "@/pages/hubs/WorkspaceHubPage";
-import { PricingPage } from "@/pages/billing/PricingPage";
-import { BillingManagePage } from "@/pages/billing/BillingManagePage";
-import { CheckoutReturnPage } from "@/pages/billing/CheckoutReturnPage";
-import { NotificationPreferencesPage } from "@/pages/NotificationPreferencesPage";
-import { SettingsPage } from "@/pages/SettingsPage";
-import { NotFoundPage } from "@/pages/NotFoundPage";
-import { OnboardingPage } from "@/pages/onboarding/OnboardingPage";
-import { ProfileConnectCallbackPage } from "@/pages/ProfileConnectCallbackPage";
-import { PlaygroundPage } from "@/pages/dev/PlaygroundPage";
-import { AdminPage } from "@/pages/admin/AdminPage";
+
+// Every leaf page is loaded via the `lazy` route field rather than a
+// top-level import, so Vite splits each into its own chunk and the
+// initial bundle only pays for the shell + whichever page was requested
+// -- see docs/performance.md "Frontend code splitting". Layout/guard
+// components (AppShell, RequireAuth, RequireAdmin) stay eager: they're
+// small and needed on every route regardless.
 
 export const router = createBrowserRouter([
-  { path: "/login", element: <LoginPage /> },
-  { path: "/register", element: <RegisterPage /> },
-  { path: "/verify-email", element: <VerifyEmailPage /> },
-  { path: "/forgot-password", element: <ForgotPasswordPage /> },
-  { path: "/reset-password", element: <ResetPasswordPage /> },
+  {
+    path: "/login",
+    lazy: () => import("@/pages/auth/LoginPage").then((m) => ({ Component: m.LoginPage })),
+  },
+  {
+    path: "/register",
+    lazy: () => import("@/pages/auth/RegisterPage").then((m) => ({ Component: m.RegisterPage })),
+  },
+  {
+    path: "/verify-email",
+    lazy: () =>
+      import("@/pages/auth/VerifyEmailPage").then((m) => ({ Component: m.VerifyEmailPage })),
+  },
+  {
+    path: "/forgot-password",
+    lazy: () =>
+      import("@/pages/auth/ForgotPasswordPage").then((m) => ({
+        Component: m.ForgotPasswordPage,
+      })),
+  },
+  {
+    path: "/reset-password",
+    lazy: () =>
+      import("@/pages/auth/ResetPasswordPage").then((m) => ({ Component: m.ResetPasswordPage })),
+  },
   {
     element: <RequireAuth />,
     children: [
-      { path: "/onboarding", element: <OnboardingPage /> },
-      { path: "/profile/connect/callback", element: <ProfileConnectCallbackPage /> },
+      {
+        path: "/onboarding",
+        lazy: () =>
+          import("@/pages/onboarding/OnboardingPage").then((m) => ({
+            Component: m.OnboardingPage,
+          })),
+      },
+      {
+        path: "/profile/connect/callback",
+        lazy: () =>
+          import("@/pages/ProfileConnectCallbackPage").then((m) => ({
+            Component: m.ProfileConnectCallbackPage,
+          })),
+      },
       {
         element: <AppShell />,
         children: [
-          { path: "/", element: <DashboardPage /> },
-          { path: "/assistant", element: <AssistantPage /> },
-          { path: "/profile", element: <ProfileHubPage /> },
-          { path: "/profile/:toolId", element: <ProfileHubPage /> },
-          { path: "/content", element: <ContentHubPage /> },
-          { path: "/content/voice", element: <VoiceProfilePage /> },
-          { path: "/content/composer", element: <Composer /> },
-          { path: "/content/carousel/:carouselId", element: <CarouselBuilder /> },
-          { path: "/content/calendar", element: <Calendar /> },
-          { path: "/content/:toolId", element: <ContentHubPage /> },
-          { path: "/engagement", element: <EngagementHubPage /> },
-          { path: "/engagement/:toolId", element: <EngagementHubPage /> },
-          { path: "/career", element: <CareerHubPage /> },
-          { path: "/career/:toolId", element: <CareerHubPage /> },
-          { path: "/growth", element: <GrowthHubPage /> },
-          { path: "/growth/coach", element: <GrowthCoachPage /> },
-          { path: "/growth/:toolId", element: <GrowthHubPage /> },
-          { path: "/workspace", element: <WorkspaceHubPage /> },
-          { path: "/billing/pricing", element: <PricingPage /> },
-          { path: "/billing/manage", element: <BillingManagePage /> },
-          { path: "/billing/checkout-return", element: <CheckoutReturnPage /> },
-          { path: "/settings", element: <SettingsPage /> },
-          { path: "/settings/notifications", element: <NotificationPreferencesPage /> },
-          { path: "/dev/playground", element: <PlaygroundPage /> },
+          {
+            path: "/",
+            lazy: () => import("@/pages/DashboardPage").then((m) => ({ Component: m.DashboardPage })),
+          },
+          {
+            path: "/assistant",
+            lazy: () =>
+              import("@/pages/AssistantPage").then((m) => ({ Component: m.AssistantPage })),
+          },
+          {
+            path: "/profile",
+            lazy: () =>
+              import("@/pages/hubs/ProfileHubPage").then((m) => ({ Component: m.ProfileHubPage })),
+          },
+          {
+            path: "/profile/:toolId",
+            lazy: () =>
+              import("@/pages/hubs/ProfileHubPage").then((m) => ({ Component: m.ProfileHubPage })),
+          },
+          {
+            path: "/content",
+            lazy: () =>
+              import("@/pages/hubs/ContentHubPage").then((m) => ({ Component: m.ContentHubPage })),
+          },
+          {
+            path: "/content/voice",
+            lazy: () =>
+              import("@/content/VoiceProfilePage").then((m) => ({ Component: m.VoiceProfilePage })),
+          },
+          {
+            path: "/content/composer",
+            lazy: () => import("@/content/Composer").then((m) => ({ Component: m.Composer })),
+          },
+          {
+            path: "/content/carousel/:carouselId",
+            lazy: () =>
+              import("@/content/CarouselBuilder").then((m) => ({ Component: m.CarouselBuilder })),
+          },
+          {
+            path: "/content/calendar",
+            lazy: () => import("@/content/Calendar").then((m) => ({ Component: m.Calendar })),
+          },
+          {
+            path: "/content/:toolId",
+            lazy: () =>
+              import("@/pages/hubs/ContentHubPage").then((m) => ({ Component: m.ContentHubPage })),
+          },
+          {
+            path: "/engagement",
+            lazy: () =>
+              import("@/pages/hubs/EngagementHubPage").then((m) => ({
+                Component: m.EngagementHubPage,
+              })),
+          },
+          {
+            path: "/engagement/:toolId",
+            lazy: () =>
+              import("@/pages/hubs/EngagementHubPage").then((m) => ({
+                Component: m.EngagementHubPage,
+              })),
+          },
+          {
+            path: "/career",
+            lazy: () =>
+              import("@/pages/hubs/CareerHubPage").then((m) => ({ Component: m.CareerHubPage })),
+          },
+          {
+            path: "/career/:toolId",
+            lazy: () =>
+              import("@/pages/hubs/CareerHubPage").then((m) => ({ Component: m.CareerHubPage })),
+          },
+          {
+            path: "/growth",
+            lazy: () =>
+              import("@/pages/hubs/GrowthHubPage").then((m) => ({ Component: m.GrowthHubPage })),
+          },
+          {
+            path: "/growth/coach",
+            lazy: () =>
+              import("@/pages/hubs/GrowthCoachPage").then((m) => ({
+                Component: m.GrowthCoachPage,
+              })),
+          },
+          {
+            path: "/growth/:toolId",
+            lazy: () =>
+              import("@/pages/hubs/GrowthHubPage").then((m) => ({ Component: m.GrowthHubPage })),
+          },
+          {
+            path: "/workspace",
+            lazy: () =>
+              import("@/pages/hubs/WorkspaceHubPage").then((m) => ({
+                Component: m.WorkspaceHubPage,
+              })),
+          },
+          {
+            path: "/billing/pricing",
+            lazy: () =>
+              import("@/pages/billing/PricingPage").then((m) => ({ Component: m.PricingPage })),
+          },
+          {
+            path: "/billing/manage",
+            lazy: () =>
+              import("@/pages/billing/BillingManagePage").then((m) => ({
+                Component: m.BillingManagePage,
+              })),
+          },
+          {
+            path: "/billing/checkout-return",
+            lazy: () =>
+              import("@/pages/billing/CheckoutReturnPage").then((m) => ({
+                Component: m.CheckoutReturnPage,
+              })),
+          },
+          {
+            path: "/settings",
+            lazy: () => import("@/pages/SettingsPage").then((m) => ({ Component: m.SettingsPage })),
+          },
+          {
+            path: "/settings/notifications",
+            lazy: () =>
+              import("@/pages/NotificationPreferencesPage").then((m) => ({
+                Component: m.NotificationPreferencesPage,
+              })),
+          },
+          {
+            path: "/dev/playground",
+            lazy: () =>
+              import("@/pages/dev/PlaygroundPage").then((m) => ({ Component: m.PlaygroundPage })),
+          },
           {
             element: <RequireAdmin />,
-            children: [{ path: "/admin", element: <AdminPage /> }],
+            children: [
+              {
+                path: "/admin",
+                lazy: () => import("@/pages/admin/AdminPage").then((m) => ({ Component: m.AdminPage })),
+              },
+            ],
           },
-          { path: "*", element: <NotFoundPage /> },
+          {
+            path: "*",
+            lazy: () => import("@/pages/NotFoundPage").then((m) => ({ Component: m.NotFoundPage })),
+          },
         ],
       },
     ],

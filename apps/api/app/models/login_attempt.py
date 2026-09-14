@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from sqlalchemy import Boolean, String
+from sqlalchemy import Boolean, Index, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db_types import UTCDateTime
@@ -18,7 +18,13 @@ class LoginAttempt(PrimaryKeyMixin, Base):
     """
 
     __tablename__ = "login_attempts"
-    __table_args__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"}
+    __table_args__ = (
+        # Every login/register call checks recent attempts by email and,
+        # separately, by IP -- both windowed on attempted_at.
+        Index("ix_login_attempts_email_attempted", "email_normalized", "attempted_at"),
+        Index("ix_login_attempts_ip_attempted", "ip_hash", "attempted_at"),
+        {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"},
+    )
 
     email_normalized: Mapped[str | None] = mapped_column(String(320), nullable=True)
     ip_hash: Mapped[str | None] = mapped_column(String(128), nullable=True)

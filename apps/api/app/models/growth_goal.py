@@ -11,7 +11,7 @@ import uuid
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import Enum, ForeignKey, Integer, String, Text
+from sqlalchemy import Enum, ForeignKey, Index, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.types import JSON
 
@@ -23,7 +23,10 @@ GrowthGoalStatus = Enum("active", "completed", "abandoned", name="growth_goal_st
 
 class GrowthGoal(PrimaryKeyMixin, TimestampMixin, SoftDeleteMixin, Base):
     __tablename__ = "growth_goals"
-    __table_args__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"}
+    __table_args__ = (
+        Index("ix_growth_goals_user_status", "user_id", "status"),
+        {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"},
+    )
 
     user_id: Mapped[uuid.UUID] = mapped_column(
         UUIDBinary, ForeignKey("users.id", ondelete="CASCADE"), nullable=False

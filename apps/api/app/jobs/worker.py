@@ -259,6 +259,10 @@ async def run_worker(
 
 
 if __name__ == "__main__":
+    from app.observability.logging import configure_logging
+
+    configure_logging()
+
     # Importing a handler module is what runs its @register_handler
     # decorator -- the worker process needs every job type it might lease
     # registered before it starts polling, which nothing else guarantees.

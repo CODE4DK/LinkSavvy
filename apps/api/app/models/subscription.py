@@ -11,7 +11,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, Enum, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Enum, ForeignKey, Index, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db_types import UTCDateTime, UUIDBinary
@@ -33,7 +33,16 @@ SubscriptionStatus = Enum(
 
 class Subscription(PrimaryKeyMixin, TimestampMixin, Base):
     __tablename__ = "subscriptions"
-    __table_args__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"}
+    __table_args__ = (
+        # app/billing/period_sweep.py's two sweeps: cancelled/expired pro
+        # subscriptions past their period end, and past_due pro
+        # subscriptions past their grace window.
+        Index("ix_subscriptions_status_plan_period_end", "status", "plan", "current_period_end"),
+        Index("ix_subscriptions_status_plan_updated", "status", "plan", "updated_at"),
+        # app/billing/service.py's webhook-event-to-subscription lookup.
+        Index("ix_subscriptions_provider_sub_id", "provider", "provider_subscription_id"),
+        {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"},
+    )
 
     user_id: Mapped[uuid.UUID] = mapped_column(
         UUIDBinary, ForeignKey("users.id", ondelete="CASCADE"), nullable=False

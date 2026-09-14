@@ -149,6 +149,22 @@ async def test_list_tools_filters_by_hub(
     assert [tool["id"] for tool in body] == ["content.fixture"]
 
 
+async def test_list_tools_supports_conditional_get(
+    client: AsyncClient, registered_user: dict[str, str], fixture_registry: ToolRegistry
+) -> None:
+    token = await _access_token(client, registered_user)
+    headers = {"Authorization": f"Bearer {token}"}
+
+    first = await client.get("/api/v1/tools", headers=headers)
+    assert first.status_code == 200
+    etag = first.headers["etag"]
+    assert etag
+
+    cached = await client.get("/api/v1/tools", headers={**headers, "if-none-match": etag})
+    assert cached.status_code == 304
+    assert cached.content == b""
+
+
 async def test_list_tools_requires_auth(
     client: AsyncClient, fixture_registry: ToolRegistry
 ) -> None:

@@ -12,7 +12,7 @@ import uuid
 from datetime import date, datetime
 from typing import Any
 
-from sqlalchemy import Date, Enum, ForeignKey, Integer, String
+from sqlalchemy import Date, Enum, ForeignKey, Index, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.types import JSON
 
@@ -24,7 +24,10 @@ WeeklyPlanStatus = Enum("active", "reflected", name="weekly_plan_status")
 
 class WeeklyPlan(PrimaryKeyMixin, TimestampMixin, Base):
     __tablename__ = "weekly_plans"
-    __table_args__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"}
+    __table_args__ = (
+        Index("ix_weekly_plans_user_week_start", "user_id", "week_start"),
+        {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"},
+    )
 
     user_id: Mapped[uuid.UUID] = mapped_column(
         UUIDBinary, ForeignKey("users.id", ondelete="CASCADE"), nullable=False

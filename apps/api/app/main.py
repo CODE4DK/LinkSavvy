@@ -16,6 +16,7 @@ from app.errors import ApiError, api_error_handler
 from app.growth import (
     weekly_plan_job,  # noqa: F401 -- registers the "weekly_plan.generate" job handler
 )
+from app.middleware.correlation_id import CorrelationIdMiddleware
 from app.middleware.impersonation_guard import ImpersonationGuardMiddleware
 from app.middleware.rate_limit import RateLimitMiddleware
 from app.middleware.security_headers import SecurityHeadersMiddleware
@@ -23,6 +24,7 @@ from app.notifications import (  # noqa: F401 -- registers the notifications.* j
     dispatch_job,
     weekly_digest_job,
 )
+from app.observability.logging import configure_logging
 from app.privacy import export_job  # noqa: F401 -- registers the "privacy.export" job handler
 from app.routers import (
     admin,
@@ -49,6 +51,8 @@ from app.routers.workspace import router as workspace_router
 from app.settings import settings
 from app.tools.registry import get_registry as get_tool_registry
 
+configure_logging()
+
 # Fails application startup loudly if any .prompt.md file is malformed,
 # rather than failing the first request that happens to use it.
 get_registry()
@@ -71,6 +75,13 @@ app.add_middleware(
 app.add_middleware(ImpersonationGuardMiddleware)
 app.add_middleware(RateLimitMiddleware)
 app.add_middleware(SecurityHeadersMiddleware)
+# Added last, so it's the outermost of all user middleware (Starlette
+# builds the stack from `add_middleware` calls in reverse, so the last
+# one added wraps every other one) -- see
+# app/middleware/correlation_id.py. That means every other middleware's
+# own log lines, and the response header, are covered too, not just the
+# route handler's.
+app.add_middleware(CorrelationIdMiddleware)
 
 app.add_exception_handler(ApiError, api_error_handler)
 

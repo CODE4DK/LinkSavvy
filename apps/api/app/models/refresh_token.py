@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import ForeignKey, Index, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db_types import UTCDateTime, UUIDBinary
@@ -12,7 +12,12 @@ from app.models.base import Base, PrimaryKeyMixin, TimestampMixin
 
 class RefreshToken(PrimaryKeyMixin, TimestampMixin, Base):
     __tablename__ = "refresh_tokens"
-    __table_args__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"}
+    __table_args__ = (
+        # Session listing/revocation filters a user's tokens by whether
+        # they're revoked.
+        Index("ix_refresh_tokens_user_revoked", "user_id", "revoked_at"),
+        {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"},
+    )
 
     user_id: Mapped[uuid.UUID] = mapped_column(
         UUIDBinary, ForeignKey("users.id", ondelete="CASCADE"), nullable=False

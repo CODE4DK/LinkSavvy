@@ -13,7 +13,7 @@ import uuid
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import JSON, Boolean, Enum, ForeignKey, String, Text, UniqueConstraint
+from sqlalchemy import JSON, Boolean, Enum, ForeignKey, Index, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db_types import UTCDateTime, UUIDBinary
@@ -24,7 +24,12 @@ NotificationChannel = Enum("in_app", "email", name="notification_channel")
 
 class Notification(PrimaryKeyMixin, TimestampMixin, Base):
     __tablename__ = "notifications"
-    __table_args__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"}
+    __table_args__ = (
+        # Serves the notification centre's own feed query: unread-first,
+        # newest-first, for one user.
+        Index("ix_notifications_user_read_created", "user_id", "read_at", "created_at"),
+        {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"},
+    )
 
     user_id: Mapped[uuid.UUID] = mapped_column(
         UUIDBinary, ForeignKey("users.id", ondelete="CASCADE"), nullable=False

@@ -13,12 +13,13 @@ from collections.abc import AsyncIterator
 from datetime import datetime
 from typing import Any
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Request, Response
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.deps import get_current_user, get_db
 from app.errors import ApiError, ErrorCode
+from app.http_cache import etag_or_none
 from app.models.user import User
 from app.schemas.tools import (
     AssetResponse,
@@ -46,14 +47,22 @@ router = APIRouter(prefix="/api/v1/tools", tags=["tools"])
 
 @router.get("", response_model=list[ToolSummary])
 async def list_tools(
+    request: Request,
+    response: Response,
     hub: Hub | None = Query(default=None),
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> list[ToolSummary]:
+) -> list[ToolSummary] | Response:
     registry = get_registry()
     definitions = registry.by_hub(hub) if hub is not None else registry.all()
     definitions = await service.visible_tools(db, user=user, definitions=definitions)
-    return [to_tool_summary(definition) for definition in definitions]
+    result = [to_tool_summary(definition) for definition in definitions]
+    # Cacheable but user-specific (plan/flag gating changes what's
+    # visible) -- a conditional GET saves the response body, not the
+    # visibility computation itself, whenever nothing has changed since
+    # the client's last fetch. See docs/performance.md "HTTP caching".
+    not_modified = etag_or_none(request, response, result)
+    return not_modified if not_modified is not None else result
 
 
 async def _sse_events(frames: AsyncIterator[dict[str, Any]]) -> AsyncIterator[str]:

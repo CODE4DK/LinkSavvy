@@ -11,7 +11,7 @@ from __future__ import annotations
 import uuid
 from typing import Any
 
-from sqlalchemy import Boolean, Enum, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Enum, ForeignKey, Index, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.types import JSON
 
@@ -24,7 +24,13 @@ ResumeSourceColumn = Enum(*[m.value for m in ResumeSource], name="resume_source"
 
 class Resume(PrimaryKeyMixin, TimestampMixin, SoftDeleteMixin, Base):
     __tablename__ = "resumes"
-    __table_args__ = {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"}
+    __table_args__ = (
+        # Activation flips is_active off for a user's other resumes;
+        # listing orders by created_at for one user.
+        Index("ix_resumes_user_active", "user_id", "is_active"),
+        Index("ix_resumes_user_created", "user_id", "created_at"),
+        {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"},
+    )
 
     user_id: Mapped[uuid.UUID] = mapped_column(
         UUIDBinary, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
