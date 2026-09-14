@@ -183,7 +183,7 @@ behind all of the above.
 | Criterion | Evidence |
 | --- | --- |
 | k6 load test: dashboard p95 < 3s, AI tool runs p95 < 10s | `apps/api/loadtest/dashboard_and_tools.js` — script exists and encodes both thresholds; not yet run against a live environment (needs staging, per its own header comment) |
-| Index review from query-pattern analysis | `docs/performance.md` "Index review" — nine composite indexes added, migration `0021_performance_indexes.py` |
+| Index review from query-pattern analysis, verified against real MySQL | `docs/performance.md` "Index review" — eight new composite indexes (migration `0021_performance_indexes.py`) plus four ORM model/migration parity fixes found the same real-MySQL verification also caught two unrelated pre-existing migration bugs (0012, 0016) that had never been exercised against MySQL before |
 | HTTP caching/ETags | `app/http_cache.py`, wired into `GET /api/v1/tools`; `tests/test_tools_router.py::test_list_tools_supports_conditional_get` |
 | Frontend code splitting | `apps/web/src/routes/router.tsx` (React Router `lazy` per route); verified by `npm run build` producing per-page chunks, see `docs/performance.md` |
 | Bundle budget enforced in CI | `apps/web/scripts/check-bundle-budget.mjs`, wired into `.github/workflows/ci.yml`'s `web` job |

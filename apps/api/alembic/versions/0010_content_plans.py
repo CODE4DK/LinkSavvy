@@ -73,6 +73,4 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_index("ix_content_plans_reminder_at", table_name="content_plans")
-    op.drop_index("ix_content_plans_user_planned_for", table_name="content_plans")
     op.drop_table("content_plans")

@@ -147,9 +147,7 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.drop_table("linkedin_connections")
-    op.drop_index("ix_profile_snapshots_user_id", table_name="profile_snapshots")
     op.drop_table("profile_snapshots")
-    op.drop_index("ix_profile_imports_user_id", table_name="profile_imports")
     op.drop_table("profile_imports")
     op.drop_table("profile_import_blobs")
     with op.batch_alter_table("oauth_login_states") as batch_op:

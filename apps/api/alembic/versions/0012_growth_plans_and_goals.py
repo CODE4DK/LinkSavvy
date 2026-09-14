@@ -39,7 +39,12 @@ def upgrade() -> None:
         sa.Column("user_id", app.db_types.UUIDBinary(length=16), nullable=False),
         sa.Column("goal_type", sa.String(length=100), nullable=False),
         sa.Column("target_role", sa.String(length=255), nullable=True),
-        sa.Column("target_description", sa.Text(), nullable=False, server_default=""),
+        # No server_default: MySQL rejects a literal DEFAULT on TEXT/BLOB/
+        # JSON columns. The ORM's own default="" (app/models/growth_goal.py)
+        # is what actually supplies the value on every insert, matching
+        # every other NOT NULL Text column elsewhere in this codebase
+        # (none of which carry a server_default, for the same reason).
+        sa.Column("target_description", sa.Text(), nullable=False),
         sa.Column("horizon_weeks", sa.Integer(), nullable=False),
         sa.Column("started_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column(
@@ -89,7 +94,5 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_index("ux_weekly_plans_user_week", table_name="weekly_plans")
     op.drop_table("weekly_plans")
-    op.drop_index("ix_growth_goals_user_status", table_name="growth_goals")
     op.drop_table("growth_goals")

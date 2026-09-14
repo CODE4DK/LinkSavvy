@@ -134,9 +134,6 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_index("ft_assets_title_body", table_name="assets")
-    op.drop_index("ix_assets_user_folder", table_name="assets")
     op.drop_table("assets")
     op.drop_table("asset_folders")
-    op.drop_index("ix_tool_runs_user_tool_created", table_name="tool_runs")
     op.drop_table("tool_runs")

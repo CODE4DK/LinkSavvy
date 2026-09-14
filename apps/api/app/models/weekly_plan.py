@@ -25,7 +25,11 @@ WeeklyPlanStatus = Enum("active", "reflected", name="weekly_plan_status")
 class WeeklyPlan(PrimaryKeyMixin, TimestampMixin, Base):
     __tablename__ = "weekly_plans"
     __table_args__ = (
-        Index("ix_weekly_plans_user_week_start", "user_id", "week_start"),
+        # One plan per user per week -- created by 0012_growth_plans_and_
+        # goals.py; this is also exactly the index the previous-week
+        # reflection lookup (app/growth/weekly_plan.py) needs, so no
+        # separate index was added for it in Phase 10's index review.
+        Index("ux_weekly_plans_user_week", "user_id", "week_start", unique=True),
         {"mysql_engine": "InnoDB", "mysql_charset": "utf8mb4"},
     )
 

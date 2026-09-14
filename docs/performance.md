@@ -34,28 +34,71 @@ log to mine yet — this review instead cross-referenced every
 `select`/`update`/`delete` `.where()`/`.order_by()` clause in `app/**/*.py`
 against the indexes actually declared in `app/models/*.py` and
 `alembic/versions/*.py`, looking for a query pattern relying on nothing
-but a table scan or a single-column FK index. Nine gaps were found and
-fixed in migration `0021_performance_indexes.py` (composite indexes,
-mirrored as `Index(...)` declarations on the corresponding ORM models so
-they stay visible next to the columns they cover):
+but a table scan or a single-column FK index.
 
-| Table | Index | Query it serves |
-| --- | --- | --- |
-| `notifications` | `(user_id, read_at, created_at)` | Notification centre feed: unread-first, newest-first, one user (`app/notifications/service.py`) |
-| `login_attempts` | `(email_normalized, attempted_at)`, `(ip_hash, attempted_at)` | Login/register rate limiting, checked on every attempt (`app/services/rate_limit.py`) |
-| `refresh_tokens` | `(user_id, revoked_at)` | Session listing/revocation (`app/services/sessions.py`) |
-| `subscriptions` | `(status, plan, current_period_end)`, `(status, plan, updated_at)`, `(provider, provider_subscription_id)` | The billing period sweep's two scans (`app/billing/period_sweep.py`) and webhook-to-subscription lookup (`app/billing/service.py`) |
-| `resumes` | `(user_id, is_active)`, `(user_id, created_at)` | Activation (deactivating a user's other resumes) and the resume list (`app/career/service.py`) |
-| `resume_matches` | `(user_id, created_at)` | Match history list (`app/career/service.py`) |
-| `content_plans` | `(user_id, planned_for)`, `(user_id, status)` | Calendar date-range view and "what have I posted" lookup (`app/content/calendar_service.py`, `app/content/content_history.py`) |
-| `growth_goals` | `(user_id, status)` | Active-goal lookup (`app/growth/goals.py`) |
-| `weekly_plans` | `(user_id, week_start)` | Previous-week reflection lookup (`app/growth/weekly_plan.py`) |
+The first pass of this review, checked only against the ORM models,
+found nine apparent gaps. Verifying the resulting migration against a
+real MySQL instance (the close-out procedure's `alembic upgrade head`
+step — SQLite, what the test suite runs against, doesn't enforce enough
+to have caught this) turned out to be essential: four of those nine
+already existed, created by earlier phases' own migrations directly via
+`op.create_index` with no corresponding `Index()` ever added to the ORM
+model — a real, separate gap in this codebase's model/migration parity,
+just not the one this review set out to fix. `docs/adr/0012` and the
+close-out procedure it's part of exist specifically to catch this class
+of thing before it reaches a real deploy. The eight genuinely new
+indexes below actually shipped in `0021_performance_indexes.py`; the
+other four were fixed by adding the missing `Index()` declaration to
+their model instead (no new migration needed, since the index itself
+was already there):
+
+| Table | Index | Status | Query it serves |
+| --- | --- | --- | --- |
+| `notifications` | `(user_id, read_at, created_at)` | New (`0021`) | Notification centre feed: unread-first, newest-first, one user (`app/notifications/service.py`) — supersedes two narrower pre-existing indexes (`ix_notifications_user_created`, `ix_notifications_user_unread`) for this specific query, though both are left in place |
+| `login_attempts` | `(email_normalized, attempted_at)`, `(ip_hash, attempted_at)` | New (`0021`) | Login/register rate limiting, checked on every attempt (`app/services/rate_limit.py`) |
+| `refresh_tokens` | `(user_id, revoked_at)` | New (`0021`) | Session listing/revocation (`app/services/sessions.py`) |
+| `subscriptions` | `(status, plan, current_period_end)`, `(status, plan, updated_at)` | New (`0021`) | The billing period sweep's two scans (`app/billing/period_sweep.py`) |
+| `subscriptions` | `(provider, provider_subscription_id)` | **Already existed** (`0017_billing.py`) | Webhook-to-subscription lookup (`app/billing/service.py`) — this review rediscovered the same need independently |
+| `resumes` | `(user_id, created_at)` | New (`0021`) | Resume list (`app/career/service.py`) |
+| `resumes` | `(user_id, is_active)` | **Already existed** (`0011_resume_pipeline.py`), model declaration added this phase | Activation (deactivating a user's other resumes) |
+| `resume_matches` | `(user_id, created_at)` | New (`0021`) | Match history list (`app/career/service.py`) |
+| `content_plans` | `(user_id, status)` | New (`0021`) | "What have I posted" lookup (`app/content/content_history.py`) |
+| `content_plans` | `(user_id, planned_for)` | **Already existed** (`0010_content_plans.py`), model declaration added this phase | Calendar date-range view (`app/content/calendar_service.py`) |
+| `growth_goals` | `(user_id, status)` | **Already existed** (`0012_growth_plans_and_goals.py`), model declaration added this phase | Active-goal lookup (`app/growth/goals.py`) |
+| `weekly_plans` | `(user_id, week_start)`, unique | **Already existed** as `ux_weekly_plans_user_week` (`0012_growth_plans_and_goals.py`), model declaration corrected this phase (it previously named and described a different, non-existent index) | Previous-week reflection lookup (`app/growth/weekly_plan.py`) |
 
 Every other high-traffic query pattern checked (jobs, tool runs, assets,
 audits, AI invocations, feature flags) already had a supporting index
 from its own phase's migration — `ai_invocations`
 (`ix_ai_invocations_user_created`) was the model this review's naming
 convention followed.
+
+The same real-MySQL verification also caught genuine bugs across earlier
+phases' migrations that had never been exercised against MySQL before
+(the whole test suite runs against SQLite, which enforces none of this):
+
+- Migration 0012 declared a literal `server_default=""` on a `TEXT`
+  column, which MySQL rejects outright (`Error 1101`).
+- Migration 0007's downgrade dropped an index before the foreign key
+  constraint that depended on it, instead of after — MySQL refuses to
+  drop an index still backing one of the table's own foreign keys
+  (`Error 1553`).
+- Eighteen migrations, from `0001_initial_schema.py` onward, dropped an
+  index immediately before dropping the table that index belonged to —
+  the exact same `Error 1553` as above, hit whenever that index happened
+  to be the sole one covering a foreign-keyed column. Dropping a table
+  already removes its indexes, so every one of these calls was both
+  redundant and, some of the time, actively broken; all were removed.
+
+All of the above are fixed in place, not via a new migration — none of
+them has ever successfully completed a downgrade against real MySQL, so
+there is no live schema state anywhere to migrate away from, and an
+in-place fix is the correct move per `docs/runbook.md`'s own rule
+against editing an already-*shipped* migration (these were never
+shipped in the sense that matters: never applied to a real, running
+database). This is exactly the class of bug the close-out procedure's
+`alembic upgrade head` / `downgrade base` verification step exists to
+catch before a real deploy hits it — see `docs/adr/0012-production-topology.md`.
 
 ## HTTP caching
 

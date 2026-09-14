@@ -67,6 +67,4 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_index("ix_jobs_user_created", table_name="jobs")
-    op.drop_index("ix_jobs_lease_candidates", table_name="jobs")
     op.drop_table("jobs")

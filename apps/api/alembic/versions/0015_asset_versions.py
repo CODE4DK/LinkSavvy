@@ -51,5 +51,4 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_index("ux_asset_versions_asset_version", table_name="asset_versions")
     op.drop_table("asset_versions")

@@ -67,5 +67,4 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_index("ix_moderation_flags_status_created", table_name="moderation_flags")
     op.drop_table("moderation_flags")

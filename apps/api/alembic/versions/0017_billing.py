@@ -161,12 +161,8 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_index("ix_webhook_events_status_received", table_name="webhook_events")
     op.drop_table("webhook_events")
-    op.drop_index("ix_payments_subscription_created", table_name="payments")
     op.drop_table("payments")
-    op.drop_index("ix_subscriptions_provider_sub_id", table_name="subscriptions")
-    op.drop_index("ix_subscriptions_user_status", table_name="subscriptions")
     op.drop_table("subscriptions")
     op.drop_column("assets", "read_only")
     op.drop_column("users", "billing_country")

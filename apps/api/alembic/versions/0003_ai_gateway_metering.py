@@ -244,5 +244,4 @@ def downgrade() -> None:
     op.drop_table("ai_cache")
     op.drop_table("plan_limits")
     op.drop_table("usage_counters")
-    op.drop_index("ix_ai_invocations_user_created", table_name="ai_invocations")
     op.drop_table("ai_invocations")

@@ -97,9 +97,6 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_index("ix_email_log_user_created", table_name="email_log")
     op.drop_table("email_log")
     op.drop_table("notification_preferences")
-    op.drop_index("ix_notifications_user_unread", table_name="notifications")
-    op.drop_index("ix_notifications_user_created", table_name="notifications")
     op.drop_table("notifications")
