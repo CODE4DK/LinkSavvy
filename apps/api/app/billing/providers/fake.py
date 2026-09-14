@@ -47,6 +47,9 @@ class FakeProvider(BillingProvider):
     async def create_portal_session(self, *, customer_id: str) -> str:
         return f"https://fake-portal.test/{customer_id}"
 
+    async def delete_customer(self, *, customer_id: str) -> None:
+        return None
+
     async def cancel(self, *, subscription: Subscription, at_period_end: bool) -> None:
         return None
 

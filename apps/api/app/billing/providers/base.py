@@ -101,6 +101,13 @@ class BillingProvider(ABC):
         if it doesn't check out) and reduces it to a `NormalisedEvent`."""
 
     @abstractmethod
+    async def delete_customer(self, *, customer_id: str) -> None:
+        """Removes the provider-side customer record -- part of a real
+        account deletion (app/privacy/purge.py), not just our own DB row.
+        A no-op (with a clear reason) is a valid implementation for a
+        provider whose API has nothing equivalent to delete."""
+
+    @abstractmethod
     def parse_payload(self, payload: dict[str, Any]) -> NormalisedEvent:
         """The signature-verified half of `parse_webhook`: turns an
         already-decoded payload into a `NormalisedEvent` with no signature

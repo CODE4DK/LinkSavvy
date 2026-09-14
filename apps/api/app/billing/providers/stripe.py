@@ -109,6 +109,15 @@ class StripeProvider(BillingProvider):
             if response.status_code >= 400:
                 raise BillingProviderError(f"stripe cancel failed: {response.text}")
 
+    async def delete_customer(self, *, customer_id: str) -> None:
+        api_key = self._require_api_key()
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.delete(
+                f"{_API_BASE}/customers/{customer_id}", auth=(api_key, "")
+            )
+        if response.status_code >= 400:
+            raise BillingProviderError(f"stripe customer deletion failed: {response.text}")
+
     async def change_plan(self, *, subscription: Subscription, plan: str, interval: str) -> None:
         price_id = settings.stripe_price_ids.get(f"{plan}:{interval}")
         if not price_id:

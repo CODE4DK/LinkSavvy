@@ -4,6 +4,7 @@ import { BillingSection } from "./settings/BillingSection";
 import { NotificationsSection } from "./settings/NotificationsSection";
 import { SessionsSection } from "./settings/SessionsSection";
 import { ChangePasswordSection } from "./settings/ChangePasswordSection";
+import { PrivacySection } from "./settings/PrivacySection";
 import { DeleteAccountSection } from "./settings/DeleteAccountSection";
 
 export function SettingsPage() {
@@ -16,6 +17,7 @@ export function SettingsPage() {
       <NotificationsSection />
       <SessionsSection />
       <ChangePasswordSection />
+      <PrivacySection />
       <DeleteAccountSection />
     </div>
   );

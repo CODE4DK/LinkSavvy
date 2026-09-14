@@ -107,8 +107,11 @@ class Settings(BaseSettings):
 
     # Privacy (Phase 10). How long a soft-deleted account's PII is kept
     # before the scheduled purge job hard-deletes it -- see
-    # app/privacy/purge_scheduler.py and docs/privacy.md.
+    # app/privacy/retention_scheduler.py and docs/privacy.md.
     account_hard_delete_after_days: int = 30
+    # How long AI invocation metering rows (tokens/cost/latency -- never
+    # prompt or completion content, see app/models/ai_invocation.py) are
+    # kept before app/privacy/purge.py::purge_old_ai_invocations trims them.
     ai_invocation_payload_retention_days: int = 90
     log_retention_days: int = 30
 

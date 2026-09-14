@@ -594,6 +594,68 @@
         }
       }
     },
+    "/api/v1/me/export": {
+      "post": {
+        "tags": [
+          "me"
+        ],
+        "summary": "Request Data Export",
+        "operationId": "request_data_export_api_v1_me_export_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportJobResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/export/{export_id}": {
+      "get": {
+        "tags": [
+          "me"
+        ],
+        "summary": "Download Data Export",
+        "operationId": "download_data_export_api_v1_me_export__export_id__get",
+        "parameters": [
+          {
+            "name": "export_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Export Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/profile/connect": {
       "post": {
         "tags": [
@@ -6858,6 +6920,23 @@
           }
         }
       }
+    },
+    "/ready": {
+      "get": {
+        "summary": "Ready",
+        "description": "Liveness (`/health`) just confirms the process is up; this confirms\nit can actually serve traffic, by round-tripping the database -- what\nan uptime check and a deploy's readiness gate should both hit instead.",
+        "operationId": "ready_ready_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -9648,6 +9727,19 @@
         "additionalProperties": false,
         "type": "object",
         "title": "Experience"
+      },
+      "ExportJobResponse": {
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "title": "Job Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "job_id"
+        ],
+        "title": "ExportJobResponse"
       },
       "FeatureFlagResponse": {
         "properties": {

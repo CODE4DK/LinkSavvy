@@ -307,3 +307,7 @@ export type ReviewFlagRequest = Schemas["ReviewFlagRequest"];
 export type QueueDepthResponse = Schemas["QueueDepthResponse"];
 export type JobResponse = Schemas["JobResponse"];
 export type PlatformHealthResponse = Schemas["PlatformHealthResponse"];
+
+// -- Privacy --------------------------------------------------------------
+
+export type ExportJobResponse = Schemas["ExportJobResponse"];

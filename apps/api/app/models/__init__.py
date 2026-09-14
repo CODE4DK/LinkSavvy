@@ -10,6 +10,7 @@ from app.models.base import Base
 from app.models.content_plan import ContentPlan
 from app.models.content_sample import ContentSample
 from app.models.conversation import Conversation
+from app.models.data_export import DataExport
 from app.models.email_log import EmailLog
 from app.models.email_verification import EmailVerification
 from app.models.feature_flag import FeatureFlag, UserFeatureFlag
@@ -56,6 +57,7 @@ __all__ = [
     "ContentPlan",
     "ContentSample",
     "Conversation",
+    "DataExport",
     "EmailLog",
     "EmailVerification",
     "FeatureFlag",

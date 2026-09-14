@@ -16,6 +16,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
+import logging
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
 
@@ -35,6 +36,7 @@ if TYPE_CHECKING:
     from app.models.user import User
 
 _API_BASE = "https://api.razorpay.com/v1"
+_logger = logging.getLogger("app.billing.providers.razorpay")
 
 _EVENT_TYPE_MAP: dict[str, NormalisedEventType] = {
     "subscription.activated": NormalisedEventType.SUBSCRIPTION_ACTIVATED,
@@ -96,6 +98,16 @@ class RazorpayProvider(BillingProvider):
         await self._post(
             f"/subscriptions/{subscription.provider_subscription_id}/cancel",
             data={"cancel_at_cycle_end": 1 if at_period_end else 0},
+        )
+
+    async def delete_customer(self, *, customer_id: str) -> None:
+        # Razorpay's API has no customer-deletion endpoint -- the closest
+        # available action is fetching and manually redacting contact
+        # details via their dashboard/support flow. Logged so a real
+        # deletion request doesn't silently look complete; tracked as a
+        # known gap in docs/privacy.md rather than left unmentioned.
+        _logger.warning(
+            "razorpay_customer_deletion_not_supported", extra={"customer_id": customer_id}
         )
 
     async def change_plan(self, *, subscription: Subscription, plan: str, interval: str) -> None:

@@ -33,6 +33,7 @@ NOTIFICATION_TYPES: list[str] = [
     "growth.weekly_report",
     "content.reminder",
     "product.update",
+    "privacy.export_ready",
 ]
 
 # Product updates are the one type that defaults to email-off: everything

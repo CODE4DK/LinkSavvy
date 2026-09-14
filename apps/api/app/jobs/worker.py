@@ -149,7 +149,7 @@ async def _record_failure(db: AsyncSession, job: Job, *, error: str) -> None:
     now = datetime.now(UTC)
     truncated_error = error[:MAX_ERROR_LENGTH]
     if job.attempts < job.max_attempts:
-        backoff = BASE_BACKOFF_SECONDS * (2 ** (job.attempts - 1)) + random.uniform(
+        backoff = BASE_BACKOFF_SECONDS * (2 ** (job.attempts - 1)) + random.uniform(  # nosec B311
             0, BASE_BACKOFF_SECONDS
         )
         await db.execute(
@@ -266,5 +266,6 @@ if __name__ == "__main__":
     from app.content import calendar_reminder_job  # noqa: F401
     from app.growth import weekly_plan_job  # noqa: F401
     from app.notifications import dispatch_job, weekly_digest_job  # noqa: F401
+    from app.privacy import export_job  # noqa: F401
 
     asyncio.run(run_worker())

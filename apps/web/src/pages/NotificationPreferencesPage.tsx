@@ -13,6 +13,7 @@ const TYPE_LABELS: Record<string, string> = {
   "growth.weekly_report": "Weekly growth report",
   "content.reminder": "Content post reminders",
   "product.update": "Product updates",
+  "privacy.export_ready": "Data export ready",
 };
 
 export function NotificationPreferencesPage() {
